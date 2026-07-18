@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: installer + hooks (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - name: Install into a scratch project
+        run: node install.mjs --adapter adapters/next-web-boilerplate.json --dest scratch --hooks
+      - name: Re-run is idempotent
+        run: node install.mjs --adapter adapters/next-web-boilerplate.json --dest scratch --hooks
+      - name: Drift check is green
+        run: node install.mjs --check --dest scratch
+      - name: Hook handlers honor the fire/silent contract
+        run: node .github/smoke-hooks.mjs
