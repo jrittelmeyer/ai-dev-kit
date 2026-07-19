@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -182,7 +182,7 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dualHome": false,
       "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract → honest theirs-vs-template disposition map → data/user reality check → one batched question round → product brief + migration map + regenerated status/backlog whose completion is a surface-identical app on the template foundation → sign-off → the pipeline begins.",
       "triggers": [

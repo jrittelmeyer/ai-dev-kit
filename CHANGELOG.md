@@ -1,5 +1,28 @@
 # ai-dev-kit changelog
 
+## 0.6.1 — 2026-07-19
+
+project-adopt **0.1.1** — mends from the live trial (program step 3: the full
+flow driven on a fresh consumer copy adopting **linkding 1.45.0**, green
+through the sign-off gate; both intake forms + the re-run/resume branch
+exercised; reference grade live-local via the original's own docker-compose).
+
+- **§2 Copy & locales:** bind copy **verbatim by reference** to the named
+  source files (the retained source is the contract's copy appendix) instead
+  of transcribing template trees into the migration map — a real app's 47
+  templates made wholesale transcription duplicative and unmaintainable.
+- **§5 question round:** one round = one *presentation moment* — where the
+  asking UI caps questions per prompt, consecutive sets within it still count
+  as the one round; and smaller calls resolved by recommendation *without
+  being asked* are marked as assumptions in the brief's decision log alongside
+  skipped answers (the trial's round came back fully answered, so the
+  skip-path relies on this convention for coverage).
+
+Trial-surfaced template (not kit) findings were filed in the template's
+backlog: a token-sheet-adoption recipe for UI.md, two post-slim leftover
+pointers in MAINTENANCE.md, and the AGENTS.md placeholder wrapper naming only
+project-init.
+
 ## 0.6.0 — 2026-07-19
 
 The brownfield inception skill — the pipeline gains its second entry door
