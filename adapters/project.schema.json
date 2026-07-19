@@ -146,15 +146,23 @@
     "init": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Project-inception parameters read by the project-init skill.",
+      "description": "Project-inception parameters read by the project-init (greenfield) and project-adopt (brownfield) skills.",
       "properties": {
         "scaffold": {
           "type": "string",
-          "description": "Mechanical scaffold command run at intake (env seed, rename, template-doc slim). `{name}` is replaced with a lowercase npm-safe slug of the chosen app name (scaffolds may silently skip renaming on an invalid npm name); omit the placeholder if the command takes none. project-init confirms before running any scaffold that removes files."
+          "description": "Mechanical scaffold command run at intake (env seed, rename, template-doc slim). `{name}` is replaced with a lowercase npm-safe slug of the chosen app name (scaffolds may silently skip renaming on an invalid npm name); omit the placeholder if the command takes none. Both inception skills confirm before running any scaffold that removes files."
         },
         "productBrief": {
           "type": "string",
           "description": "Where the converged product brief lands (default docs/PRODUCT.md)."
+        },
+        "migrationMap": {
+          "type": "string",
+          "description": "Where project-adopt's migration map lands — disposition table, parity contract, data/user plan (default docs/MIGRATION.md)."
+        },
+        "sourceDir": {
+          "type": "string",
+          "description": "Drop-dir convention where an existing codebase is placed for project-adopt when no path/URL argument is given (default intake/source/). Kept gitignored — the original source is a read-only reference, never committed to the adopting repo's history."
         }
       }
     }

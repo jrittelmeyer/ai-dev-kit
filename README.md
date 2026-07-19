@@ -23,6 +23,7 @@ into a project; re-run it from a fresh clone to stay current.
 | `dep-check` | Registry-verify version, release age, and pin policy before any dependency change | adding/upgrading a dependency |
 | `live-verify` | Fresh prod build + drive the real flow — behavioral proof before commit | before committing product changes |
 | `project-init` | Inception: plan docs / raw idea → discovery + competitive scan → product brief → status/backlog regenerated to a 100 bar | once, on a fresh scaffold |
+| `project-adopt` | Brownfield inception: existing codebase → parity contract + theirs-vs-template disposition map → product brief + migration map → port backlog | once, on an existing app |
 
 The intended lifecycle (machine-readable in `manifest.json` → `pipeline`):
 
@@ -32,9 +33,14 @@ orient → plan-gate → [dep-check] → build → live-verify
       → periodic: doc-audit · project-audit
 ```
 
-`project-init` sits *before* the loop — the one-time inception pass that turns an
-idea (or a stack of plan documents) into the signed-off product brief, mended
-context docs, and prioritized backlog the loop then executes.
+`project-init` and `project-adopt` sit *before* the loop — the one-time inception
+passes. `project-init` turns an idea (or a stack of plan documents) into the
+signed-off product brief, mended context docs, and prioritized backlog the loop
+then executes. `project-adopt` does the same for a product that **already exists
+as code**: it surveys the app into a parity contract, maps every subsystem
+theirs-vs-template, and regenerates the docs into a port program that lands the
+app surface-identical on the template foundation — with the template's relevant
+features lit up.
 
 `code-review`, `simplify`, and `verify` are Claude Code built-ins the kit composes
 with rather than reimplements.

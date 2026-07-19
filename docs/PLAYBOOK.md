@@ -213,30 +213,42 @@ skills with active triggers).
 
 ## 10. Inception discipline
 
-**What.** A new project enters the pipeline through one structured inception pass:
-idea (or plan docs) → discovery (gap analysis, value-add candidates, competitive
-landscape, template fit-map) → one batched question round → a product brief that
-defines the feature groups and the quality bar → regenerated status + backlog whose
-completion *is* the 100 score → sign-off → row 1.
+**What.** A project enters the pipeline through one structured inception pass, by
+one of two doors. **Greenfield** (`project-init`): idea (or plan docs) → discovery
+(gap analysis, value-add candidates, competitive landscape, template fit-map).
+**Brownfield** (`project-adopt`): an existing codebase → a full product survey that
+doubles as the **parity contract** (every human-observable surface the port must
+preserve) → an honest theirs-vs-template **disposition map**. Both doors converge
+the same way: one batched question round → a product brief that defines the
+feature groups and the quality bar → regenerated status + backlog whose completion
+*is* the 100 score → sign-off → row 1.
 
 **Why.** The most expensive words in a project are the ones never said at the start:
 each unmade decision (tenancy, monetization, the MVP cut) costs a rebuild when it
 surfaces mid-program. And a backlog derived from a scored bar makes "done" a
-measurement, not a mood.
+measurement, not a mood. For adoption, the disposition map guards against the two
+failure modes of every port: reverence (keeping inferior legacy plumbing) and
+arrogance (discarding load-bearing custom logic the template can't replace).
 
 **Practice.** Restate before analyzing — a wrong restatement is cheapest to catch
 first. Split value-adds honestly into *already-free* vs *new build*. Date-stamp
 competitive claims; they rot fastest. Skipped answers become **marked assumptions**,
-never silent defaults. The first backlog row is always the walking skeleton — the
-thinnest live-verified slice of the core flow.
+never silent defaults. Brownfield adds: extract real design tokens, not
+impressions; grade the reference honestly (live-local / live-remote / static-only)
+and let the grade set each row's parity evidence; every disposition row carries a
+*why* — "the template usually wins" is a prior, not a rule. The first backlog row
+is always the walking skeleton — greenfield: the thinnest live-verified slice of
+the core flow; brownfield: scaffold + extracted tokens + one core page,
+parity-verified against the original.
 
-**Automation.** The project-init skill mechanizes the whole pass. No hook — the
-template's getting-started docs point at it (a post-scaffold nudge is text, not
-machinery).
+**Automation.** The project-init and project-adopt skills mechanize the pass. No
+hook — the template's getting-started docs point at them (a post-scaffold nudge is
+text, not machinery).
 
 **Composes with.** plan-gate (#2 — the inception sign-off is the biggest plan-gate
 there is), project-audit (which scores against the brief's groups + bar ever after),
-context tiers (#3 — the brief joins the on-demand tier).
+context tiers (#3 — the brief and migration map join the on-demand tier),
+live-verify (whose standing mode for port rows is the parity check).
 
 ---
 

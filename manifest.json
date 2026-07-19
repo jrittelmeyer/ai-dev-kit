@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -178,6 +178,34 @@
       },
       "automation": {
         "reviewed": "0.4.0: no hook — a post-scaffold nudge belongs in the template's getting-started text, not machinery; the skill triggers cover invocation"
+      }
+    },
+    {
+      "name": "project-adopt",
+      "version": "0.1.0",
+      "dualHome": false,
+      "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract → honest theirs-vs-template disposition map → data/user reality check → one batched question round → product brief + migration map + regenerated status/backlog whose completion is a surface-identical app on the template foundation → sign-off → the pipeline begins.",
+      "triggers": [
+        "adopt this codebase",
+        "port my app onto the template",
+        "migrate an existing app to this boilerplate",
+        "here's my existing site's source"
+      ],
+      "composition": {
+        "runs": ["mechanical scaffold (adapter init.scaffold)"],
+        "consumes": "the existing codebase — arg path/git URL or the adapter init.sourceDir drop dir; a read-only, never-committed reference",
+        "feeds": [
+          "product brief (adapter init.productBrief)",
+          "migration map + parity contract (adapter init.migrationMap)",
+          "status doc + backlog (regenerated)",
+          "upstream candidates (template issues/PRs; keep-theirs rows double as template lessons)"
+        ],
+        "siblingOf": "project-init (greenfield inception)",
+        "precedes": "the whole pipeline — the one-time entry point for an existing product; the parity check becomes the standing live-verify mode for port rows",
+        "scoredBy": "project-audit (against the brief's feature groups + bar)"
+      },
+      "automation": {
+        "reviewed": "0.6.0: no hook — same rationale as project-init; the template's getting-started text and the skill triggers cover invocation"
       }
     }
   ]

@@ -1,5 +1,38 @@
 # ai-dev-kit changelog
 
+## 0.6.0 — 2026-07-19
+
+The brownfield inception skill — the pipeline gains its second entry door
+(project-adopt program, step 1 of 3).
+
+- `skills/project-adopt/` — adopts an existing codebase onto the template: intake
+  (arg path/git URL or the gitignored `init.sourceDir` drop dir; the source stays a
+  **read-only, never-committed reference**) → best-effort boot establishing the
+  **reference grade** (live-local / live-remote / static-only — the grade sets each
+  port row's parity evidence: side-by-side drives / deployed-URL comparison /
+  checklist + verified-by-inspection) → extended-thinking survey producing the
+  **product inventory = parity contract** (routes, flows, data model, auth shape,
+  integrations, extracted design tokens, copy, assets, SEO; `--deep` fans out
+  subagents) → honest five-bucket **disposition map** (port-onto-template ·
+  replace-with-template · keep-theirs · light-up · drop; every row carries a why —
+  "the template wins" is a prior, not a rule; keep-theirs rows double as
+  upstream-lesson candidates) → data & users reality check (auth-hash import vs
+  forced reset, schema path, stored files, cutover) → one batched question round →
+  product brief + **migration map** (adapter `init.migrationMap`) → regenerated
+  status doc + banded backlog whose completion is a surface-identical app on the
+  template foundation with the relevant template features lit up; B1 opens with
+  the port walking skeleton (scaffold + extracted tokens + one core page,
+  parity-verified). Writes no product code; sign-off commits the inception output.
+- Adapter contract: `init` gains `migrationMap` (default `docs/MIGRATION.md`) and
+  `sourceDir` (default `intake/source/`, kept gitignored); the `init` block is now
+  shared by both inception skills; reference adapter updated.
+- `docs/PLAYBOOK.md` technique 10 (inception discipline) now covers both entry
+  doors — greenfield (project-init) and brownfield (project-adopt: parity
+  contract, disposition honesty, reference-graded evidence). The deck gains the
+  eighth skill card and re-stamps at 0.6.0.
+- Reviewed and deliberately NOT hook-automated — same rationale as project-init:
+  the entry point is the template's getting-started text plus the skill triggers.
+
 ## 0.5.0 — 2026-07-18
 
 Extraction — the kit now lives in its own repository:
