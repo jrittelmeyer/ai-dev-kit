@@ -250,6 +250,63 @@ there is), project-audit (which scores against the brief's groups + bar ever aft
 context tiers (#3 — the brief and migration map join the on-demand tier),
 live-verify (whose standing mode for port rows is the parity check).
 
+## 11. Standing-instruction economy
+
+**What.** The always-loaded instruction surface — the onboarding `AGENTS.md`,
+tool files like `CLAUDE.md`, the memory index, skill descriptions — carries
+**only what the agent can't infer from the repo**, stays within budget (~150
+lines for the onboarding file), and keeps its *top stable*. Tool-specific files
+are thin pointers (an `@AGENTS.md` import plus genuinely tool-specific config).
+Monorepo packages with sharp package-local rules carry **leaf `AGENTS.md`
+files** — nearest file wins, ≤~30 lines, each line one imperative plus an
+anchor link into the owning context doc.
+
+**Why.** Always-loaded tokens are paid on every turn of every session — and the
+prompt cache keys on an exact prefix, so churn near the top of a standing file
+re-bills the entire context. Repo-inferable content in instruction files has
+been measured to make agents *worse*, not just costlier. Volatile facts
+(scores, dates, deadlines) in a standing file are stale by construction.
+
+**Practice.** Every line pays rent: delete what the file tree, the package
+manifest, or a README already says; compress stack tables to a version anchor;
+move status narrative to the status doc and *point* at it. Keep leaf files
+anchor-pointer-only so a rule changes in one place. Budgets are per-repo facts
+and live in the adapter (`contextBudget`); they're heuristics — flag, don't
+churn a stable file to chase a number.
+
+**Automation.** doc-audit hunt 7 (periodic: budget + placement + leaf drift);
+the context-guard hook (edit-time nudge on instruction/context files).
+
+**Composes with.** context tiers (#3 — this is the top tier's authoring rule),
+the archive pattern (#7 — where evicted narrative goes), doc-audit.
+
+## 12. Session economics
+
+**What.** Four in-session spend disciplines. **Three strikes:** after three
+failed attempts at the same obstacle, stop — diagnose, fix the spec or the
+context, start fresh. **Point, don't paste:** tail/grep logs and reference
+files; never ingest what a pointer can carry. **Model routing:** send subtasks
+to the cheapest tier that's sufficient; keep the frontier model for judgment.
+**Bounded output:** output tokens cost ~5× input — cap lengths, dial reasoning
+effort to the task.
+
+**Why.** A window full of failed attempts actively poisons further attempts —
+the doom loop burns full-priced iterations against an assumption the session
+can't see past, and killing a doomed session is the most profitable move in
+agentic development. Every pasted kilobyte is context the actual work no longer
+has, re-paid on every subsequent turn.
+
+**Practice.** Count strikes honestly — "one more variation" is how loops hide.
+The checkpoint skill's health check treats a third strike as unhealthy
+regardless of remaining window; the handoff carries the *diagnosis* so the
+fresh session starts from the fix, not the failure. For exploration, fan out
+(#6); for logs, tail the relevant slice into the transcript, never the file.
+
+**Automation.** checkpoint's three-strikes clause; the rest is judgment.
+
+**Composes with.** resume prompts (#8 — the remedy's mechanics),
+cheapest-sufficient-probe (#5), fan-out research (#6).
+
 ---
 
 *Part of [ai-dev-kit](../README.md) · techniques distilled from the

@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -42,15 +42,22 @@
         "matcher": "Edit|Write",
         "skill": "(kit invariant)",
         "fires": "direct file-tool edits under .claude/skills/ or .claude/hooks/"
+      },
+      {
+        "file": "hooks/context-guard.mjs",
+        "event": "PostToolUse",
+        "matcher": "Edit|Write",
+        "skill": "doc-audit (hunt 7 — standing-instruction economy)",
+        "fires": "edits to AGENTS.md/CLAUDE.md at any depth, or files under the adapter docs.contextDir (default docs/context)"
       }
     ]
   },
   "skills": [
     {
       "name": "checkpoint",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "dualHome": false,
-      "summary": "Commit + push pending work, judge context health, then continue or hand off with a paste-ready resume prompt.",
+      "summary": "Commit + push pending work, judge context health (three strikes on a repeated obstacle = unhealthy), then continue or hand off via an on-disk resume prompt.",
       "triggers": [
         "checkpoint",
         "commit and continue",
@@ -68,9 +75,9 @@
     },
     {
       "name": "doc-audit",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dualHome": true,
-      "summary": "Keep docs, agent context, persistent memory, and showcase docs accurate and token-lean; archive instead of delete.",
+      "summary": "Keep docs, agent context, persistent memory, and showcase docs accurate and token-lean; archive instead of delete; enforce standing-instruction budgets and cache-stable placement (hunt 7).",
       "triggers": [
         "clean up docs",
         "audit the docs",
@@ -138,7 +145,7 @@
     },
     {
       "name": "live-verify",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "dualHome": false,
       "summary": "Full gate, then a fresh prod build on a dedicated port, then drive the affected flow and observe real output.",
       "triggers": [
@@ -156,7 +163,7 @@
     },
     {
       "name": "project-init",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "dualHome": false,
       "summary": "One-time inception: plan docs or a raw idea → discovery (gaps, value-adds, competitive scan, template fit-map) → one batched question round → product brief + regenerated status/backlog to a 100 bar → sign-off → the pipeline begins.",
       "triggers": [
@@ -182,7 +189,7 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dualHome": false,
       "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract → honest theirs-vs-template disposition map → data/user reality check → one batched question round → product brief + migration map + regenerated status/backlog whose completion is a surface-identical app on the template foundation → sign-off → the pipeline begins.",
       "triggers": [

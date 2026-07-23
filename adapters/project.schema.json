@@ -76,6 +76,33 @@
         "archiveDir": {
           "type": "string",
           "description": "Where audit reports and archived history land."
+        },
+        "handoff": {
+          "type": "string",
+          "description": "Where checkpoint writes the resume/handoff file. Absent → the agent memory directory (resume-prompt.md). Keep repo paths out of version control unless deliberately tracked."
+        }
+      }
+    },
+    "contextBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Line/token budgets for the always-loaded and on-demand context surfaces, read by doc-audit's standing-instruction hunt. Heuristics — the audit flags and recommends, never hard-fails.",
+      "properties": {
+        "agentsMdMaxLines": {
+          "type": "integer",
+          "description": "Ceiling for the agent-onboarding file (default 150)."
+        },
+        "contextDocSplitTokens": {
+          "type": "integer",
+          "description": "A context doc above this size (tokens ≈ chars/4) is flagged for split/index (default 3000)."
+        },
+        "memoryIndexMaxTokens": {
+          "type": "integer",
+          "description": "Ceiling for the always-loaded memory index (default 700)."
+        },
+        "memoryFileMaxTokens": {
+          "type": "integer",
+          "description": "Per-memory-file ceiling (default 1500)."
         }
       }
     },

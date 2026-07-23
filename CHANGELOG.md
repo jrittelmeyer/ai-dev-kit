@@ -1,5 +1,63 @@
 # ai-dev-kit changelog
 
+## 0.7.0 — 2026-07-23
+
+Context-engineering release — the kit absorbs the standing-instruction-economy
+and session-economics curriculum (prime directive, budgets, cache-stable
+prefixes, leaf AGENTS.md, three-strikes, disk-seeded handoffs) as enforceable
+practice, not just prose.
+
+- `skills/doc-audit` (**0.2.0**, dual-home): new **hunt 7 — standing-instruction
+  budget & placement**: measures the always-loaded set against budgets (adapter
+  `contextBudget`, defaults ~150-line onboarding file / ~700-token memory index
+  with ~120-char hooks / ~3k-token context-doc split threshold / ~1.5k-token
+  memory files, flag-and-recommend, never hard-fail) and checks *placement* —
+  prime-directive (repo-inferable lines), thin-pointer tool files, cache
+  stability (volatile dates/scores/deadlines out of always-loaded files), leaf
+  `AGENTS.md` drift + candidates, load-when-table precision. Discover step now
+  globs leaf instruction files; execute step gains the matching fixes (relocate
+  volatile facts, split-with-redirect-stub, restate write-time memory rules).
+  Frontmatter description trimmed ~800→~350 chars (triggers preserved) — the
+  description is always-loaded in every consumer session, and globally via
+  dual-home.
+- `skills/checkpoint` (**0.2.0**): the context-health check gains the
+  **three-strikes rule** (a session that failed the same obstacle 3× is
+  unhealthy regardless of remaining window — hand off with a diagnosis, never
+  coach in-window), and the handoff now **writes the resume prompt to disk**
+  (adapter `docs.handoff`, else the agent memory directory as
+  `resume-prompt.md`) with a one-line seed pointer; the paste-ready block
+  remains as convenience. Disk survives scrollback; the fresh session reads the
+  file in targeted chunks instead of ingesting a paste.
+- `skills/project-init` (**0.2.0**) / `skills/project-adopt` (**0.2.0**):
+  registering the brief/map in the context-doc index now *appends* a
+  shape-matched row (uncommenting a pre-seeded placeholder stays the
+  older-template fallback) — templates no longer need to carry commented
+  scaffolding in their always-loaded onboarding file. Frontmatter descriptions
+  trimmed to trigger-essentials (~640/~600 → ~350 chars each).
+- `skills/live-verify` (**0.1.1**): frontmatter description trimmed
+  (procedure detail moved out; triggers preserved).
+- `hooks/context-guard.mjs` — **fourth hook** (PostToolUse: Edit|Write):
+  fires on edits to `AGENTS.md`/`CLAUDE.md` at any depth (leaf files included)
+  or files under the adapter's `docs.contextDir`; injects the
+  standing-instruction-economy reminder (non-inferable only, within budget,
+  stable top, doc + code in the same commit). Advise-never-block; smoke cases
+  added. Reviewed-and-rejected alongside it: calendar/session-counter doc-audit
+  nudges (contradict audits-on-real-need; noise) — recorded here per the
+  automation-review discipline.
+- Adapter contract: `contextBudget` block (agentsMdMaxLines ·
+  contextDocSplitTokens · memoryIndexMaxTokens · memoryFileMaxTokens) read by
+  doc-audit hunt 7; `docs.handoff` for the checkpoint handoff file. Reference
+  adapter gains the budget block and widens `depPolicy.exactPin` to the full
+  frequent-publisher list (stripe, @sentry/*, posthog-*, react-email,
+  @axe-core/playwright) that previously lived only in project memory.
+- `docs/PLAYBOOK.md` techniques **11 — standing-instruction economy** (prime
+  directive, ceilings, thin pointers, leaf files, cache-stable prefix) and
+  **12 — session economics** (three-strikes, point-don't-paste, model routing,
+  bounded output). README gains the **"Keep the consumer thin"** section with
+  the canonical 4-line consumer CLAUDE.md block (a consumer re-cataloging
+  skills double-pays for descriptions the harness already always-loads). Deck
+  re-stamped at 0.7.0 (four hooks, twelve techniques).
+
 ## 0.6.1 — 2026-07-19
 
 project-adopt **0.1.1** — mends from the live trial (program step 3: the full

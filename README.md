@@ -95,14 +95,31 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash` | package.json edits; pm `add`/`update`/install-with-args |
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
+| `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth) or the adapter's `docs.contextDir` — injects the standing-instruction-economy reminder |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe),
 installed to `.claude/hooks/ai-dev-kit/` and drift-guarded by `--check` like skills.
-Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag and a
-tidy/cache hook — existing cadence (standing agreement, husky pre-push) covers both,
+Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag, a
+tidy/cache hook, and any calendar/session-counter doc-audit nudge — existing
+cadence (standing agreement, husky pre-push, audits on real need) covers them,
 and a nag would be noise. Hooks changed in `settings.json` load at session start;
 an already-running session may need `/hooks` opened once (or a restart) to pick
 them up.
+
+## Keep the consumer thin
+
+The harness already always-loads every installed skill's description — a consumer's
+`CLAUDE.md` re-cataloging the skills pays for that content twice, every session.
+The canonical consumer block is four lines:
+
+```markdown
+- Skill library: installed from [ai-dev-kit](https://github.com/jrittelmeyer/ai-dev-kit)
+  (versions: `.claude/ai-dev-kit.installed.json` · params: `.claude/ai-dev-kit.config.json`).
+  Never edit `.claude/skills/` or `.claude/hooks/ai-dev-kit/` — edit a kit clone, then
+  `node <clone>/install.mjs --adapter <clone>/adapters/<project>.json --dest <project>
+  --global --hooks`; `install.mjs --check` guards drift.
+- Run `/checkpoint` at each step boundary.
+```
 
 ## Rules
 
