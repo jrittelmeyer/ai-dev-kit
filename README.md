@@ -95,7 +95,7 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash` | package.json edits; pm `add`/`update`/install-with-args |
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
-| `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth) or the adapter's `docs.contextDir` — injects the standing-instruction-economy reminder |
+| `context-guard.mjs` | PostToolUse · `Edit|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe),
 installed to `.claude/hooks/ai-dev-kit/` and drift-guarded by `--check` like skills.

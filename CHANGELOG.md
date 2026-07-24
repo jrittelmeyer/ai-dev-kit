@@ -1,5 +1,19 @@
 # ai-dev-kit changelog
 
+## 0.7.1 — 2026-07-23
+
+- `hooks/context-guard.mjs`: now also fires on **agent-memory files**
+  (`~/.claude/projects/<slug>/memory/*.md`, the `MEMORY.md` index included)
+  with a memory-economy reminder — the index stays a one-line-per-memory
+  pointer list within budget (adapter `contextBudget`; defaults ~700 tokens,
+  ~120-char hooks), memory files stay within ~1.5k tokens, shipped work lands
+  as one clause on an existing line, and the repo owns history. Motivated by
+  a real consumer failure: a memory-index entry regrew into a
+  multi-thousand-token always-loaded blob — the guard covered every
+  standing-instruction surface except the one that failed. Smoke cases added
+  (fire: Windows-path index + POSIX memory file; silent: non-memory `.md`
+  under the project dir).
+
 ## 0.7.0 — 2026-07-23
 
 Context-engineering release — the kit absorbs the standing-instruction-economy
