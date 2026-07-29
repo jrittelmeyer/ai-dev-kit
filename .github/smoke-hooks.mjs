@@ -5,6 +5,7 @@
  * block — and "fires" means the stdout JSON carries additionalContext.
  */
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 
 const cases = [
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }, true],
@@ -40,5 +41,32 @@ for (const [handler, event, shouldFire] of cases) {
     console.log(`ok   ${handler} → ${fired ? "fires" : "silent"}`);
   }
 }
+// Every wired command must anchor its handler path on ${CLAUDE_PROJECT_DIR}. Hooks are
+// spawned with the *session* cwd, not the project root, so a repo-relative path resolves
+// against whatever subdirectory the session last cd'd into and dies with MODULE_NOT_FOUND —
+// silently, since only exit 2 blocks and these advise. Braced and double-quoted are both
+// load-bearing: bare $CLAUDE_PROJECT_DIR reads as $null under the PowerShell hook shell, and
+// an unquoted path word-splits under bash when the project path contains a space.
+const wired = JSON.parse(readFileSync("hooks/hooks.json", "utf8")).hooks;
+for (const [event, entries] of Object.entries(wired)) {
+  for (const entry of entries) {
+    for (const hook of entry.hooks ?? []) {
+      const command = String(hook.command ?? "");
+      const handler = command.match(/\.claude\/hooks\/[\w./-]+\.mjs/)?.[0];
+      if (!handler) continue;
+      if (!command.includes(`"\${CLAUDE_PROJECT_DIR}/${handler}"`)) {
+        failures++;
+        console.error(
+          `FAIL ${event} → ${command}\n` +
+            `     handler path must be written as "\${CLAUDE_PROJECT_DIR}/${handler}" ` +
+            "(braced and double-quoted)",
+        );
+      } else {
+        console.log(`ok   ${event} → ${handler} anchored`);
+      }
+    }
+  }
+}
+
 if (failures > 0) process.exit(1);
-console.log(`${cases.length} hook smoke cases passed.`);
+console.log(`${cases.length} hook smoke cases passed, all wired commands anchored.`);

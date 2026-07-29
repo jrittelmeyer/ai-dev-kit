@@ -1,5 +1,33 @@
 # ai-dev-kit changelog
 
+## 0.7.2 — 2026-07-29
+
+- `hooks/hooks.json`: every wired command now anchors its handler path on
+  `"${CLAUDE_PROJECT_DIR}/…"` instead of a repo-relative `.claude/hooks/…`.
+  **Hooks are spawned with the session cwd, not the project root**, so a
+  relative path resolved against whatever subdirectory the session last `cd`'d
+  into and died with `MODULE_NOT_FOUND` — silently, since only exit 2 blocks and
+  these handlers advise. Measured across two consumers in a 50-session window:
+  14 lost runs in one, 274 in a monorepo where sessions live inside
+  `packages/*`. Every gate stayed green throughout; nothing detected it.
+- Braced **and** double-quoted are both load-bearing, for different reasons: a
+  bare `$CLAUDE_PROJECT_DIR` reads as `$null` under the PowerShell hook shell
+  (Windows without Git Bash), and an unquoted path word-splits under bash when
+  the project path contains a space. The official hooks-guide examples use the
+  bare form; they are POSIX-only and must not be copied into a template.
+- Exec form (`args`) was evaluated and rejected: it moves the handler path out
+  of `command`, where `install.mjs`'s ownership marker looks, so the installer
+  would stop recognising kit entries and append duplicates alongside them. It
+  also degrades worse on adopter builds predating the `args` key, whereas the
+  shell form degrades to exactly the prior behaviour. Revisit once the marker
+  keys on `args` too.
+- `.github/smoke-hooks.mjs`: new assertion that every command in `hooks.json`
+  carries the anchored form. The wiring itself was ungated — the previous suite
+  proved handlers *behave*, never that they can be *found*.
+- Known limit, unchanged by this release: `CLAUDE_PROJECT_DIR` is the launch
+  cwd, not the git root, so launching from inside a subdirectory still misses.
+  Strictly better than before, which broke on any `cd`.
+
 ## 0.7.1 — 2026-07-23
 
 - `hooks/context-guard.mjs`: now also fires on **agent-memory files**
