@@ -1,5 +1,62 @@
 # ai-dev-kit changelog
 
+## 0.8.0 — 2026-08-08
+
+`skills/project-adopt` **0.3.0** — the selective-merge release: adoption now
+answers "merge this template's improvements into my existing app" as first-class
+intent, with the burden of proof made explicit per tier.
+
+- **Two-tiered meaningful-improvement bar (§3).** The product surface (UI,
+  flows, styles, copy, business logic) defaults to **keep-theirs** —
+  transplanted intact; a wash keeps theirs, churn is a cost. The foundation
+  (auth, DB layer, tooling, CI, security, observability) keeps the template
+  presumption — the scaffold already wires it, so keeping theirs is the churn
+  and takes the same named why. "The template has one" is never a why on either
+  tier. A first draft flipped the default uniformly; adversarial review broke
+  it (a static-only reference makes "working" unverifiable — wash-by-ignorance
+  at exactly the highest-stakes subsystems), hence the tiers plus a
+  **no-wash-by-ignorance** rule: wash verdicts exist only on top of a recorded
+  comparison.
+- **Contested subsystems get a recorded comparison** — tech choices and
+  implementation details on named axes, verdict plus what was actually
+  inspected, written into the migration map (§3/§6).
+- **"Transplanted intact" is now decidable (§3):** bounded by the adopting
+  repo's CI gate *plus* its stated non-CI-enforced hard rules; a hard rule
+  forcing structural change relocates the row to port-onto-template with that
+  rule as its why. Framework-agnostic material (business logic, schemas,
+  algorithms, styles/tokens, copy) named as the honest transplant class. The
+  upstream-lesson clause is scoped to keep-theirs rows that *beat* a template
+  equivalent — washes are not lessons.
+- **The incoming agentic layer is surveyed and dispositioned (§2/§3)** — the
+  codebase's own `.claude/` (skills, hooks, agents, settings), instruction
+  files, agent memory, custom dev scripts. The merged project ships the union
+  of the template's agentic layer and the survivors; a dropped agentic asset
+  needs the same evidence as dropped code. (Closes the adopt-wrapper gap
+  analysis's deliverable E, kit-side.)
+- **Parity-as-tests (§7).** Right behind the walking skeleton, the parity
+  contract is enumerated into a one-to-one **pending-spec map** — a
+  skipped/`fixme` e2e spec per contract row, behavior named, selectors left to
+  the row that builds the surface. Each port row flips its specs live and
+  ports its carried green suites alongside its code; completion = zero pending
+  parity specs plus the full gate and suites green at the adopting repo's
+  enforced thresholds. Sequenced this way deliberately: specs authored before
+  their surfaces exist are selector guesses — the map fixes behavior, the
+  building row fixes selectors.
+- **Model/effort routing (§0):** the judgment steps (disposition map, contested
+  comparisons) run with extended thinking on the most capable model available
+  to the session — flag a lighter-tier session before surveying; `--deep`
+  enumeration fan-out may run on cheaper tiers per PLAYBOOK §12's routing
+  doctrine.
+- **Green tests are carried assets and the dependency manifest is snapshotted
+  (§2)** — every carried dependency faces the adopting repo's dependency policy
+  at port time.
+- Intake reconciles "merge" at minute one (§1): scaffold-plus-port, the
+  original a read-only reference, the parity contract as the written no-loss
+  promise. The §8 gate now opens in plain language (what stays yours, what each
+  replacement buys, what lights up, what's dropped and why). Frontmatter
+  reworked roughly net-neutral — 0.7.0's description trim stands.
+- PLAYBOOK §10 carries the doctrine; manifest summary/triggers updated.
+
 ## 0.7.2 — 2026-07-29
 
 - `hooks/hooks.json`: every wired command now anchors its handler path on

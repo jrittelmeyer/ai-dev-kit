@@ -236,7 +236,14 @@ competitive claims; they rot fastest. Skipped answers become **marked assumption
 never silent defaults. Brownfield adds: extract real design tokens, not
 impressions; grade the reference honestly (live-local / live-remote / static-only)
 and let the grade set each row's parity evidence; every disposition row carries a
-*why* — "the template usually wins" is a prior, not a rule. The first backlog row
+*why*, and since 0.8.0 the why must clear a **two-tiered meaningful-improvement
+bar** — the product surface defaults to keep-theirs (a wash keeps theirs; churn
+is a cost) while the foundation keeps the template presumption — with contested
+subsystems recording a real tech-choice comparison (no wash by ignorance), the
+incoming **agentic layer** surveyed and dispositioned like product code, and the
+parity contract enumerated into a pending-spec map right behind the walking
+skeleton, so "nothing lost" is proven by suites at the adopting repo's
+thresholds rather than asserted. The first backlog row
 is always the walking skeleton — greenfield: the thinnest live-verified slice of
 the core flow; brownfield: scaffold + extracted tokens + one core page,
 parity-verified against the original.

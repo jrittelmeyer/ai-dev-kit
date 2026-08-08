@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.7.2",
+  "version": "0.8.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -189,13 +189,15 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dualHome": false,
-      "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract → honest theirs-vs-template disposition map → data/user reality check → one batched question round → product brief + migration map + regenerated status/backlog whose completion is a surface-identical app on the template foundation → sign-off → the pipeline begins.",
+      "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-template disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation defaults template) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the template foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
       "triggers": [
         "adopt this codebase",
         "port my app onto the template",
         "migrate an existing app to this boilerplate",
+        "merge the boilerplate into my app",
+        "upgrade my app with the template's features",
         "here's my existing site's source"
       ],
       "composition": {
