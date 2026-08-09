@@ -67,12 +67,14 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
 - `--dest <path>` targets a different project root (default: cwd).
 - Writes `.claude/ai-dev-kit.installed.json` (kit + skill versions, no timestamp).
   Idempotent — a second run writes nothing.
+- Prunes stale leftovers — files in kit-owned dirs (`.claude/skills/<kit skill>/`,
+  `.claude/hooks/ai-dev-kit/`) that no longer exist in kit source (reported).
 - Skills in `.claude/skills/` that the manifest doesn't list are left untouched.
 
 Drift guard:
 
 ```bash
-node ai-dev-kit/install.mjs --check --dest path/to/your-project   # exit 1 + file list on drift
+node ai-dev-kit/install.mjs --check --dest path/to/your-project   # exit 1 + file list on drift or stale leftovers
 ```
 
 ## The adapter contract

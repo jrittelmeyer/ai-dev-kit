@@ -1,5 +1,30 @@
 # ai-dev-kit changelog
 
+## 0.10.0 — 2026-08-09
+
+The installer-trust release — backlog rows B2-6 + B2-7. The settings merge the
+audit proved correct is now a CI regression net, and the one direction the
+installer couldn't see — files *it* left behind — is closed.
+
+- **Stale leftovers are detected and pruned** (`install.mjs`). The installer
+  records every path it owns and walks the kit-owned dirs
+  (`.claude/skills/<kit skill>/`, `.claude/hooks/ai-dev-kit/`, dual-home skill
+  dirs with `--global`) for files kit source no longer contains — previously
+  both install and `--check` walked kit source only, so a renamed/removed kit
+  file left an orphan forever while drift read green. `--check` now lists such
+  files as STALE and exits 1; a plain install prunes them (reported, emptied
+  subdirs cleaned up). Skills the manifest doesn't list stay untouched, and the
+  user-owned adapter config + settings.json are outside the kit-owned dirs, so
+  they are never candidates. The smoke proved the blindness first: planted
+  orphans passed `--check` green on the 0.9.0 installer.
+- **Settings-merge regression net** (`.github/smoke-installer.mjs`, run by CI
+  on both OSes): installs `--hooks` into a dest whose `.claude/settings.json`
+  is pre-populated — user hooks on kit events, a user hook sharing an entry
+  with a kit hook, a foreign event, a stale kit-marker entry, non-hook keys —
+  and asserts preserve / replace / no-dup / byte-stable-on-rerun. The merge
+  behavior was proven in-session during the audit; these 12 cases keep it from
+  regressing silently (disabling the marker filter fails 9 of them).
+
 ## 0.9.0 — 2026-08-09
 
 The B1 hardening release — the 2026-08-09 audit's do-next band shipped whole:

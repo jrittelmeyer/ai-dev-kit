@@ -11,12 +11,22 @@
  * unchanged kit writes nothing. `--adapter` is schema-validated against
  * adapters/project.schema.json before anything is written, then copied verbatim.
  * `--check` exits 1 listing any installed file that drifted from kit source (the
- * adapter config and settings.json are user-owned and never checked). Skills in
- * `.claude/skills/` that the manifest doesn't list are left untouched. `--hooks`
+ * adapter config and settings.json are user-owned and never checked) and any
+ * stale file left in a kit-owned dir by a renamed/removed kit file — a plain
+ * install prunes those leftovers. Skills in `.claude/skills/` that the manifest
+ * doesn't list are left untouched. `--hooks`
  * merges hooks/hooks.json into `.claude/settings.json` — only entries whose command
  * carries the kit's handler-path marker are ever replaced.
  */
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -43,6 +53,14 @@ const walk = (dir) =>
     const p = join(dir, entry.name);
     return entry.isDirectory() ? walk(p) : [p];
   });
+
+/** Remove directories left empty after a prune (bottom-up). */
+const pruneEmptyDirs = (dir) => {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.isDirectory()) pruneEmptyDirs(join(dir, entry.name));
+  }
+  if (readdirSync(dir).length === 0) rmdirSync(dir);
+};
 
 const posix = (p) => p.replaceAll("\\", "/");
 const label = (p) => posix(p.startsWith(dest) ? relative(dest, p) : p);
@@ -97,11 +115,13 @@ if (adapterArg && !checkMode) {
 }
 
 const drifted = [];
+const expected = new Set();
 let written = 0;
 let unchanged = 0;
 
 /** Copy (or, in check mode, diff) one file from kit source to an installed path. */
 function syncFile(srcPath, outPath) {
+  expected.add(outPath);
   const want = readFileSync(srcPath);
   const have = existsSync(outPath) ? readFileSync(outPath) : null;
   if (have?.equals(want)) {
@@ -131,8 +151,8 @@ for (const skill of manifest.skills) {
 }
 
 // 2. Dual-home skills — also installed to the user's global skills dir.
+const globalSkills = join(homedir(), ".claude", "skills");
 if (withGlobal) {
-  const globalSkills = join(homedir(), ".claude", "skills");
   for (const skill of manifest.skills.filter((s) => s.dualHome)) {
     syncSkill(skill.name, globalSkills);
   }
@@ -148,7 +168,34 @@ for (const file of walk(hooksSrc)) {
   }
 }
 
-// 4. Adapter config — schema-validated up front, then copied verbatim. User-owned
+// 4. Stale leftovers — files in kit-owned dirs that no longer exist in kit source
+//    (renamed/removed upstream). --check flags them as STALE; a plain install
+//    prunes them. Skills the manifest doesn't list are never candidates.
+const kitOwnedDirs = [
+  ...manifest.skills.map((s) => join(projectSkills, s.name)),
+  hooksDest,
+  ...(withGlobal
+    ? manifest.skills.filter((s) => s.dualHome).map((s) => join(globalSkills, s.name))
+    : []),
+];
+const stale = kitOwnedDirs
+  .filter((dir) => existsSync(dir))
+  .flatMap((dir) => walk(dir))
+  .filter((file) => !expected.has(file));
+if (stale.length > 0 && !checkMode) {
+  for (const file of stale) {
+    rmSync(file);
+  }
+  for (const dir of kitOwnedDirs) {
+    if (existsSync(dir)) pruneEmptyDirs(dir);
+  }
+  console.log(`stale → pruned ${stale.length} file(s) no longer in kit source:`);
+  for (const f of stale) {
+    console.log(`  ${label(f)}`);
+  }
+}
+
+// 5. Adapter config — schema-validated up front, then copied verbatim. User-owned
 //    after install: edit it freely in the project; --check never polices it.
 if (adapterText !== null) {
   const outPath = join(dest, ".claude", "ai-dev-kit.config.json");
@@ -163,7 +210,7 @@ if (adapterText !== null) {
   }
 }
 
-// 5. Hook config — merged into .claude/settings.json (--hooks). Kit-owned entries
+// 6. Hook config — merged into .claude/settings.json (--hooks). Kit-owned entries
 //    are identified by the handler-path marker and replaced wholesale; everything
 //    else in settings.json is preserved. Run-twice ⇒ byte-identical output.
 if (withHooks && !checkMode) {
@@ -193,7 +240,7 @@ if (withHooks && !checkMode) {
   }
 }
 
-// 6. Version stamp — deterministic (no timestamp) so re-installs produce zero diff.
+// 7. Version stamp — deterministic (no timestamp) so re-installs produce zero diff.
 const stamp = {
   kit: manifest.version,
   skills: Object.fromEntries(manifest.skills.map((s) => [s.name, s.version])),
@@ -211,7 +258,7 @@ if (haveStamp === stampText) {
   written++;
 }
 
-// 7. Report.
+// 8. Report.
 if (checkMode) {
   if (drifted.length > 0) {
     console.error(`ai-dev-kit ${manifest.version}: DRIFT in ${drifted.length} file(s):`);
@@ -219,8 +266,17 @@ if (checkMode) {
       console.error(`  ${f}`);
     }
     console.error("Fix: edit kit source, then re-run the installer (install.mjs).");
-    process.exit(1);
   }
+  if (stale.length > 0) {
+    console.error(
+      `ai-dev-kit ${manifest.version}: STALE ${stale.length} file(s) in kit-owned dirs, gone from kit source:`,
+    );
+    for (const f of stale) {
+      console.error(`  ${label(f)}`);
+    }
+    console.error("Fix: re-run the installer (install.mjs) to prune them.");
+  }
+  if (drifted.length > 0 || stale.length > 0) process.exit(1);
   console.log(
     `ai-dev-kit ${manifest.version}: installed copies match kit source (${unchanged} files).`,
   );

@@ -11,8 +11,6 @@ Source: [PROJECT_AUDIT_2026-08-09](archive/PROJECT_AUDIT_2026-08-09.md)
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B2 | 6 | ci | Settings-merge regression tests from pre-populated settings.json | CI +3, Installer +3 | M |
-| B2 | 7 | installer | Stale-leftover detection/prune in kit-owned dirs | Installer +4 | M |
 | B2 | 8 | security | dependabot.yml (github-actions) + bump pinned actions to current majors | Security +4 | S |
 | B2 | 9 | docs/ci | Declare Node floor in README; add floor version to CI matrix | Docs +1, CI +1 | S |
 | B2 | 10 | repo | Dogfood adapter (`adapters/ai-dev-kit.json`) + self-install | Public +3 | S |

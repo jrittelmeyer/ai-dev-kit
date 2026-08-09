@@ -35,3 +35,5 @@ jobs:
         run: node install.mjs --check --dest scratch
       - name: Hook handlers honor the fire/silent contract
         run: node .github/smoke-hooks.mjs
+      - name: Settings merge + stale-prune scenarios
+        run: node .github/smoke-installer.mjs
