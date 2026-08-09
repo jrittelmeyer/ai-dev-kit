@@ -158,5 +158,7 @@ The canonical consumer block is four lines:
   subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
   other 0.7.2 deferral — shipped in 0.11.0.
 - **Quality bar:** first project-audit (2026-08-09) scored the kit 90.4/100;
-  the banded work plan to 100 is [docs/BACKLOG.md](docs/BACKLOG.md), the full
-  report [docs/archive/PROJECT_AUDIT_2026-08-09.md](docs/archive/PROJECT_AUDIT_2026-08-09.md).
+  after the banded B1–B3 program shipped (0.9.0 → 0.11.0), the same-day
+  re-score is **96.9/100** — remaining tail (all S-effort) in
+  [docs/BACKLOG.md](docs/BACKLOG.md), full report
+  [docs/archive/PROJECT_AUDIT_2026-08-09-post-B3.md](docs/archive/PROJECT_AUDIT_2026-08-09-post-B3.md).
