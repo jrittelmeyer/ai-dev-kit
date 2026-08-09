@@ -234,9 +234,46 @@ try {
       !third.stdout.includes("pruned"),
     third.stdout.trim(),
   );
+
+  // ---- advisory adapter re-validation on --check (config is user-owned) ----
+  // The exit code must stay drift/stale-only; schema issues and unparseable
+  // JSON surface as an ADVISORY on stderr, so a broken config is visible
+  // instead of silently degrading the skills that read it.
+  const cfgPath = join(scratch, ".claude", "ai-dev-kit.config.json");
+  writeFileSync(cfgPath, `${JSON.stringify({ project: 42, nope: true })}\n`);
+  const advisory = run("--check");
+  check(
+    "advisory: --check exits 0 despite a broken user config",
+    advisory.status === 0,
+    `exit ${advisory.status}`,
+  );
+  check(
+    "advisory: broken config draws an ADVISORY on stderr",
+    (advisory.stderr ?? "").includes("ADVISORY"),
+    (advisory.stderr ?? "").trim(),
+  );
+  check(
+    "advisory: violations named with their config path",
+    (advisory.stderr ?? "").includes("config.project") &&
+      (advisory.stderr ?? "").includes("config.nope"),
+  );
+  writeFileSync(cfgPath, `${JSON.stringify({ project: "scratch" })}\n`);
+  const advisoryQuiet = run("--check");
+  check(
+    "advisory: valid config stays quiet",
+    advisoryQuiet.status === 0 && !(advisoryQuiet.stderr ?? "").includes("ADVISORY"),
+    (advisoryQuiet.stderr ?? "").trim(),
+  );
+  writeFileSync(cfgPath, "{ not json\n");
+  const advisoryUnparseable = run("--check");
+  check(
+    "advisory: unparseable config warns, exit code unchanged",
+    advisoryUnparseable.status === 0 && (advisoryUnparseable.stderr ?? "").includes("ADVISORY"),
+    `exit ${advisoryUnparseable.status}: ${(advisoryUnparseable.stderr ?? "").trim()}`,
+  );
 } finally {
   rmSync(scratch, { recursive: true, force: true });
 }
 
 if (failures > 0) process.exit(1);
-console.log("installer smoke: all merge + stale cases passed.");
+console.log("installer smoke: all merge + stale + advisory cases passed.");

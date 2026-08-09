@@ -11,9 +11,6 @@ Source: [PROJECT_AUDIT_2026-08-09-post-B3](archive/PROJECT_AUDIT_2026-08-09-post
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 18 | testing | Close the two baseline-named smoke gaps: dep-check `npm install <pkg>` variant; live-verify `git -c k=v commit` | Testing +2 | S |
-| B3 | 19 | installer/adapter | Warn-only adapter re-validation on `--check` (schema advisory, exit code unchanged — user-owned config stays unpoliced) | Adapter +2 | S |
-| B3 | 20 | docs/security | Consumer trust note for `--hooks` in README/SECURITY: what installing hooks executes in your sessions (advise-only, pure Node, no network, drift-guarded) | Security +1, Docs +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-09: zero issues/PRs) | Public +1 | M |
 
 Watch (externally gated, re-check each audit):
@@ -23,9 +20,11 @@ Watch (externally gated, re-check each audit):
   2026-08-09: docs define the placeholder only as "Project root," subdirectory
   behavior unspecified, no related changelog entry — gate not lifted.
 - Harness-side hook-injection visibility on Windows (B1-17 outcome, closed
-  2026-08-09): a fresh exec-form session's deterministic context-guard probe
-  (memory-file Write) drew no injection, matching the 0.11.0-build session
-  (×3 events); the 0.10.1-build session had recorded fires. Kit exonerated
+  2026-08-09): a fresh exec-form session's deterministic instruments —
+  context-guard probe (memory-file Write) and live-verify `git commit` (run
+  via the Bash tool) — both drew no injection across both hook classes,
+  matching the 0.11.0-build session (×3 events); the 0.10.1-build session
+  had recorded fires. Kit exonerated
   in-situ — installed handlers hash-identical to source, local smoke 30/30 on
   the same Windows machine, CI green on windows-latest — so the open layer is
   harness spawn/display. Known same-class mechanism: BOM-prefixed stdin

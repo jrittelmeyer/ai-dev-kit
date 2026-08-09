@@ -306,7 +306,37 @@ if (haveStamp === stampText) {
   written++;
 }
 
-// 8. Report.
+// 8. Advisory adapter re-validation (--check only). The installed config is
+//    user-owned — edits are expected, are never drift, and never fail the
+//    check — but a config that no longer parses or fits the schema silently
+//    degrades the skills that read it, so --check surfaces it as an ADVISORY
+//    on stderr. Exit code stays drift/stale-only.
+if (checkMode) {
+  const cfgPath = join(dest, ".claude", "ai-dev-kit.config.json");
+  if (existsSync(cfgPath)) {
+    let issues;
+    try {
+      const schema = JSON.parse(
+        readFileSync(join(kitRoot, "adapters", "project.schema.json"), "utf8"),
+      );
+      issues = validateAdapter(JSON.parse(readFileSync(cfgPath, "utf8")), schema, "config");
+    } catch (e) {
+      issues = [`config: not parseable as JSON (${e.message})`];
+    }
+    if (issues.length > 0) {
+      console.error(
+        `ai-dev-kit ${manifest.version}: ADVISORY — ${label(cfgPath)} has ` +
+          `${issues.length} schema issue(s) (user-owned; exit code unaffected):`,
+      );
+      for (const issue of issues) {
+        console.error(`  ${issue}`);
+      }
+      console.error("Schema: adapters/project.schema.json. Skills fall back per-field.");
+    }
+  }
+}
+
+// 9. Report.
 if (checkMode) {
   if (drifted.length > 0) {
     console.error(`ai-dev-kit ${manifest.version}: DRIFT in ${drifted.length} file(s):`);

@@ -1,5 +1,33 @@
 # ai-dev-kit changelog
 
+## 0.12.0 — 2026-08-09
+
+The S-tail closes — backlog rows B3-18/19/20 (B1-17 closed docs-only in
+`5cf5b22`: both live-fire instruments silent under exec-form; harness layer
+Watch-rowed, kit code exonerated in-situ).
+
+- **Baseline-named smoke gaps closed** (`.github/smoke-hooks.mjs`):
+  dep-check's install-with-args variant (`npm install left-pad`) and
+  live-verify's flagged commit (`git -c core.autocrlf=false commit -m x`).
+  Both shipped regexes already handled them — the cases passed on arrival,
+  so this is coverage closure, not a fix (noted per the failing-first rule).
+  Hook cases 30 → 32.
+- **Advisory adapter re-validation on `--check`** (`install.mjs`): when the
+  dest's `.claude/ai-dev-kit.config.json` exists, `--check` re-validates it
+  against `adapters/project.schema.json` and prints an ADVISORY on stderr
+  for schema issues or unparseable JSON — exit code unchanged (drift/stale
+  only): the config is user-owned and stays unpoliced, but a broken one is
+  now visible instead of silently degrading the skills that read it.
+  Failing-first: of the five new installer cases, the three ADVISORY asserts
+  failed against the pre-fix installer; the exit-0 and valid-config-quiet
+  cases pin the contract's unchanged half and pass either way. Installer
+  cases 32 → 37.
+- **`--hooks` consumer trust note** (SECURITY.md, README): what installing
+  the kit's hooks lets run in your sessions — advise-only
+  `additionalContext`, pure Node stdlib, no network, no child processes,
+  10s timeout, byte-for-byte drift-guarded by `--check`, malformed events
+  exit 0 silently.
+
 ## 0.11.0 — 2026-08-09
 
 The B3 precision band shipped whole — backlog rows B3-12…15. Hooks and the

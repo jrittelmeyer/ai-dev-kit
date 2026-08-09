@@ -68,6 +68,8 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
 - `--hooks` merges `hooks/hooks.json` into `.claude/settings.json` — only entries
   whose command or args carry the `.claude/hooks/ai-dev-kit/` marker are ever
   replaced; every other setting is preserved. Omit it to wire hooks manually.
+  The trust contract for what those hooks may do in a session is pinned in
+  [SECURITY.md](SECURITY.md).
 - `--dest <path>` targets a different project root (default: cwd).
 - `--help` prints usage. Unknown or misspelled flags fail loudly before anything
   is read or written (a typo'd `--dest` can no longer install into cwd silently).
@@ -83,6 +85,10 @@ Drift guard:
 node ai-dev-kit/install.mjs --check --dest path/to/your-project   # exit 1 + file list on drift or stale leftovers
 ```
 
+`--check` also re-validates the user-owned `.claude/ai-dev-kit.config.json`
+against the adapter schema — ADVISORY on stderr only; the exit code stays
+drift/stale-only.
+
 ## The adapter contract
 
 Skills read `.claude/ai-dev-kit.config.json` at run time for project parameters —
@@ -93,7 +99,7 @@ style, hygiene targets, dependency policy. Schema:
 
 Every field is optional — a skill missing a field derives it from the repo (and says
 so) rather than failing. After install the config belongs to the project: edit it
-freely (`--check` doesn't police it).
+freely — `--check` never fails on it (schema issues print an advisory only).
 
 ## Automation (hooks)
 

@@ -12,8 +12,10 @@ import { join } from "node:path";
 const cases = [
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }, true],
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm install" } }, false],
+  ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "npm install left-pad" } }, true],
   ["hooks/dep-check-nudge.mjs", { tool_name: "Edit", tool_input: { file_path: "apps/web/package.json" } }, true],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git add -A && git commit -m x" } }, true],
+  ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git -c core.autocrlf=false commit -m x" } }, true],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git log | grep commit" } }, false],
   ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/checkpoint/SKILL.md" } }, true],
   ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "src/app.ts" } }, false],
