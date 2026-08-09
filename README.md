@@ -87,7 +87,7 @@ freely (`--check` doesn't police it).
 
 ## Automation (hooks)
 
-Three Claude Code hooks make the lifecycle self-reinforcing. **All of them advise,
+Four Claude Code hooks make the lifecycle self-reinforcing. **All of them advise,
 never block** — they inject a reminder into the agent's context; the agent decides.
 
 | Handler | Event · matcher | Fires on |
@@ -95,7 +95,7 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash` | package.json edits; pm `add`/`update`/install-with-args |
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
-| `context-guard.mjs` | PostToolUse · `Edit|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
+| `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe),
 installed to `.claude/hooks/ai-dev-kit/` and drift-guarded by `--check` like skills.
@@ -137,4 +137,10 @@ The canonical consumer block is four lines:
   ([PLAYBOOK.md](docs/PLAYBOOK.md) · [pitch-deck.html](docs/pitch-deck.html)).
 - ~~Extract to a standalone repo~~ **shipped in 0.5.0** — this repository;
   consumers (next-web-boilerplate first) install from a clone.
-- **Later:** npm packaging (`npx` install) if consumer demand shows up.
+- **Later:** npm packaging (`npx` install) if consumer demand shows up; exec-form
+  hook entries once the installer's ownership marker keys on `args` too, and
+  git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
+  subdirectory (both deferred in [0.7.2](CHANGELOG.md)).
+- **Quality bar:** first project-audit (2026-08-09) scored the kit 90.4/100;
+  the banded work plan to 100 is [docs/BACKLOG.md](docs/BACKLOG.md), the full
+  report [docs/archive/PROJECT_AUDIT_2026-08-09.md](docs/archive/PROJECT_AUDIT_2026-08-09.md).
