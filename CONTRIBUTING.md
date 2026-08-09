@@ -35,3 +35,8 @@ node install.mjs --check
 ```
 
 CI runs the same suite on ubuntu + windows × Node 22 + 24.
+
+Hand-testing a handler? Don't pipe JSON into it from PowerShell 5.1 — the pipe
+BOM-prefixes stdin, `JSON.parse` fails, and stdin tolerance turns that into a
+silent exit 0 (a false "silent" verdict). Use the smoke suite, or pipe from
+bash / `node -e`, which write clean stdin.
