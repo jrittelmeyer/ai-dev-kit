@@ -1,0 +1,8 @@
+# Keep the SHA-pinned actions in ci.yml current — Dependabot PRs bump the pin
+# (and its version comment) when a new release lands.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly

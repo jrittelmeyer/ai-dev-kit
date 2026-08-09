@@ -1,5 +1,31 @@
 # ai-dev-kit changelog
 
+## 0.10.1 — 2026-08-09
+
+The governance band — backlog rows B2-8…B2-11 close out B2. No installer,
+hook, or skill behavior changed (hence patch); the repo around the kit
+hardened.
+
+- **Actions current + Dependabot** (`ci.yml`, `.github/dependabot.yml`):
+  actions/checkout → v7.0.1 and actions/setup-node → v7.0.0, both still
+  pinned to full commit SHAs; a weekly `github-actions` Dependabot config
+  keeps the pins moving. Clears the Node-20 deprecation annotations observed
+  on the 0.9.0 and 0.10.0 CI runs.
+- **Node floor declared and CI-proven** (README, `ci.yml`): requires Node
+  ≥ 22 (oldest active LTS); the CI matrix now runs 22 + 24 on ubuntu +
+  windows — four jobs, so the floor is tested, not aspirational.
+- **The kit is its own consumer** (`adapters/ai-dev-kit.json`, `.claude/`):
+  a minimal schema-valid dogfood adapter (gate, doc paths, commit style, CI
+  facts); the self-install is tracked in-repo with hooks merged into
+  `.claude/settings.json`, and a new CI step (`node install.mjs --check` at
+  the repo root) fails the build if the dogfood copy ever drifts from kit
+  source.
+- **Governance surface** (`CONTRIBUTING.md`, `SECURITY.md`, README, repo):
+  contributor ground rules (edit source not installed copies, generic skill
+  bodies, the five-site version bump, show a claiming test failing pre-fix)
+  plus the full local suite; security policy with GitHub private
+  vulnerability reporting enabled; CI badge on the README; five repo topics.
+
 ## 0.10.0 — 2026-08-09
 
 The installer-trust release — backlog rows B2-6 + B2-7. The settings merge the

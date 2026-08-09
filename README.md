@@ -1,5 +1,7 @@
 # ai-dev-kit
 
+[![CI](https://github.com/jrittelmeyer/ai-dev-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/jrittelmeyer/ai-dev-kit/actions/workflows/ci.yml)
+
 A portable, versioned library of agentic-development skills — the working method
 distilled from building
 [next-web-boilerplate](https://github.com/jrittelmeyer/next-web-boilerplate),
@@ -54,6 +56,8 @@ git clone https://github.com/jrittelmeyer/ai-dev-kit
 node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --dest path/to/your-project --global --hooks
 ```
 
+- Requires Node ≥ 22 (pure Node, zero dependencies); CI runs the floor (22) and
+  current (24) on ubuntu + windows.
 - Copies `skills/*` → `<project>/.claude/skills/` (byte-identical) and hook handlers
   (`hooks/*.mjs`) → `.claude/hooks/ai-dev-kit/`.
 - `--global` also installs dual-home skills (`doc-audit`) → `~/.claude/skills/`.
