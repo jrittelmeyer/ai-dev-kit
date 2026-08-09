@@ -8,11 +8,13 @@
  *   node install.mjs --check [--dest <project-root>] [--global]
  *
  * Pure Node fs — no shell, no symlinks (Windows-safe). Idempotent: a re-run with an
- * unchanged kit writes nothing. `--check` exits 1 listing any installed file that
- * drifted from kit source (the adapter config and settings.json are user-owned and
- * never checked). Skills in `.claude/skills/` that the manifest doesn't list are left
- * untouched. `--hooks` merges hooks/hooks.json into `.claude/settings.json` — only
- * entries whose command carries the kit's handler-path marker are ever replaced.
+ * unchanged kit writes nothing. `--adapter` is schema-validated against
+ * adapters/project.schema.json before anything is written, then copied verbatim.
+ * `--check` exits 1 listing any installed file that drifted from kit source (the
+ * adapter config and settings.json are user-owned and never checked). Skills in
+ * `.claude/skills/` that the manifest doesn't list are left untouched. `--hooks`
+ * merges hooks/hooks.json into `.claude/settings.json` — only entries whose command
+ * carries the kit's handler-path marker are ever replaced.
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -44,6 +46,55 @@ const walk = (dir) =>
 
 const posix = (p) => p.replaceAll("\\", "/");
 const label = (p) => posix(p.startsWith(dest) ? relative(dest, p) : p);
+
+/**
+ * Validate a parsed adapter against the subset of JSON Schema the kit's schema
+ * actually uses: type · enum · properties + additionalProperties:false · array
+ * items. Returns human-readable violations ("path: reason").
+ */
+function validateAdapter(value, schema, path = "adapter") {
+  const typeOf = (v) => (Array.isArray(v) ? "array" : v === null ? "null" : typeof v);
+  const t = schema.type;
+  if (t === "integer" ? !Number.isInteger(value) : t && typeOf(value) !== t) {
+    return [`${path}: expected ${t}, got ${typeOf(value)}`];
+  }
+  const errors = [];
+  if (schema.enum && !schema.enum.includes(value)) {
+    errors.push(`${path}: "${value}" is not one of ${schema.enum.join(" | ")}`);
+  }
+  if (t === "object" && schema.properties) {
+    for (const [key, v] of Object.entries(value)) {
+      if (schema.properties[key]) {
+        errors.push(...validateAdapter(v, schema.properties[key], `${path}.${key}`));
+      } else if (schema.additionalProperties === false) {
+        errors.push(
+          `${path}.${key}: unknown key (allowed: ${Object.keys(schema.properties).join(", ")})`,
+        );
+      }
+    }
+  }
+  if (t === "array" && schema.items) {
+    value.forEach((v, i) => errors.push(...validateAdapter(v, schema.items, `${path}[${i}]`)));
+  }
+  return errors;
+}
+
+// Adapter is read and schema-validated up front — a bad adapter must fail the
+// install before any file is written (previously invalid JSON died mid-install).
+let adapterText = null;
+if (adapterArg && !checkMode) {
+  adapterText = readFileSync(resolve(adapterArg), "utf8");
+  const schema = JSON.parse(readFileSync(join(kitRoot, "adapters", "project.schema.json"), "utf8"));
+  const violations = validateAdapter(JSON.parse(adapterText), schema);
+  if (violations.length > 0) {
+    console.error(`adapter ${adapterArg}: ${violations.length} schema violation(s):`);
+    for (const v of violations) {
+      console.error(`  ${v}`);
+    }
+    console.error("Schema: adapters/project.schema.json. Nothing was installed.");
+    process.exit(1);
+  }
+}
 
 const drifted = [];
 let written = 0;
@@ -97,18 +148,16 @@ for (const file of walk(hooksSrc)) {
   }
 }
 
-// 4. Adapter config — validated as JSON, then copied verbatim. User-owned after
-//    install: edit it freely in the project; --check never polices it.
-if (adapterArg && !checkMode) {
-  const text = readFileSync(resolve(adapterArg), "utf8");
-  JSON.parse(text); // throws on invalid JSON before anything is written
+// 4. Adapter config — schema-validated up front, then copied verbatim. User-owned
+//    after install: edit it freely in the project; --check never polices it.
+if (adapterText !== null) {
   const outPath = join(dest, ".claude", "ai-dev-kit.config.json");
   const have = existsSync(outPath) ? readFileSync(outPath, "utf8") : null;
-  if (have === text) {
+  if (have === adapterText) {
     unchanged++;
   } else {
     mkdirSync(dirname(outPath), { recursive: true });
-    writeFileSync(outPath, text);
+    writeFileSync(outPath, adapterText);
     written++;
     console.log(`adapter → ${label(outPath)}`);
   }

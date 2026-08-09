@@ -12,14 +12,20 @@
  * living docs. Never blocks; the agent decides.
  */
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 
 const input = JSON.parse(readFileSync(0, "utf8"));
 const filePath = String(input.tool_input?.file_path ?? "").replaceAll("\\", "/");
 if (!filePath) process.exit(0);
 
+// Hooks spawn with the *session* cwd (any subdirectory the session cd'd into);
+// the harness exports the project root as CLAUDE_PROJECT_DIR. The adapter config
+// must resolve against the root, or a custom contextDir is silently lost.
+const projectDir = process.env.CLAUDE_PROJECT_DIR ?? ".";
+
 let contextDir = "docs/context";
 try {
-  const cfg = JSON.parse(readFileSync(".claude/ai-dev-kit.config.json", "utf8"));
+  const cfg = JSON.parse(readFileSync(join(projectDir, ".claude/ai-dev-kit.config.json"), "utf8"));
   if (cfg?.docs?.contextDir) {
     contextDir = String(cfg.docs.contextDir).replaceAll("\\", "/").replace(/\/+$/, "");
   }

@@ -3,18 +3,14 @@
 Forward-only and banded: **B1** do-next → **B4** pivot-only. Rows carry no
 shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
-report. Completing B1–B3 recovers the aggregate to ~100 as scored.
+report. Completing the remaining B2–B3 rows recovers the aggregate to ~100 as
+scored (B1 shipped in 0.9.0).
 
 Source: [PROJECT_AUDIT_2026-08-09](archive/PROJECT_AUDIT_2026-08-09.md)
 (aggregate 90.4/100). Every row still enters plan → sign-off → build.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 1 | hooks | Anchor context-guard's adapter-config read on `CLAUDE_PROJECT_DIR`; add config-override smoke case | Hooks +5, CI +1 | S |
-| B1 | 2 | ci | Version-consistency gate: VERSION == manifest == CHANGELOG top == deck stamps | CI +3, Versioning +3, Docs +1 | S |
-| B1 | 3 | installer | Zero-dep adapter schema validation at install + reference adapter validated in CI; restore deck's "schema-validated" | Adapter +5, Installer +2, CI +1 | M |
-| B1 | 4 | ci | Assert install idempotency for real ("0 file(s) written" on run 2) | CI +2, Installer +1 | S |
-| B1 | 5 | release | Tag releases (backfill 0.8.0) + GitHub Releases from changelog | Versioning +3, Public +1 | S |
 | B2 | 6 | ci | Settings-merge regression tests from pre-populated settings.json | CI +3, Installer +3 | M |
 | B2 | 7 | installer | Stale-leftover detection/prune in kit-owned dirs | Installer +4 | M |
 | B2 | 8 | security | dependabot.yml (github-actions) + bump pinned actions to current majors | Security +4 | S |

@@ -57,8 +57,10 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
 - Copies `skills/*` → `<project>/.claude/skills/` (byte-identical) and hook handlers
   (`hooks/*.mjs`) → `.claude/hooks/ai-dev-kit/`.
 - `--global` also installs dual-home skills (`doc-audit`) → `~/.claude/skills/`.
-- `--adapter <file>` validates the adapter JSON and writes it verbatim to
-  `.claude/ai-dev-kit.config.json`.
+- `--adapter <file>` validates the adapter against
+  [adapters/project.schema.json](adapters/project.schema.json) (types · enums ·
+  unknown keys) and writes it verbatim to `.claude/ai-dev-kit.config.json`; a
+  violation fails the install before anything is written.
 - `--hooks` merges `hooks/hooks.json` into `.claude/settings.json` — only entries
   whose command carries the `.claude/hooks/ai-dev-kit/` marker are ever replaced;
   every other setting is preserved. Omit it to wire hooks manually.
@@ -128,7 +130,9 @@ The canonical consumer block is four lines:
 - **Keep skill bodies generic.** Project facts go in the adapter (mechanical params)
   or the project's agent memory (recipes/gotchas) — never hardcoded in a skill.
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
-  and `CHANGELOG.md` together with any behavior change.
+  `CHANGELOG.md`, and the deck stamps together with any behavior change (CI gates the
+  five sites). Every release commit gets an annotated tag `v<version>` and a GitHub
+  Release built from its CHANGELOG entry — pushed once CI is green.
 
 ## Roadmap
 

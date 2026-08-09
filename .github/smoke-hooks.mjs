@@ -5,7 +5,9 @@
  * block — and "fires" means the stdout JSON carries additionalContext.
  */
 import { spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const cases = [
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }, true],
@@ -68,5 +70,39 @@ for (const [event, entries] of Object.entries(wired)) {
   }
 }
 
+// Config-override case: hooks are spawned with the *session* cwd — any subdirectory —
+// while the harness exports CLAUDE_PROJECT_DIR = project root. context-guard must read
+// the adapter config from the root, not the cwd: drive it from a fixture subdir and
+// assert a custom contextDir still fires.
+const fixture = mkdtempSync(join(tmpdir(), "adk-ctx-"));
+try {
+  mkdirSync(join(fixture, ".claude"), { recursive: true });
+  mkdirSync(join(fixture, "sub"), { recursive: true });
+  writeFileSync(
+    join(fixture, ".claude", "ai-dev-kit.config.json"),
+    JSON.stringify({ docs: { contextDir: "notes/ctx" } }),
+  );
+  const res = spawnSync(process.execPath, [join(process.cwd(), "hooks", "context-guard.mjs")], {
+    input: JSON.stringify({ tool_name: "Edit", tool_input: { file_path: "notes/ctx/DB.md" } }),
+    encoding: "utf8",
+    cwd: join(fixture, "sub"),
+    env: { ...process.env, CLAUDE_PROJECT_DIR: fixture },
+  });
+  const fired = (res.stdout ?? "").includes("additionalContext");
+  if (res.status !== 0 || !fired) {
+    failures++;
+    console.error(
+      `FAIL hooks/context-guard.mjs config override from subdir → exit ${res.status}, ` +
+        `fired=${fired}, expected fired=true`,
+    );
+  } else {
+    console.log("ok   hooks/context-guard.mjs → custom contextDir fires from a subdir");
+  }
+} finally {
+  rmSync(fixture, { recursive: true, force: true });
+}
+
 if (failures > 0) process.exit(1);
-console.log(`${cases.length} hook smoke cases passed, all wired commands anchored.`);
+console.log(
+  `${cases.length + 1} hook smoke cases passed (config override included), all wired commands anchored.`,
+);

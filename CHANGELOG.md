@@ -1,5 +1,40 @@
 # ai-dev-kit changelog
 
+## 0.9.0 — 2026-08-09
+
+The B1 hardening release — the 2026-08-09 audit's do-next band shipped whole:
+the one proven hook bug fixed, and the kit's honest-but-ungated claims (version
+stamps, adapter shape, idempotency) now enforced by CI. Closes backlog rows
+B1-1 … B1-5 (audit report in `docs/archive/`).
+
+- **context-guard reads the adapter config from the project root**
+  (`hooks/context-guard.mjs`). The read anchors on `CLAUDE_PROJECT_DIR` — the
+  root the harness exports to hooks — falling back to cwd when unset, so a
+  session running in a subdirectory no longer silently loses a custom
+  `docs.contextDir`. This is the same cwd class 0.7.2 fixed for handler
+  *paths*, now closed for the config read. New smoke case drives the handler
+  from a fixture subdirectory and asserts the override fires.
+- **Adapters are schema-validated at install** (`install.mjs`). A zero-dep
+  validator checks the adapter against `adapters/project.schema.json` — types,
+  enums, unknown keys (`additionalProperties: false`), array items — and a
+  violation fails the install listing each path + reason. The adapter is read
+  and validated up front, so a bad adapter no longer dies mid-install with
+  skills already copied; nothing is written on failure. CI's reference-adapter
+  install now exercises the validator on every push, and the deck's
+  Portability claim returns to "schema-validated" (the audit had downgraded it
+  to "schema-documented" to match reality).
+- **Version-consistency gate in CI** (`.github/check-version.mjs`): `VERSION`,
+  `manifest.json`, the CHANGELOG's top entry, and both deck stamps must agree
+  — the drift class the audit caught twice (a 0.8.0 kit under a 0.7.1-stamped
+  deck) now fails the build instead of waiting for the next audit.
+- **Idempotency is asserted for real** (`ci.yml`): the second install run must
+  print "0 file(s) written"; previously the step passed on exit 0 alone, which
+  never tested the claim it named.
+- **Releases are tagged**: annotated `v0.8.0` backfilled on the 0.8.0 release
+  commit, `v0.9.0` on this one, each with a GitHub Release carrying its
+  changelog entry — a consumer can finally pin or roll back instead of always
+  installing HEAD. Go-forward rule added to README · Rules.
+
 ## 0.8.0 — 2026-08-08
 
 `skills/project-adopt` **0.3.0** — the selective-merge release: adoption now
