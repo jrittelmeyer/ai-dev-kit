@@ -1,5 +1,48 @@
 # ai-dev-kit changelog
 
+## 0.11.0 — 2026-08-09
+
+The B3 precision band shipped whole — backlog rows B3-12…15. Hooks and the
+installer lose their last scored rough edges: garbage-tolerant handlers,
+strict flags, exec-form wiring, boundary-anchored matching. Per program rule,
+every new smoke case below was shown failing against the pre-fix code first.
+
+- **Handlers tolerate malformed stdin** (all four `hooks/*.mjs`): the stdin
+  read+parse is wrapped so a malformed, empty, or JSON-scalar event exits 0
+  silently — previously a SyntaxError death with exit 1. Harmless to the
+  session (only exit 2 blocks) but a broken contract: these handlers advise,
+  they never fail. The 12 new smoke cases (`""`, `"not json"`, `"null"` × 4
+  handlers) all exited 1 on the pre-fix handlers.
+- **Installer rejects unknown flags; `--help`** (`install.mjs`): strict parse
+  over the known flag set — an unknown or misspelled flag, a stray positional,
+  or a value flag missing its value fails loudly (exit 1, offending token
+  named, `--help` hinted) before anything is read or written. Previously
+  `--frobnicate` exited 0 and installed, and a typo'd `--dest` installed into
+  cwd. `--help`/`-h` prints real usage (flags, defaults, the self-install
+  line). Six of the seven new smoke cases failed pre-fix — `--help` "exited 0"
+  only because it was silently ignored while a full install ran.
+- **Exec-form hook entries** (`install.mjs` §6, then `hooks/hooks.json`): the
+  merge's ownership check now keys on `args` entries as well as the `command`
+  string, and hooks.json flips all four entries to exec form —
+  `command: "node"`, `args: ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/…"]`.
+  With no shell between harness and handler, the 0.7.2 PowerShell/bash quoting
+  class is gone by construction; the smoke anchor net now enforces the braced,
+  *unquoted* exec form (quotes would be literal argv bytes). Re-verified
+  against the current hooks docs before the flip: `args` selects exec form and
+  `${CLAUDE_PROJECT_DIR}` is substituted into each element as a plain string.
+  Failing-first: an exec-form stale kit entry seeded into settings survived
+  the pre-fix merge (marker invisible to the command-string-only matcher,
+  marker-hook count 2 vs 1); string-form stale entries — the 0.10.x upgrade
+  path — are still replaced, and a markerless user exec-form hook survives.
+- **context-guard match precision** (`hooks/context-guard.mjs`): the
+  contextDir test is segment-boundary-anchored, regex-escaped, and
+  case-insensitive — `mydocs/context/` no longer false-fires a `docs/context`
+  config — and the instruction-file + memory matches gain case-insensitivity
+  (`Claude.md` *is* `CLAUDE.md` on Windows/macOS filesystems; advise-only, so
+  the rare case-sensitive-Linux false positive costs one harmless reminder).
+  All three new cases failed pre-fix: a false fire on `mydocs/context/DB.md`,
+  misses on `packages/api/Claude.md` and `Docs/Context/DB.md`.
+
 ## 0.10.1 — 2026-08-09
 
 The governance band — backlog rows B2-8…B2-11 close out B2. No installer,

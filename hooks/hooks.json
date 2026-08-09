@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/live-verify-reminder.mjs\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/live-verify-reminder.mjs"],
             "if": "Bash(git *)",
             "timeout": 10,
             "statusMessage": "ai-dev-kit: live-verify reminder"
@@ -20,7 +21,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/dep-check-nudge.mjs\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/dep-check-nudge.mjs"],
             "timeout": 10,
             "statusMessage": "ai-dev-kit: dep-check nudge"
           }
@@ -31,13 +33,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/skill-drift-guard.mjs\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/skill-drift-guard.mjs"],
             "timeout": 10,
             "statusMessage": "ai-dev-kit: skill-drift guard"
           },
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/context-guard.mjs\"",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/context-guard.mjs"],
             "timeout": 10,
             "statusMessage": "ai-dev-kit: context guard"
           }

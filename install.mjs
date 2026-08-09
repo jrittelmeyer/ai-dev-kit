@@ -6,7 +6,9 @@
  * Usage:
  *   node install.mjs [--dest <project-root>] [--adapter <file>] [--global] [--hooks]
  *   node install.mjs --check [--dest <project-root>] [--global]
+ *   node install.mjs --help
  *
+ * Unknown or misspelled flags fail loudly before anything is read or written.
  * Pure Node fs — no shell, no symlinks (Windows-safe). Idempotent: a re-run with an
  * unchanged kit writes nothing. `--adapter` is schema-validated against
  * adapters/project.schema.json before anything is written, then copied verbatim.
@@ -16,7 +18,7 @@
  * install prunes those leftovers. Skills in `.claude/skills/` that the manifest
  * doesn't list are left untouched. `--hooks`
  * merges hooks/hooks.json into `.claude/settings.json` — only entries whose command
- * carries the kit's handler-path marker are ever replaced.
+ * or args carry the kit's handler-path marker are ever replaced.
  */
 import {
   existsSync,
@@ -34,18 +36,60 @@ import { fileURLToPath } from "node:url";
 const kitRoot = dirname(fileURLToPath(import.meta.url));
 const manifest = JSON.parse(readFileSync(join(kitRoot, "manifest.json"), "utf8"));
 
-const args = process.argv.slice(2);
-const flag = (name) => args.includes(name);
-const opt = (name) => {
-  const i = args.indexOf(name);
-  return i !== -1 && i + 1 < args.length ? args[i + 1] : undefined;
-};
+const usage = `ai-dev-kit installer ${manifest.version}
 
-const checkMode = flag("--check");
-const withGlobal = flag("--global");
-const withHooks = flag("--hooks");
-const dest = resolve(opt("--dest") ?? process.cwd());
-const adapterArg = opt("--adapter");
+Usage:
+  node install.mjs [--dest <project-root>] [--adapter <file>] [--global] [--hooks]
+  node install.mjs --check [--dest <project-root>] [--global]
+  node install.mjs --help
+
+Flags:
+  --dest <project-root>  Target project root (default: current directory).
+  --adapter <file>       Project adapter JSON — schema-validated, then copied
+                         verbatim to .claude/ai-dev-kit.config.json.
+  --global               Also install dual-home skills to ~/.claude/skills/.
+  --hooks                Merge hooks/hooks.json into .claude/settings.json
+                         (kit-owned entries replaced by marker; user hooks kept).
+  --check                Report drift/stale files against kit source; exit 1 if any.
+  --help, -h             Show this help and exit.
+
+Self-install (kit repo):
+  node install.mjs --adapter adapters/ai-dev-kit.json --hooks`;
+
+// Strict flag parsing: an unknown or misspelled flag fails loudly before anything
+// is read or written (previously `--desst x` silently installed into cwd).
+const args = process.argv.slice(2);
+const BOOL_FLAGS = new Set(["--check", "--global", "--hooks", "--help", "-h"]);
+const VALUE_FLAGS = new Set(["--dest", "--adapter"]);
+const bools = new Set();
+const values = new Map();
+for (let i = 0; i < args.length; i++) {
+  const a = args[i];
+  if (BOOL_FLAGS.has(a)) {
+    bools.add(a);
+  } else if (VALUE_FLAGS.has(a)) {
+    const v = args[i + 1];
+    if (v === undefined || v.startsWith("-")) {
+      console.error(`install.mjs: ${a} requires a value (run node install.mjs --help).`);
+      process.exit(1);
+    }
+    values.set(a, v);
+    i++;
+  } else {
+    console.error(`install.mjs: unknown argument "${a}" (run node install.mjs --help).`);
+    process.exit(1);
+  }
+}
+if (bools.has("--help") || bools.has("-h")) {
+  console.log(usage);
+  process.exit(0);
+}
+
+const checkMode = bools.has("--check");
+const withGlobal = bools.has("--global");
+const withHooks = bools.has("--hooks");
+const dest = resolve(values.get("--dest") ?? process.cwd());
+const adapterArg = values.get("--adapter");
 
 /** Recursively list all files under a directory. */
 const walk = (dir) =>
@@ -219,13 +263,17 @@ if (withHooks && !checkMode) {
   const before = existsSync(settingsPath) ? readFileSync(settingsPath, "utf8") : null;
   const settings = before ? JSON.parse(before) : {};
   const marker = ".claude/hooks/ai-dev-kit/";
+  // Kit ownership rides the handler path — shell form carries it in the command
+  // string, exec form as an args entry. Check both, so settings written by any
+  // kit generation (either form) merge cleanly; user hooks never carry it.
+  const carriesMarker = (h) =>
+    [h.command ?? "", ...(Array.isArray(h.args) ? h.args : [])].some((v) =>
+      String(v).includes(marker),
+    );
   settings.hooks = settings.hooks ?? {};
   for (const [event, entries] of Object.entries(kitHooks)) {
     const kept = (settings.hooks[event] ?? [])
-      .map((e) => ({
-        ...e,
-        hooks: (e.hooks ?? []).filter((h) => !String(h.command ?? "").includes(marker)),
-      }))
+      .map((e) => ({ ...e, hooks: (e.hooks ?? []).filter((h) => !carriesMarker(h)) }))
       .filter((e) => e.hooks.length > 0);
     settings.hooks[event] = [...kept, ...entries];
   }

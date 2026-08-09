@@ -2,9 +2,10 @@
 /**
  * CI smoke: installer scenarios that need a real dest fixture. Two nets:
  *  - settings merge from a PRE-POPULATED .claude/settings.json — user hooks on
- *    kit events, a user hook sharing an entry with a kit hook, a foreign event,
- *    a stale kit-marker entry, a non-hook key. Assert preserve / replace /
- *    no-dup / byte-stable-on-rerun.
+ *    kit events (shell and exec form), a user hook sharing an entry with a kit
+ *    hook, a foreign event, stale kit-marker entries in BOTH forms (marker in
+ *    the command string, marker only in args), a non-hook key. Assert preserve
+ *    / replace / no-dup / byte-stable-on-rerun.
  *  - stale leftovers in kit-owned dirs — files gone from kit source must fail
  *    --check (STALE) and be pruned by install; skills the manifest doesn't
  *    list stay untouched.
@@ -28,29 +29,73 @@ const check = (name, ok, detail = "") => {
   }
 };
 const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+// Kit ownership rides the handler path: shell form carries it in the command
+// string, exec form as an args entry — the merge must see both.
+const carriesMarker = (h) =>
+  [h.command ?? "", ...(Array.isArray(h.args) ? h.args : [])].some((v) =>
+    String(v).includes(marker),
+  );
 
 const scratch = mkdtempSync(join(tmpdir(), "adk-install-"));
 const run = (...extra) =>
   spawnSync(process.execPath, [installer, "--dest", scratch, ...extra], { encoding: "utf8" });
 
 try {
+  // ---- strict flag parsing: unknown/misspelled flags die before any write ----
+  const badFlag = run("--hooks", "--frobnicate");
+  check("flags: unknown flag exits 1", badFlag.status === 1, `exit ${badFlag.status}`);
+  check(
+    "flags: unknown flag named on stderr",
+    (badFlag.stderr ?? "").includes("--frobnicate"),
+    (badFlag.stderr ?? "").trim(),
+  );
+  check("flags: unknown flag writes nothing", !existsSync(join(scratch, ".claude")));
+  const noValue = run("--adapter");
+  check(
+    "flags: value flag without a value exits 1",
+    noValue.status === 1,
+    `exit ${noValue.status}`,
+  );
+  const help = run("--help");
+  check("flags: --help exits 0", help.status === 0, `exit ${help.status}`);
+  check("flags: --help prints usage", (help.stdout ?? "").includes("Usage"));
+  check("flags: --help writes nothing", !existsSync(join(scratch, ".claude")));
+
   // ---- settings merge from a pre-populated settings.json ----
   const settingsPath = join(scratch, ".claude", "settings.json");
   const userPre = { matcher: "Bash", hooks: [{ type: "command", command: "echo user-pre" }] };
+  const userExec = {
+    matcher: "Bash",
+    hooks: [{ type: "command", command: "node", args: ["scripts/my-own-hook.mjs"] }],
+  };
   const userStop = { matcher: "", hooks: [{ type: "command", command: "echo user-stop" }] };
   const seeded = {
     permissions: { allow: ["Bash(pnpm test:*)"] },
     hooks: {
       PreToolUse: [
         userPre,
-        // Stale kit-marker entry: a handler the kit no longer ships. The merge
-        // must replace it (drop, then append current kit entries), never keep it.
+        // User exec-form hook without the marker: never the kit's to replace.
+        userExec,
+        // Stale kit-marker entries in both forms: handlers the kit no longer
+        // ships. The merge must replace them (drop, then append current kit
+        // entries), never keep them — the exec-form one carries the marker
+        // only in args, invisible to a command-string-only matcher.
         {
           matcher: "WebFetch",
           hooks: [
             {
               type: "command",
               command: `node "\${CLAUDE_PROJECT_DIR}/${marker}removed-handler.mjs"`,
+            },
+          ],
+        },
+        {
+          matcher: "WebFetch",
+          hooks: [
+            {
+              type: "command",
+              command: "node",
+              args: [`\${CLAUDE_PROJECT_DIR}/${marker}removed-exec-handler.mjs`],
             },
           ],
         },
@@ -85,9 +130,7 @@ try {
 
   const merged = JSON.parse(readFileSync(settingsPath, "utf8"));
   const markerHooks = (event) =>
-    (merged.hooks[event] ?? [])
-      .flatMap((e) => e.hooks ?? [])
-      .filter((h) => String(h.command ?? "").includes(marker));
+    (merged.hooks[event] ?? []).flatMap((e) => e.hooks ?? []).filter(carriesMarker);
 
   check("preserve: non-hook top-level key survives", eq(merged.permissions, seeded.permissions));
   check("preserve: foreign event (Stop) survives verbatim", eq(merged.hooks.Stop, [userStop]));
@@ -108,11 +151,19 @@ try {
     "replace: stale kit-marker entry is gone",
     !JSON.stringify(merged).includes("removed-handler.mjs"),
   );
+  check(
+    "replace: exec-form stale kit entry is gone (marker only in args)",
+    !JSON.stringify(merged).includes("removed-exec-handler.mjs"),
+  );
+  check(
+    "preserve: user exec-form hook (no marker) survives",
+    (merged.hooks.PreToolUse ?? []).some((e) => eq(e, userExec)),
+  );
   for (const event of Object.keys(kitHooks)) {
     // Kit hooks all carry the marker (smoke-hooks enforces the anchored path),
     // so marker-bearing entries after the merge must be exactly hooks.json's.
     const kitEntries = (merged.hooks[event] ?? []).filter((e) =>
-      (e.hooks ?? []).some((h) => String(h.command ?? "").includes(marker)),
+      (e.hooks ?? []).some(carriesMarker),
     );
     check(`replace: ${event} kit entries match hooks.json`, eq(kitEntries, kitHooks[event]));
     const want = kitHooks[event].flatMap((e) => e.hooks).length;

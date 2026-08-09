@@ -66,9 +66,11 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
   unknown keys) and writes it verbatim to `.claude/ai-dev-kit.config.json`; a
   violation fails the install before anything is written.
 - `--hooks` merges `hooks/hooks.json` into `.claude/settings.json` — only entries
-  whose command carries the `.claude/hooks/ai-dev-kit/` marker are ever replaced;
-  every other setting is preserved. Omit it to wire hooks manually.
+  whose command or args carry the `.claude/hooks/ai-dev-kit/` marker are ever
+  replaced; every other setting is preserved. Omit it to wire hooks manually.
 - `--dest <path>` targets a different project root (default: cwd).
+- `--help` prints usage. Unknown or misspelled flags fail loudly before anything
+  is read or written (a typo'd `--dest` can no longer install into cwd silently).
 - Writes `.claude/ai-dev-kit.installed.json` (kit + skill versions, no timestamp).
   Idempotent — a second run writes nothing.
 - Prunes stale leftovers — files in kit-owned dirs (`.claude/skills/<kit skill>/`,
@@ -105,8 +107,12 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 
-Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe),
-installed to `.claude/hooks/ai-dev-kit/` and drift-guarded by `--check` like skills.
+Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe;
+a malformed event exits 0 silently), installed to `.claude/hooks/ai-dev-kit/` and
+drift-guarded by `--check` like skills. They are wired **exec-form** — `command:
+"node"` plus the `${CLAUDE_PROJECT_DIR}`-anchored handler path as an `args` entry —
+so no shell sits between the harness and the handler (the PowerShell/bash quoting
+class is gone by construction).
 Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag, a
 tidy/cache hook, and any calendar/session-counter doc-audit nudge — existing
 cadence (standing agreement, husky pre-push, audits on real need) covers them,
@@ -147,10 +153,10 @@ The canonical consumer block is four lines:
   ([PLAYBOOK.md](docs/PLAYBOOK.md) · [pitch-deck.html](docs/pitch-deck.html)).
 - ~~Extract to a standalone repo~~ **shipped in 0.5.0** — this repository;
   consumers (next-web-boilerplate first) install from a clone.
-- **Later:** npm packaging (`npx` install) if consumer demand shows up; exec-form
-  hook entries once the installer's ownership marker keys on `args` too, and
+- **Later:** npm packaging (`npx` install) if consumer demand shows up, and
   git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
-  subdirectory (both deferred in [0.7.2](CHANGELOG.md)).
+  subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
+  other 0.7.2 deferral — shipped in 0.11.0.
 - **Quality bar:** first project-audit (2026-08-09) scored the kit 90.4/100;
   the banded work plan to 100 is [docs/BACKLOG.md](docs/BACKLOG.md), the full
   report [docs/archive/PROJECT_AUDIT_2026-08-09.md](docs/archive/PROJECT_AUDIT_2026-08-09.md).
