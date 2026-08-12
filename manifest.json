@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -55,9 +55,9 @@
   "skills": [
     {
       "name": "checkpoint",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dualHome": false,
-      "summary": "Commit + push pending work, judge context health (three strikes on a repeated obstacle = unhealthy), then continue or hand off via an on-disk resume prompt.",
+      "summary": "Commit + push pending work, judge context health (three strikes on a repeated obstacle = unhealthy), then continue or hand off via an on-disk resume prompt plus a relaunch model × effort recommendation.",
       "triggers": [
         "checkpoint",
         "commit and continue",

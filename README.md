@@ -18,7 +18,7 @@ into a project; re-run it from a fresh clone to stay current.
 
 | Skill | Job | Typical trigger |
 | --- | --- | --- |
-| `checkpoint` | Commit + push, context-health verdict, continue or hand off with a resume prompt | every step boundary |
+| `checkpoint` | Commit + push, context-health verdict, continue or hand off with a resume prompt + relaunch model/effort recommendation | every step boundary |
 | `doc-audit` | Keep docs / agent context / memory / showcase docs accurate + token-lean | periodic maintenance |
 | `project-audit` | Score the repo /100 per feature group; emit a prioritized backlog | "how good is this really?" |
 | `tidy` | Prune the unbounded build cache; surface judgment-required machine cleanups | checkpoint boundary / low disk |

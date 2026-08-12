@@ -1,5 +1,31 @@
 # ai-dev-kit changelog
 
+## 0.13.0 — 2026-08-12
+
+checkpoint 0.3.0 — a handoff now ends with a launch recommendation.
+
+- **checkpoint: relaunch model × effort recommendation**
+  (`skills/checkpoint/SKILL.md`): a handoff no longer stops at the resume
+  prompt — the response's literal last line is now
+  `Launch: <model> @ <effort> — <why>`, mirrored at the top of the handoff
+  file, so the user picks the relaunch configuration with the step's cost
+  already weighed. A new rubric maps the §2 step-shape estimate onto the
+  harness's tier ladder: **Mechanical** (approved plan, docs/config-only,
+  release chores, gate re-runs) → smallest tier at low effort; **Standard
+  build** (signed-off S/M around a known design) → mid tier at medium, high
+  when the diff touches concurrency/authz/money; **Judgment** (planning,
+  audits and scoring, unknown-debugging, adversarial verification) → top
+  tier at high+. Mixed steps split by session (a plan-only session is
+  Judgment; its approved execution relaunches as Mechanical); ties on work
+  that ships product code or scores quality resolve upward. Manifest
+  summary, README skill row, and deck card refreshed to match.
+
+Verification: skill-body + docs change — no smoke surface, nothing to show
+failing-first. Five stamps bumped together; self-install re-run refreshed
+the tracked dogfood copies; full local suite green (scratch install →
+idempotent re-run → scratch `--check` → smoke-hooks 32 → smoke-installer 37
+→ check-version 0.13.0 × 5 → root `--check`).
+
 ## 0.12.0 — 2026-08-09
 
 The S-tail closes — backlog rows B3-18/19/20 (B1-17 closed docs-only in
