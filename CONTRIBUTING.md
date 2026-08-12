@@ -34,7 +34,9 @@ node .github/check-version.mjs
 node install.mjs --check
 ```
 
-CI runs the same suite on ubuntu + windows × Node 22 + 24.
+CI runs the same suite on ubuntu + windows × Node 22 + 24; the block above
+also runs unchanged from PowerShell (Node resolves `/tmp/kit-scratch` against
+the drive root).
 
 Hand-testing a handler? Don't pipe JSON into it from PowerShell 5.1 — the pipe
 BOM-prefixes stdin, `JSON.parse` fails, and stdin tolerance turns that into a

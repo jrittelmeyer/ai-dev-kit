@@ -5,12 +5,14 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-09-post-B3](archive/PROJECT_AUDIT_2026-08-09-post-B3.md)
-(aggregate 96.9/100, re-scored after B1–B3 shipped as 0.9.0 → 0.11.0; baseline
-[PROJECT_AUDIT_2026-08-09](archive/PROJECT_AUDIT_2026-08-09.md), 90.4/100).
+Source: [PROJECT_AUDIT_2026-08-12](archive/PROJECT_AUDIT_2026-08-12.md)
+(aggregate 97.4/100, third audit; chain: baseline
+[90.4](archive/PROJECT_AUDIT_2026-08-09.md) → post-B3
+[96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) → 97.4).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B3 | 21 | release | Retitle the v0.12.0 GitHub Release to the `v<ver> — <subject>` convention its predecessors set; pin the convention in one clause where releases are described | Versioning +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-12: zero issues/PRs) | Public +1 | M |
 
 Watch (externally gated, re-check each audit):
@@ -30,10 +32,14 @@ Watch (externally gated, re-check each audit):
   the same Windows machine, CI green on windows-latest — so the open layer is
   harness spawn/display. Known same-class mechanism: BOM-prefixed stdin
   parse-fails and the stdin-tolerant handler exits 0 silently (CONTRIBUTING
-  notes the hand-test trap). Observation log in kit memory. 2026-08-12
-  (harness 2.1.226, one session): live-verify **fired** on Bash-tool
-  `git commit` ×2, and context-guard — silent across the session's first
-  six memory-file edit probes — **fired** on the next two. Both classes
-  are now proven visible on Windows (first injections since the
-  0.10.1-build session); the open question shifts from visibility to
-  within-session intermittency (PostToolUse surfaced 2 of 8, late onset).
+  notes the hand-test trap). Observation log in kit memory. 2026-08-12,
+  two sessions: session 1 (harness 2.1.226) — live-verify **fired** 3/3
+  Bash-tool commits; context-guard silent across the session's first six
+  memory-file probes, then **fired** on the next two (late onset).
+  Session 2 (harness auto-updated to 2.1.228) — both classes fired on
+  their **first** probe: live-verify 1/1, context-guard 7/7, zero misses;
+  changelog 2.1.227–228 offers no attributable fix. Both classes proven
+  visible on Windows; the open question is within-session onset variance
+  (late on 2.1.226, immediate on 2.1.228). A silent probe = intermittency
+  datapoint; only a full-session all-silent run matching 2026-08-09
+  reopens visibility.
