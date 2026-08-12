@@ -11,14 +11,15 @@ Source: [PROJECT_AUDIT_2026-08-09-post-B3](archive/PROJECT_AUDIT_2026-08-09-post
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-09: zero issues/PRs) | Public +1 | M |
+| B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-12: zero issues/PRs) | Public +1 | M |
 
 Watch (externally gated, re-check each audit):
 
 - Harness-side git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
   launch in a subdirectory (kit-side share closed by B1-1). Re-checked
-  2026-08-09: docs define the placeholder only as "Project root," subdirectory
-  behavior unspecified, no related changelog entry — gate not lifted.
+  2026-08-09 (docs: placeholder defined only as "Project root," subdirectory
+  behavior unspecified) and 2026-08-12 (changelog head 2.1.228: no related
+  entry) — gate not lifted.
 - Harness-side hook-injection visibility on Windows (B1-17 outcome, closed
   2026-08-09): a fresh exec-form session's deterministic instruments —
   context-guard probe (memory-file Write) and live-verify `git commit` (run
@@ -29,4 +30,5 @@ Watch (externally gated, re-check each audit):
   the same Windows machine, CI green on windows-latest — so the open layer is
   harness spawn/display. Known same-class mechanism: BOM-prefixed stdin
   parse-fails and the stdin-tolerant handler exits 0 silently (CONTRIBUTING
-  notes the hand-test trap). Observation log in kit memory.
+  notes the hand-test trap). Observation log in kit memory (context-guard
+  still silent 2026-08-12, memory-file edit probes).
