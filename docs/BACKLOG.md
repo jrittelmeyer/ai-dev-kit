@@ -31,8 +31,9 @@ Watch (externally gated, re-check each audit):
   harness spawn/display. Known same-class mechanism: BOM-prefixed stdin
   parse-fails and the stdin-tolerant handler exits 0 silently (CONTRIBUTING
   notes the hand-test trap). Observation log in kit memory. 2026-08-12
-  (harness 2.1.226): the classes diverged — live-verify **fired** on a
-  Bash-tool `git commit` (first visible injection since the 0.10.1-build
-  session) while context-guard stayed silent across six memory-file edit
-  probes the same session — the open question narrows to PostToolUse
-  surfacing.
+  (harness 2.1.226, one session): live-verify **fired** on Bash-tool
+  `git commit` ×2, and context-guard — silent across the session's first
+  six memory-file edit probes — **fired** on the next two. Both classes
+  are now proven visible on Windows (first injections since the
+  0.10.1-build session); the open question shifts from visibility to
+  within-session intermittency (PostToolUse surfaced 2 of 8, late onset).
