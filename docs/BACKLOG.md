@@ -30,5 +30,9 @@ Watch (externally gated, re-check each audit):
   the same Windows machine, CI green on windows-latest — so the open layer is
   harness spawn/display. Known same-class mechanism: BOM-prefixed stdin
   parse-fails and the stdin-tolerant handler exits 0 silently (CONTRIBUTING
-  notes the hand-test trap). Observation log in kit memory (context-guard
-  still silent 2026-08-12, memory-file edit probes).
+  notes the hand-test trap). Observation log in kit memory. 2026-08-12
+  (harness 2.1.226): the classes diverged — live-verify **fired** on a
+  Bash-tool `git commit` (first visible injection since the 0.10.1-build
+  session) while context-guard stayed silent across six memory-file edit
+  probes the same session — the open question narrows to PostToolUse
+  surfacing.
