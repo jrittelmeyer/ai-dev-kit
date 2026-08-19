@@ -5,10 +5,11 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-12](archive/PROJECT_AUDIT_2026-08-12.md)
-(aggregate 97.4/100, third audit; chain: baseline
+Source: [PROJECT_AUDIT_2026-08-19](archive/PROJECT_AUDIT_2026-08-19.md)
+(aggregate 97.9/100, fourth audit; chain: baseline
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) → post-B3
-[96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) → 97.4).
+[96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
+[97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|

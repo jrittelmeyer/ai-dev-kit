@@ -169,8 +169,8 @@ The canonical consumer block is four lines:
   git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
   subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
   other 0.7.2 deferral — shipped in 0.11.0.
-- **Quality bar:** audited 2026-08-09 at 90.4/100 (baseline) and **96.9/100**
-  after B1–B3 shipped (0.9.0 → 0.11.0); the 2026-08-12 audit verifies
-  0.12.0's S-tail by execution and scores **97.4/100** — remaining rows in
+- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → **97.9/100**
+  (2026-08-19, fourth audit: 0.13.0 verified, zero drift, zero new
+  deductions; hooks reach 100) — remaining rows in
   [docs/BACKLOG.md](docs/BACKLOG.md), latest report
-  [docs/archive/PROJECT_AUDIT_2026-08-12.md](docs/archive/PROJECT_AUDIT_2026-08-12.md).
+  [docs/archive/PROJECT_AUDIT_2026-08-19.md](docs/archive/PROJECT_AUDIT_2026-08-19.md).
