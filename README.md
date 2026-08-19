@@ -119,9 +119,10 @@ drift-guarded by `--check` like skills. They are wired **exec-form** — `comman
 "node"` plus the `${CLAUDE_PROJECT_DIR}`-anchored handler path as an `args` entry —
 so no shell sits between the harness and the handler (the PowerShell/bash quoting
 class is gone by construction). Verified-where: handler fire/silent contracts are
-smoke-proven in CI on ubuntu + windows; whether a live session *surfaces* the
-injected context is harness-side and currently inconsistent on Windows — tracked
-as a Watch row in [docs/BACKLOG.md](docs/BACKLOG.md).
+smoke-proven in CI on ubuntu + windows; live sessions on recent harness versions
+surface the injections consistently (both hook classes, first probe) — the
+residual onset-variance question from one older harness version is tracked as a
+Watch row in [docs/BACKLOG.md](docs/BACKLOG.md).
 Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag, a
 tidy/cache hook, and any calendar/session-counter doc-audit nudge — existing
 cadence (standing agreement, husky pre-push, audits on real need) covers them,
