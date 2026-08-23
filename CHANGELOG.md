@@ -1,5 +1,53 @@
 # ai-dev-kit changelog
 
+## 0.17.0 — 2026-08-23
+
+Plugin-marketplace packaging — phase 4 closes the modernization program
+(row B3-20). The kit is now installable two ways: the marketplace for Claude
+Code consumers, the installer for any harness reading the Agent Skills
+format. One route per project — README carries the choose-one warning.
+
+- **`.claude-plugin/marketplace.json` + `.claude-plugin/plugin.json`** —
+  `/plugin marketplace add jrittelmeyer/ai-dev-kit` then
+  `/plugin install ai-dev-kit@ai-dev-kit`. One plugin, `source: "./"` —
+  the marketplace catalogs the same `skills/` + `hooks/` the installer
+  ships. `plugin.json`'s `version` is the marketplace update signal and
+  becomes the **6th version-stamp site** (`check-version.mjs` extended in
+  the same commit; README/CONTRIBUTING/AGENTS.md now say six sites).
+- **Hook wiring split by route** — the build-time check found the plugin
+  loader auto-discovers `hooks/hooks.json` at the plugin root, so the
+  installer-form file there would have loaded with dead
+  `${CLAUDE_PROJECT_DIR}/.claude/…` paths for marketplace users. The plan's
+  fallback shipped: `hooks/hooks.json` is now the **plugin form**
+  (`${CLAUDE_PLUGIN_ROOT}/hooks/<handler>.mjs`, auto-discovered) and the
+  renamed `hooks/installer-hooks.json` is the **installer form** — read by
+  `--hooks` for the settings merge and shipped to consumers under the
+  stable name `.claude/hooks/ai-dev-kit/hooks.json`. Handlers themselves
+  are shared unmodified. smoke-hooks' exec-form net now asserts both files
+  against their respective anchors **plus structural parity** (same events
+  · matchers · handlers · if-clauses · timeouts, anchors aside);
+  smoke-installer asserts the plugin-form file never ships and the shipped
+  wiring carries no `${CLAUDE_PLUGIN_ROOT}`; skill-lint checks handler
+  existence in both files.
+- **B4-16 closed — superseded.** Marketplace plugins install from
+  git/GitHub/npm sources without a registry account or publish pipeline,
+  which serves the demand npm packaging was gated on; reopen only on
+  explicit `npx`-install demand. Rows 18–20 have all shipped; the backlog
+  holds the two harness-audit rows (21–22).
+- README: dual-route install section; deck: marketplace step on the
+  portability slide.
+
+Verification: smoke-hooks 42 with the two-file exec-form net (10 anchored
+entries) + the parity assert green; smoke-installer 56 (installer wiring
+ships as hooks.json byte-identical to installer-hooks.json; plugin-form
+never ships; 4 adapter fixtures × 3; enum-violation triple); skill-lint 10
+skills 0/0; check-version **0.17.0 × 6 sites** (shown failing at 5/6 before
+plugin.json was stamped); scratch install + idempotent re-run + `--check`;
+self-install re-run refreshed the tracked dogfood copies; root `--check`
+green. Marketplace-route live check: `claude plugin validate` where the CLI
+offers it, plus the marketplace/plugin manifests parsing and pathing
+verified against the current plugin docs fetched this session.
+
 ## 0.16.0 — 2026-08-23
 
 harness-audit + the compounding loop — phase 3 of the modernization program

@@ -1,0 +1,19 @@
+{
+  "name": "ai-dev-kit",
+  "owner": {
+    "name": "John Rittelmeyer",
+    "url": "https://github.com/jrittelmeyer"
+  },
+  "metadata": {
+    "description": "The ai-dev-kit marketplace — one plugin carrying the kit's skills and advisory hooks."
+  },
+  "plugins": [
+    {
+      "name": "ai-dev-kit",
+      "source": "./",
+      "description": "Lifecycle + inception + currency skills for agentic development on any project type, five advisory hooks (advise, never block), and a per-project adapter contract.",
+      "category": "workflow",
+      "tags": ["lifecycle", "verification", "audits", "portability"]
+    }
+  ]
+}

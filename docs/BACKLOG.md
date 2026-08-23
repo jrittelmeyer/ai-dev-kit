@@ -9,16 +9,18 @@ Source: [PROJECT_AUDIT_2026-08-19](archive/PROJECT_AUDIT_2026-08-19.md)
 (aggregate 97.9/100, fourth audit; chain: baseline
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) → post-B3
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
-[97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9). Row 20: the 2026-08-23
-modernization program — user-approved plan, phases 1–3 shipped as
-0.14.0–0.16.0 (CHANGELOG owns the record); plan already signed off.
+[97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9). The 2026-08-23
+modernization program (user-approved plan) shipped as 0.14.0–0.17.0; the
+CHANGELOG owns that record. Rows 21–22 entered from the first
+[harness-audit](archive/HARNESS_AUDIT_2026-08-23.md). B4-16 (npm/`npx`
+packaging) closed 0.17.0 — superseded by the plugin marketplace, which
+serves git/npm-source installs without a registry account; reopen only on
+explicit `npx`-install demand.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 20 | packaging | Plugin-marketplace packaging (`.claude-plugin/` + `hooks/plugin-hooks.json` twin, 6th version-stamp site) — supersedes B4-16 on ship (program phase 4) | Public +2 | M |
 | B2 | 21 | testing | Per-skill eval scenarios (`.github/skill-evals/`, ~3 input→expected-behavior fixtures per skill) — the authoring rubric's evaluation-driven step; source: [HARNESS_AUDIT_2026-08-23](archive/HARNESS_AUDIT_2026-08-23.md) | Harness: evals +15–20 | M |
 | B3 | 22 | skills | harness-audit inventory script (zero-dep surface-table emitter for §1) — runs start from measured data; source: same report | Harness: disclosure +4 | S |
-| B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-19: zero issues/PRs); row 20 supersedes on ship | Public +1 | M |
 
 Watch (externally gated, re-check each audit):
 

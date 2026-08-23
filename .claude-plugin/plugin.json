@@ -1,0 +1,19 @@
+{
+  "name": "ai-dev-kit",
+  "version": "0.17.0",
+  "description": "Lifecycle + inception + currency skills for agentic development on any project type (web · game · CLI · library · data), five advisory hooks, and a per-project adapter contract. Skills load per-domain mechanics on demand; hooks advise, never block.",
+  "author": {
+    "name": "John Rittelmeyer",
+    "url": "https://github.com/jrittelmeyer"
+  },
+  "homepage": "https://github.com/jrittelmeyer/ai-dev-kit",
+  "repository": "https://github.com/jrittelmeyer/ai-dev-kit",
+  "license": "MIT",
+  "keywords": [
+    "agent-skills",
+    "lifecycle",
+    "hooks",
+    "adapter",
+    "portability"
+  ]
+}

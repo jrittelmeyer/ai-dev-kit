@@ -9,8 +9,9 @@ pointed at, not restated here.
   `node install.mjs --adapter adapters/ai-dev-kit.json --hooks` (add `--global`
   when a dual-home skill changed) or CI's root `--check` fails.
 - **Behavior change ⇒ version bump:** the kit version plus each touched skill's
-  version in `manifest.json`, `VERSION`, the `CHANGELOG.md` top entry, and both
-  deck stamps move together — CI gates the sites.
+  version in `manifest.json`, `VERSION`, the `CHANGELOG.md` top entry, both
+  deck stamps, and `.claude-plugin/plugin.json` move together — CI gates the
+  six sites.
 - **Program discipline:** forward-only banded backlog (`docs/BACKLOG.md`); every
   row goes plan → explicit sign-off → build; a test that claims to catch a bug
   is shown failing first; CHANGELOG entries end with a Verification paragraph.

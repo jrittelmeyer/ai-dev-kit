@@ -14,9 +14,9 @@ Node ≥ 22, no npm packages) and token-lean docs.
   (`adapters/*.json`, schema: `adapters/project.schema.json`), never hardcoded
   in a skill.
 - **Behavior change ⇒ version bump.** Bump `VERSION`, `manifest.json` (kit
-  version plus any touched skill's version), the `CHANGELOG.md` top entry, and
-  both deck stamps together — CI's version gate fails when the five sites
-  disagree.
+  version plus any touched skill's version), the `CHANGELOG.md` top entry,
+  both deck stamps, and `.claude-plugin/plugin.json` together — CI's version
+  gate fails when the six sites disagree.
 - **A test that claims to catch a bug** should be shown failing against the
   pre-fix code (note it in the PR description).
 

@@ -204,14 +204,18 @@ if (withGlobal) {
 
 // 3. Hook handlers — installed alongside skills (and drift-guarded the same way);
 //    inert until the hook config is merged into settings via --hooks. The
-//    canonical wiring (hooks.json, exactly — never other *.json variants) ships
-//    too, so consumers hold the source of truth next to the handlers.
+//    canonical INSTALLER wiring (hooks/installer-hooks.json, ${CLAUDE_PROJECT_DIR}
+//    form) ships as hooks.json next to the handlers — the plugin-form
+//    hooks/hooks.json (${CLAUDE_PLUGIN_ROOT}, auto-discovered by the plugin
+//    loader) must never reach an installer consumer.
 const hooksSrc = join(kitRoot, "hooks");
 const hooksDest = join(dest, ".claude", "hooks", "ai-dev-kit");
 for (const file of walk(hooksSrc)) {
   const rel = relative(hooksSrc, file);
-  if (rel.endsWith(".mjs") || rel === "hooks.json") {
+  if (rel.endsWith(".mjs")) {
     syncFile(file, join(hooksDest, rel));
+  } else if (rel === "installer-hooks.json") {
+    syncFile(file, join(hooksDest, "hooks.json"));
   }
 }
 
@@ -261,7 +265,7 @@ if (adapterText !== null) {
 //    are identified by the handler-path marker and replaced wholesale; everything
 //    else in settings.json is preserved. Run-twice ⇒ byte-identical output.
 if (withHooks && !checkMode) {
-  const kitHooks = JSON.parse(readFileSync(join(hooksSrc, "hooks.json"), "utf8")).hooks;
+  const kitHooks = JSON.parse(readFileSync(join(hooksSrc, "installer-hooks.json"), "utf8")).hooks;
   const settingsPath = join(dest, ".claude", "settings.json");
   const before = existsSync(settingsPath) ? readFileSync(settingsPath, "utf8") : null;
   const settings = before ? JSON.parse(before) : {};

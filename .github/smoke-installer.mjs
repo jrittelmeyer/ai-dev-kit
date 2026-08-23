@@ -24,7 +24,9 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
 const installer = join(process.cwd(), "install.mjs");
-const kitHooks = JSON.parse(readFileSync("hooks/hooks.json", "utf8")).hooks;
+// The installer form is the merge source; plugin-form hooks/hooks.json is the
+// marketplace loader's file and never reaches an installer consumer.
+const kitHooks = JSON.parse(readFileSync("hooks/installer-hooks.json", "utf8")).hooks;
 const marker = ".claude/hooks/ai-dev-kit/";
 
 let failures = 0;
@@ -136,13 +138,21 @@ try {
     `exit ${first.status}: ${first.stderr}`,
   );
 
-  // The canonical wiring ships next to the handlers, so a consumer wiring hooks
-  // by hand (or auditing what --hooks merged) has the local source of truth.
+  // The canonical INSTALLER wiring ships next to the handlers (as hooks.json),
+  // so a consumer wiring hooks by hand has the local source of truth — and the
+  // plugin-form file must never ship (its ${CLAUDE_PLUGIN_ROOT} paths resolve
+  // nowhere in an installer consumer).
   const shippedWiring = join(scratch, ".claude", "hooks", "ai-dev-kit", "hooks.json");
   check(
-    "handlers: hooks.json wiring ships next to the handlers",
+    "handlers: installer wiring ships next to the handlers as hooks.json",
     existsSync(shippedWiring) &&
-      readFileSync(shippedWiring, "utf8") === readFileSync("hooks/hooks.json", "utf8"),
+      readFileSync(shippedWiring, "utf8") === readFileSync("hooks/installer-hooks.json", "utf8"),
+  );
+  check(
+    "handlers: plugin-form wiring never ships",
+    !readFileSync(shippedWiring, "utf8").includes("CLAUDE_PLUGIN_ROOT") &&
+      !existsSync(join(scratch, ".claude", "hooks", "ai-dev-kit", "installer-hooks.json")) &&
+      !existsSync(join(scratch, ".claude", "hooks", "ai-dev-kit", "plugin-hooks.json")),
   );
 
   const merged = JSON.parse(readFileSync(settingsPath, "utf8"));

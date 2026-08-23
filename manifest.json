@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -19,7 +19,7 @@
     "post-milestone: retro (lessons → codified surfaces)"
   ],
   "hooks": {
-    "config": "hooks/hooks.json",
+    "config": "hooks/installer-hooks.json (installer form, ships to consumers as hooks.json) · hooks/hooks.json (plugin form, auto-discovered by the plugin loader; smoke-enforced parity)",
     "installedTo": ".claude/hooks/ai-dev-kit/",
     "policy": "advise, never block — hooks inject context; the agent decides",
     "handlers": [

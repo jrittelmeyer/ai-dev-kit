@@ -54,7 +54,23 @@ with rather than reimplements.
 
 ## Install into a project
 
-From a clone of this repo (anywhere on disk):
+Two routes — **choose one per project**: running both duplicates every skill
+(plugin-namespaced + project copies) and double-fires every hook.
+
+**A · Plugin marketplace** (Claude Code):
+
+```text
+/plugin marketplace add jrittelmeyer/ai-dev-kit
+/plugin install ai-dev-kit@ai-dev-kit
+```
+
+Skills and hooks load from the plugin (hooks auto-wire from the plugin-form
+`hooks/hooks.json`, `${CLAUDE_PLUGIN_ROOT}`-anchored); updates arrive when the
+plugin version bumps. The adapter stays yours either way — drop
+`.claude/ai-dev-kit.config.json` into the project (contract below).
+
+**B · The installer** (any harness that reads `.claude/skills/` — the Agent
+Skills open format). From a clone of this repo (anywhere on disk):
 
 ```bash
 git clone https://github.com/jrittelmeyer/ai-dev-kit
@@ -164,9 +180,10 @@ The canonical consumer block is four lines:
 - **Keep skill bodies generic.** Project facts go in the adapter (mechanical params)
   or the project's agent memory (recipes/gotchas) — never hardcoded in a skill.
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
-  `CHANGELOG.md`, and the deck stamps together with any behavior change (CI gates the
-  five sites). Every release commit gets an annotated tag `v<version>` and a GitHub
-  Release built from its CHANGELOG entry — pushed once CI is green.
+  `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
+  behavior change (CI gates the six sites). Every release commit gets an annotated tag
+  `v<version>` and a GitHub Release built from its CHANGELOG entry — pushed once CI is
+  green.
 - **Release titles:** Follow the pattern `v<version> — <subject>` where `<subject>`
   summarizes the shipped feature group or fix (see CHANGELOG entries for examples).
 

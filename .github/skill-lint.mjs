@@ -218,15 +218,17 @@ for (const group of SHARED) {
   }
 }
 
-const wired = JSON.parse(readFileSync("hooks/hooks.json", "utf8")).hooks;
-for (const entries of Object.values(wired)) {
-  for (const entry of entries) {
-    for (const h of entry.hooks ?? []) {
-      const handler = [h.command ?? "", ...(Array.isArray(h.args) ? h.args : [])]
-        .join(" ")
-        .match(/\.claude\/hooks\/ai-dev-kit\/([\w.-]+\.mjs)/)?.[1];
-      if (handler && !existsSync(join("hooks", handler))) {
-        err(`hooks/hooks.json: wired handler hooks/${handler} does not exist`);
+for (const wiring of ["hooks/installer-hooks.json", "hooks/hooks.json"]) {
+  const wired = JSON.parse(readFileSync(wiring, "utf8")).hooks;
+  for (const entries of Object.values(wired)) {
+    for (const entry of entries) {
+      for (const h of entry.hooks ?? []) {
+        const handler = [h.command ?? "", ...(Array.isArray(h.args) ? h.args : [])]
+          .join(" ")
+          .match(/([\w-]+\.mjs)\b/)?.[1];
+        if (handler && !existsSync(join("hooks", handler))) {
+          err(`${wiring}: wired handler hooks/${handler} does not exist`);
+        }
       }
     }
   }

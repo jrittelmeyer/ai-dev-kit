@@ -107,37 +107,57 @@ for (const [handler, event] of bomEvents) {
 }
 
 // Every wired hook must be exec form — command "node", the handler path as the
-// sole ${CLAUDE_PROJECT_DIR}-anchored args entry. Exec form bypasses the shell,
-// so the 0.7.2 quoting class (bare $VAR reading as $null under PowerShell, an
-// unquoted path word-splitting under bash) cannot recur — and the path must be
-// UNQUOTED: with no shell to strip them, quotes would be literal argv bytes.
-// Hooks still spawn with the *session* cwd, not the project root, hence the
-// anchor; the harness substitutes ${CLAUDE_PROJECT_DIR} into each args element
-// as a plain string.
-const wired = JSON.parse(readFileSync("hooks/hooks.json", "utf8")).hooks;
-for (const [event, entries] of Object.entries(wired)) {
-  for (const entry of entries) {
-    for (const hook of entry.hooks ?? []) {
-      const fields = [hook.command ?? "", ...(Array.isArray(hook.args) ? hook.args : [])];
-      const handler = fields.join(" ").match(/\.claude\/hooks\/[\w./-]+\.mjs/)?.[0];
-      if (!handler) continue;
-      const ok =
-        hook.command === "node" &&
-        Array.isArray(hook.args) &&
-        hook.args.length === 1 &&
-        hook.args[0] === `\${CLAUDE_PROJECT_DIR}/${handler}`;
-      if (!ok) {
-        failures++;
-        console.error(
-          `FAIL ${event} → ${JSON.stringify({ command: hook.command, args: hook.args })}\n` +
-            '     must be exec form: command "node", args exactly ' +
-            `["\${CLAUDE_PROJECT_DIR}/${handler}"] (braced, unquoted)`,
+// sole anchored args entry. Exec form bypasses the shell, so the 0.7.2 quoting
+// class (bare $VAR reading as $null under PowerShell, an unquoted path
+// word-splitting under bash) cannot recur — and the path must be UNQUOTED:
+// with no shell to strip them, quotes would be literal argv bytes.
+// Two wiring files, two anchors: installer-hooks.json anchors
+// ${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/ (hooks spawn with the
+// *session* cwd, not the project root); hooks.json is the plugin-form twin
+// the plugin loader auto-discovers, anchoring ${CLAUDE_PLUGIN_ROOT}/hooks/.
+const WIRING = [
+  ["hooks/installer-hooks.json", "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/"],
+  ["hooks/hooks.json", "${CLAUDE_PLUGIN_ROOT}/hooks/"],
+];
+const shapes = new Map();
+for (const [file, anchor] of WIRING) {
+  const wired = JSON.parse(readFileSync(file, "utf8")).hooks;
+  const shape = [];
+  for (const [event, entries] of Object.entries(wired)) {
+    for (const entry of entries) {
+      for (const hook of entry.hooks ?? []) {
+        const arg = Array.isArray(hook.args) ? (hook.args[0] ?? "") : "";
+        const base = arg.match(/([\w-]+\.mjs)$/)?.[1];
+        const ok =
+          hook.command === "node" &&
+          Array.isArray(hook.args) &&
+          hook.args.length === 1 &&
+          base &&
+          arg === `${anchor}${base}`;
+        if (!ok) {
+          failures++;
+          console.error(
+            `FAIL ${file} ${event} → ${JSON.stringify({ command: hook.command, args: hook.args })}\n` +
+              `     must be exec form: command "node", args exactly ["${anchor}<handler>.mjs"]`,
+          );
+        } else {
+          console.log(`ok   ${file} ${event} → ${base} exec-form anchored`);
+        }
+        shape.push(
+          JSON.stringify([event, entry.matcher ?? "", base, hook.if ?? "", hook.timeout ?? null]),
         );
-      } else {
-        console.log(`ok   ${event} → ${handler} exec-form anchored`);
       }
     }
   }
+  shapes.set(file, shape.sort().join("\n"));
+}
+// Parity: the two wiring files must describe the same hooks — same events,
+// matchers, handlers, if-clauses, timeouts — differing only in the anchor.
+if (shapes.get(WIRING[0][0]) === shapes.get(WIRING[1][0])) {
+  console.log("ok   installer-hooks.json ≡ hooks.json (wiring parity, anchors aside)");
+} else {
+  failures++;
+  console.error("FAIL wiring parity: installer-hooks.json and hooks.json describe different hooks");
 }
 
 // Config-override case: hooks are spawned with the *session* cwd — any subdirectory —
