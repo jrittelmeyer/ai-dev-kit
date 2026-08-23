@@ -1,6 +1,6 @@
 ---
 name: dep-check
-description: Registry-verify a dependency before adding or upgrading it — check the real published version, tags, and release age; enforce a release-age window; exact-pin frequent publishers; sanity-check peers and maintenance. Use whenever adding a dependency, bumping a version, choosing a version to install, or triaging a Renovate/Dependabot PR. Never pick versions from blog posts, tutorials, or model memory.
+description: Registry-verify a dependency before adding or upgrading it — check the real published version, tags, and release age; enforce a release-age window; exact-pin frequent publishers; sanity-check peers and maintenance. Use when adding or bumping a dependency, picking a version, or triaging a Renovate/Dependabot PR. Never pick versions from blog posts or model memory.
 ---
 
 # dep-check

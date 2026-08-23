@@ -48,7 +48,8 @@ live loop → docs → commit → CI watch: typically a third to half of a *fres
   unhealthy regardless of remaining window — the window is now full of failure
   and poisons further attempts. Hand off with a diagnosis of the wrong
   assumption (the fix is to the spec or the context, not another retry); never
-  coach it out in-window.
+  coach it out in-window — and suggest a `retro` pass so the obstacle becomes
+  a codified lesson, not a rerun.
 
 State the verdict and the rough numbers behind it — don't decide silently.
 

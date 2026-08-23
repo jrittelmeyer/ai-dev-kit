@@ -1,5 +1,66 @@
 # ai-dev-kit changelog
 
+## 0.16.0 — 2026-08-23
+
+harness-audit + the compounding loop — phase 3 of the modernization program
+(row B2-19). The kit gains the periodic skill that keeps it (and any
+consumer's agent setup) current with the ecosystem, and the retro loop that
+turns session lessons into codified surfaces.
+
+- **New skill `harness-audit`** (0.1.0) — the audit-family sibling for the
+  agentic layer: inventory the local surface with an always-loaded vs
+  on-demand cost split → re-fetch every row of the pinned authority list
+  (`references/sources.md` — each row: governs · URL · verified-how · date;
+  dead sources repaired during the run; no network ⇒ PARTIAL report, never
+  fabricated findings) → current-dated category sweeps (never remembered
+  product names) maintaining `references/stack.md` (dated recommended stack:
+  baseline + per-domain tool servers incl. game engines, adjacent tooling
+  verdicts, lean doctrine) → judgment rubric over descriptions, disclosure,
+  evals, hook-event coverage, tool-server leanness, permissions, packaging →
+  dated scored report in `docs.archiveDir` with explicit no-change-needed
+  verdicts → proposed forward-only rows, then the sign-off gate.
+  Anti-rot: no tool names in the body; a self-staleness check makes an aging
+  source list the run's first finding. Ships project-scoped (not dual-home).
+- **New skill `retro`** (0.1.0) — the compounding harvest: corrections /
+  surprises / re-derivations / repetitions routed to the cheapest durable
+  home (memory · instruction line · adapter field · skill edit · hook
+  candidate · test · explicit drop), propose-don't-apply, rejections
+  recorded. PLAYBOOK gains **technique 13 — compounding retros**; checkpoint
+  suggests a retro on a three-strikes handoff (patch).
+- **New hook `compact-reorient.mjs`** — SessionStart, matcher `compact`:
+  a session resuming from context compaction gets a one-shot "re-open the
+  status doc + current backlog row; re-verify assumed findings" nudge.
+  Build-time contract check changed the design: **PreCompact rejected** (the
+  event cannot inject additionalContext per the current hooks reference) and
+  **SessionStart(startup|resume|clear) rejected** (per-session latency/noise)
+  — both recorded in manifest.json's new hook-decision log; only the
+  compaction re-entry is wired. Smoke-hooks 36 → 42 (fire, wrong-event
+  silent, garbage sweep, BOM case, exec-form net picks up the new event).
+- **`docs/PERMISSIONS.md`** — least-privilege doctrine + copy-paste starter
+  allowlist + what-not-to-allowlist; README links it; the installer
+  deliberately never writes permissions (recorded).
+- **skill-lint**: `lint-ok: dated-file` whole-file suppression for
+  maintained-metadata files (sources/stack rows are dates by design); the
+  always-loaded budget check fired at 953 tokens during this build and
+  forced description trims to **897** (10 skills — two more skills than the
+  program started with, net −45 tokens vs the 0.13.0 baseline).
+- Backlog: rows 18–19 leave the table (shipped as 0.15.0/0.16.0); rows
+  21–22 enter from the harness-audit report (per-skill evals · inventory
+  script).
+
+Skills: harness-audit 0.1.0 (new) · retro 0.1.0 (new) · checkpoint 0.4.1 ·
+dep-check 0.2.1 (description trims). Deck: ten skills / five hooks /
+thirteen techniques.
+
+Verification: **first live harness-audit run** —
+`docs/archive/HARNESS_AUDIT_2026-08-23.md`, baseline **92.4/100** across 8
+areas, sources all re-verified same-day, deductions mapped to rows 20–22 —
+is this release's live loop. smoke-hooks 42 green (new handler: fire /
+wrong-event-silent / garbage / BOM cases); smoke-installer 53; skill-lint 10
+skills, 0 errors / 0 warnings after the budget check forced trims;
+check-version 0.16.0 × 5; self-install re-run refreshed the tracked dogfood
+copies (new skills + handler install and drift-check); root `--check` green.
+
 ## 0.15.0 — 2026-08-23
 
 Any-project portability — phase 2 of the modernization program (row B1-18).

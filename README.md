@@ -29,6 +29,8 @@ fresh clone to stay current.
 | `live-verify` | Fresh production-shaped run (served build / game export / CLI binary / packed library) + drive the real flow — behavioral proof before commit | before committing product changes |
 | `project-init` | Inception: plan docs / raw idea → discovery + competitive scan → product brief → status/backlog regenerated to a 100 bar | once, on a fresh scaffold |
 | `project-adopt` | Brownfield inception: existing codebase → parity contract + theirs-vs-foundation disposition map → product brief + migration map → port backlog | once, on an existing app |
+| `harness-audit` | Audit the agent harness itself (skills, hooks, context files, tool servers, permissions, packaging) against re-fetched current ecosystem standards; dated scored report + proposed rows | quarterly / after major harness releases |
+| `retro` | Harvest a milestone or painful session into durable improvements — lessons routed to memory, instruction lines, adapter fields, skills, hooks, or tests | post-milestone / "make sure this doesn't happen again" |
 
 The intended lifecycle (machine-readable in `manifest.json` → `pipeline`):
 
@@ -73,7 +75,9 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
   whose command or args carry the `.claude/hooks/ai-dev-kit/` marker are ever
   replaced; every other setting is preserved. Omit it to wire hooks manually.
   The trust contract for what those hooks may do in a session is pinned in
-  [SECURITY.md](SECURITY.md).
+  [SECURITY.md](SECURITY.md). The kit never writes `permissions` — a
+  least-privilege starter allowlist lives in
+  [docs/PERMISSIONS.md](docs/PERMISSIONS.md).
 - `--dest <path>` targets a different project root (default: cwd).
 - `--help` prints usage. Unknown or misspelled flags fail loudly before anything
   is read or written (a typo'd `--dest` can no longer install into cwd silently).
@@ -110,7 +114,7 @@ freely — `--check` never fails on it (schema issues print an advisory only).
 
 ## Automation (hooks)
 
-Four Claude Code hooks make the lifecycle self-reinforcing. **All of them advise,
+Five Claude Code hooks make the lifecycle self-reinforcing. **All of them advise,
 never block** — they inject a reminder into the agent's context; the agent decides.
 
 | Handler | Event · matcher | Fires on |
@@ -119,6 +123,7 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
+| `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear) |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe;
 a malformed event exits 0 silently), installed to `.claude/hooks/ai-dev-kit/` and
@@ -181,3 +186,6 @@ The canonical consumer block is four lines:
   deductions; hooks reach 100) — remaining rows in
   [docs/BACKLOG.md](docs/BACKLOG.md), latest report
   [docs/archive/PROJECT_AUDIT_2026-08-19.md](docs/archive/PROJECT_AUDIT_2026-08-19.md).
+  Harness-currency baseline **92.4/100**
+  ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
+  first `harness-audit` run — deductions map to rows 20–22).

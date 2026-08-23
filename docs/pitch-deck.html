@@ -208,7 +208,7 @@
 <body>
 
 <section class="slide">
-  <p class="eyebrow">ai-dev-kit · v0.15.0</p>
+  <p class="eyebrow">ai-dev-kit · v0.16.0</p>
   <h1>A portable operating method for agentic development.</h1>
   <p class="lede">Eight skills, four hooks, and twelve techniques that turn AI-assisted
   building into a repeatable pipeline — token-lean, verification-first, and installable
@@ -241,7 +241,7 @@
 
 <section class="slide">
   <p class="eyebrow">02 · The skills</p>
-  <h2>Eight skills carry the mechanics.</h2>
+  <h2>Ten skills carry the mechanics.</h2>
   <div class="grid">
     <div class="card">
       <div class="card-head"><h3>project-init</h3><span class="chip">once, at inception</span></div>
@@ -299,6 +299,20 @@
       judgment-required cleanups: orphaned dev processes, stale test data, dangling images.</p>
       <p class="meta">invoked from → <b>checkpoint</b> (deeper pass) · pre-push backstop</p>
     </div>
+    <div class="card">
+      <div class="card-head"><h3>harness-audit</h3><span class="chip">quarterly</span></div>
+      <p>Audit the agent harness itself against the live ecosystem: re-fetch the pinned
+      authoring standards, sweep with current-dated queries, diff the local surface,
+      emit a dated scored report + proposed rows. Its source list repairs itself.</p>
+      <p class="meta">sibling of → <b>project-audit · doc-audit</b> · maintains its own stack file</p>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>retro</h3><span class="chip">post-milestone</span></div>
+      <p>The compounding loop: corrections, surprises, and re-derived knowledge routed
+      to the cheapest durable home — memory, an instruction line, an adapter field, a
+      skill, a hook, a test — so the next session starts smarter.</p>
+      <p class="meta">suggested by → <b>checkpoint</b> (three strikes) · playbook technique 13</p>
+    </div>
   </div>
 </section>
 
@@ -327,6 +341,11 @@
       <td>edits to AGENTS.md / CLAUDE.md / context docs / agent memory</td>
       <td>"non-inferable only, within budget, stable top"</td>
     </tr>
+    <tr>
+      <td><code>compact-reorient</code></td>
+      <td>a session resuming from context compaction (only that)</td>
+      <td>"re-open status + current row; re-verify assumed findings"</td>
+    </tr>
   </table></div>
   <div class="callout">
     <p class="eyebrow">Policy</p>
@@ -341,7 +360,7 @@
 
 <section class="slide">
   <p class="eyebrow">04 · The playbook</p>
-  <h2>Twelve techniques that don't fit in a skill.</h2>
+  <h2>Thirteen techniques that don't fit in a skill.</h2>
   <div class="techniques">
     <div><h3>The lifecycle pipeline</h3><p>One loop for every unit of work; skip a stage only out loud.</p></div>
     <div><h3>Plan → sign-off → build</h3><p>Wrong direction is the most expensive failure; a plan costs a paragraph.</p></div>
@@ -355,6 +374,7 @@
     <div><h3>Inception discipline</h3><p>One structured pass — from an idea or an existing codebase — to a signed-off brief and a backlog whose completion is 100.</p></div>
     <div><h3>Standing-instruction economy</h3><p>Only what the agent can't infer; thin pointers, leaf files, a stable cache prefix.</p></div>
     <div><h3>Session economics</h3><p>Three strikes on a doom loop; point don't paste; route models; bound output.</p></div>
+    <div><h3>Compounding retros</h3><p>Lessons routed to the cheapest durable home — codified once, re-paid never.</p></div>
   </div>
   <p style="margin-top:18px"><a href="PLAYBOOK.md">Read the full playbook →</a></p>
 </section>
@@ -399,7 +419,7 @@
 </section>
 
 <footer>
-  current as of 2026-08-23 · ai-dev-kit 0.15.0 ·
+  current as of 2026-08-23 · ai-dev-kit 0.16.0 ·
   <a href="https://github.com/jrittelmeyer/ai-dev-kit">jrittelmeyer/ai-dev-kit</a> ·
   <a href="../README.md">README</a> · <a href="../manifest.json">manifest</a> ·
   <a href="PLAYBOOK.md">playbook</a>

@@ -314,6 +314,34 @@ fresh session starts from the fix, not the failure. For exploration, fan out
 **Composes with.** resume prompts (#8 — the remedy's mechanics),
 cheapest-sufficient-probe (#5), fan-out research (#6).
 
+## 13. Compounding retros
+
+**What.** After a milestone or a painful session, a deliberate harvest pass:
+corrections, surprises, re-derived knowledge, and repeated manual steps get
+routed to the cheapest durable home — project memory, an instruction-file
+line, an adapter field, a skill edit, a hook candidate, or a test — so the
+next session starts where this one finished learning.
+
+**Why.** The compounding loop is what separates a harness that improves from
+one that merely executes: a lesson left in the transcript is re-paid by every
+future session, while a lesson codified once is paid never again. Rejections
+compound too — a recorded "considered, no" prevents the same idea from being
+re-litigated forever (#9).
+
+**Practice.** Harvest after the work, not during (mid-task retros trade
+momentum for tidiness). One lesson, one home, the lightest that reaches the
+session that needs it. Route skill-body lessons upstream to the kit rather
+than patching installed copies. Cap the pass — three routed lessons beat ten
+unrouted observations.
+
+**Automation.** The retro skill mechanizes the pass; checkpoint suggests it
+when a session tripped the three-strikes rule. No hook — a retro nag after
+every session would be noise (#9).
+
+**Composes with.** automation review discipline (#9 — rejected candidates go
+to the same decision log), persistent-memory discipline (#4 — the usual
+destination), the harness-audit pass (which checks the loop is being run).
+
 ---
 
 *Part of [ai-dev-kit](../README.md) · techniques distilled from the

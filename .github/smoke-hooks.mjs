@@ -29,6 +29,8 @@ const cases = [
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "C:\\Users\\x\\.claude\\projects\\P--slug\\memory\\MEMORY.md" } }, true],
   ["hooks/context-guard.mjs", { tool_name: "Write", tool_input: { file_path: "/home/u/.claude/projects/p-slug/memory/project-state.md" } }, true],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "/home/u/.claude/projects/p-slug/notes.md" } }, false],
+  ["hooks/compact-reorient.mjs", { hook_event_name: "SessionStart", session_id: "s1" }, true],
+  ["hooks/compact-reorient.mjs", { hook_event_name: "PostToolUse", tool_name: "Edit" }, false],
 ];
 
 let failures = 0;
@@ -53,6 +55,7 @@ for (const [handler, event, shouldFire] of cases) {
 // exit 0, never a SyntaxError/TypeError death (only stderr noise, but a broken
 // contract: handlers advise, they never fail).
 const handlers = [
+  "hooks/compact-reorient.mjs",
   "hooks/context-guard.mjs",
   "hooks/dep-check-nudge.mjs",
   "hooks/live-verify-reminder.mjs",
@@ -84,6 +87,7 @@ const bomEvents = [
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git commit -m x" } }],
   ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/tidy/SKILL.md" } }],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "CLAUDE.md" } }],
+  ["hooks/compact-reorient.mjs", { hook_event_name: "SessionStart", session_id: "s1" }],
 ];
 for (const [handler, event] of bomEvents) {
   const res = spawnSync(process.execPath, [handler], {

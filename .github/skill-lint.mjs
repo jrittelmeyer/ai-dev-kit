@@ -78,6 +78,10 @@ function fileChecks(path) {
   const p = posix(path);
   if (text.charCodeAt(0) === 0xfeff) err(`${p}: UTF-8 BOM`);
   if (text.includes("\r\n")) warn(`${p}: CRLF line endings (repo normalizes to LF)`);
+  // Whole-file opt-out for files whose dates are maintained metadata (e.g.
+  // harness-audit's sources/stack rows, refreshed every run) rather than
+  // prose that rots unnoticed.
+  const datedFileOk = /lint-ok:\s*dated-file/i.test(text);
   const lines = text.split(/\r?\n/);
   const suppressed = new Set();
   lines.forEach((l, i) => {
@@ -96,7 +100,7 @@ function fileChecks(path) {
     if (/(^|[\s`("'])[A-Za-z]:[\\/]/.test(line)) {
       err(`${at}: absolute drive path — skills must stay machine-portable`);
     }
-    if (/\b20\d{2}\b/.test(line) && !suppressed.has(i)) {
+    if (/\b20\d{2}\b/.test(line) && !suppressed.has(i) && !datedFileOk) {
       warn(`${at}: bare year/date rots — rephrase, or suppress: lint-ok: dated — <reason>`);
     }
   });
