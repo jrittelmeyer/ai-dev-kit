@@ -12,15 +12,14 @@ Source: [PROJECT_AUDIT_2026-08-19](archive/PROJECT_AUDIT_2026-08-19.md)
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9). The 2026-08-23
 modernization program (user-approved plan) shipped as 0.14.0–0.17.0; the
 CHANGELOG owns that record. Rows 21–22 entered from the first
-[harness-audit](archive/HARNESS_AUDIT_2026-08-23.md). B4-16 (npm/`npx`
-packaging) closed 0.17.0 — superseded by the plugin marketplace, which
-serves git/npm-source installs without a registry account; reopen only on
-explicit `npx`-install demand.
+[harness-audit](archive/HARNESS_AUDIT_2026-08-23.md); row 21 (per-skill eval
+scenarios) closed 0.18.0. B4-16 (npm/`npx` packaging) closed 0.17.0 —
+superseded by the plugin marketplace, which serves git/npm-source installs
+without a registry account; reopen only on explicit `npx`-install demand.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B2 | 21 | testing | Per-skill eval scenarios (`.github/skill-evals/`, ~3 input→expected-behavior fixtures per skill) — the authoring rubric's evaluation-driven step; source: [HARNESS_AUDIT_2026-08-23](archive/HARNESS_AUDIT_2026-08-23.md) | Harness: evals +15–20 | M |
-| B3 | 22 | skills | harness-audit inventory script (zero-dep surface-table emitter for §1) — runs start from measured data; source: same report | Harness: disclosure +4 | S |
+| B3 | 22 | skills | harness-audit inventory script (zero-dep surface-table emitter for §1) — runs start from measured data; source: [HARNESS_AUDIT_2026-08-23](archive/HARNESS_AUDIT_2026-08-23.md) | Harness: disclosure +4 | S |
 
 Watch (externally gated, re-check each audit):
 

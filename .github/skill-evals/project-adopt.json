@@ -1,0 +1,79 @@
+{
+  "skill": "project-adopt",
+  "scenarios": [
+    {
+      "id": "port-onto-foundation",
+      "prompt": "port my app onto the template",
+      "decoys": ["project-init", "project-audit"],
+      "expect": [
+        {
+          "behavior": "treats the incoming source as a read-only reference, never committed and never edited",
+          "anchor": "read-only reference"
+        },
+        {
+          "behavior": "produces an inventory that doubles as the parity contract the port must preserve",
+          "anchor": "parity contract"
+        },
+        {
+          "behavior": "buckets every subsystem with a recorded why rather than an unexplained verdict",
+          "anchor": "every row carries a *why*"
+        },
+        {
+          "behavior": "extracts the real design tokens rather than impressions of the design",
+          "anchor": "parity lives or dies on these"
+        }
+      ],
+      "reject": [
+        "edits or commits the original source into the new repo's history",
+        "buckets subsystems from a skim with no recorded comparison",
+        "writes product code during inception"
+      ]
+    },
+    {
+      "id": "source-wont-boot",
+      "prompt": "here's my existing site's source — it won't build locally",
+      "decoys": ["project-init", "live-verify"],
+      "expect": [
+        {
+          "behavior": "records the reference grade honestly and lets it set the parity evidence per row",
+          "anchor": "reference grade"
+        },
+        {
+          "behavior": "proceeds on inspection alone rather than blocking on a codebase that won't boot",
+          "anchor": "static-only is a grade, not a failure"
+        },
+        {
+          "behavior": "carries the original's green tests as portable characterization suites, not just signals",
+          "anchor": "green tests are carried assets"
+        }
+      ],
+      "reject": [
+        "blocks the adoption until the original runs locally",
+        "claims side-by-side parity evidence it cannot actually produce"
+      ]
+    },
+    {
+      "id": "merge-boilerplate-agentic-layer",
+      "prompt": "merge the boilerplate into my app",
+      "decoys": ["project-init", "harness-audit"],
+      "expect": [
+        {
+          "behavior": "says at intake that the mechanism is scaffold-plus-port, not an in-place merge",
+          "anchor": "scaffold-plus-port"
+        },
+        {
+          "behavior": "enumerates the incoming agent setup as an investment to disposition, not clutter",
+          "anchor": "Agentic layer"
+        },
+        {
+          "behavior": "ships the union of both agentic layers, resolving collisions by the same bar",
+          "anchor": "ships the **union**"
+        }
+      ],
+      "reject": [
+        "silently drops the incoming skills, hooks, and instruction files",
+        "presents the disposition map without saying in plain language what stays theirs"
+      ]
+    }
+  ]
+}

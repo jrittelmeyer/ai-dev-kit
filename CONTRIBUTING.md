@@ -29,6 +29,7 @@ node install.mjs --adapter adapters/next-web-boilerplate.json --dest /tmp/kit-sc
 node install.mjs --adapter adapters/next-web-boilerplate.json --dest /tmp/kit-scratch --hooks   # must print "0 file(s) written"
 node install.mjs --check --dest /tmp/kit-scratch
 node .github/skill-lint.mjs
+node .github/skill-evals.mjs
 node .github/smoke-hooks.mjs
 node .github/smoke-installer.mjs
 node .github/check-version.mjs

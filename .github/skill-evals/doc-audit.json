@@ -1,0 +1,75 @@
+{
+  "skill": "doc-audit",
+  "scenarios": [
+    {
+      "id": "periodic-pass",
+      "prompt": "clean up the docs",
+      "decoys": ["project-audit", "harness-audit"],
+      "expect": [
+        {
+          "behavior": "triages every file by how often the agent loads it and slims the hot path first",
+          "anchor": "load frequency"
+        },
+        {
+          "behavior": "runs the seven hunts as analysis before changing anything",
+          "anchor": "seven hunts"
+        },
+        {
+          "behavior": "quantifies the savings so the win is concrete",
+          "anchor": "tokens ≈ chars/4"
+        }
+      ],
+      "reject": [
+        "starts editing before presenting findings and taking sign-off",
+        "slims an on-demand reference while leaving the always-loaded files fat"
+      ]
+    },
+    {
+      "id": "archive-not-delete",
+      "prompt": "the status doc has regrown a huge per-step changelog — trim it",
+      "decoys": ["checkpoint", "project-audit"],
+      "expect": [
+        {
+          "behavior": "moves the verbose detail verbatim to an archive instead of destroying it",
+          "anchor": "Preserve, don't destroy"
+        },
+        {
+          "behavior": "leaves a compact one-line-per-item record on the hot-path file",
+          "anchor": "one-line-per-item record"
+        },
+        {
+          "behavior": "makes the hot-path file defer to the authoritative file rather than restating it",
+          "anchor": "One source of truth"
+        }
+      ],
+      "reject": [
+        "deletes the changelog outright with no archive record",
+        "leaves the same fact duplicated across two files"
+      ]
+    },
+    {
+      "id": "memory-and-local-docs",
+      "prompt": "audit our agent context files and persistent memory",
+      "decoys": ["harness-audit", "retro"],
+      "expect": [
+        {
+          "behavior": "hunts the ignore files for doc-shaped exclusions that never show in git status",
+          "anchor": ".git/info/exclude"
+        },
+        {
+          "behavior": "edits agent memory directly because it lives outside the repo",
+          "anchor": "not in git — edit it directly"
+        },
+        {
+          "behavior": "never names a project's local-only docs inside a committed file",
+          "anchor": "Never name a project's local-only docs inside committed files"
+        }
+      ],
+      "reject": [
+        "commits the local-only showcase docs",
+        "writes the names of local-only docs into the in-repo skill copy",
+        "edits the installed copy of this skill instead of the kit source"
+      ]
+    }
+  ]
+}

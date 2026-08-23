@@ -1,0 +1,77 @@
+{
+  "skill": "project-init",
+  "scenarios": [
+    {
+      "id": "raw-idea",
+      "prompt": "here's my idea for an app: a habit tracker for climbers",
+      "decoys": ["project-adopt", "project-audit"],
+      "expect": [
+        {
+          "behavior": "restates the problem and users before designing, because a wrong restatement is cheapest to catch early",
+          "anchor": "A wrong restatement is cheapest to catch here"
+        },
+        {
+          "behavior": "web-searches the competitive landscape as of today and date-stamps the claims",
+          "anchor": "Competitive landscape"
+        },
+        {
+          "behavior": "batches every open question into a single round instead of drip-feeding them",
+          "anchor": "One batched question round"
+        }
+      ],
+      "reject": [
+        "writes product code during inception",
+        "proceeds to the brief without a question round",
+        "presents competitor claims with no date or source"
+      ]
+    },
+    {
+      "id": "plan-documents",
+      "prompt": "turn these plan documents into a build plan",
+      "decoys": ["project-adopt", "doc-audit"],
+      "expect": [
+        {
+          "behavior": "reads every provided plan document in full rather than skimming",
+          "anchor": "Read every provided plan document fully"
+        },
+        {
+          "behavior": "names the decisions the input never made instead of silently inventing them",
+          "anchor": "Gap analysis"
+        },
+        {
+          "behavior": "opens B1 with the thinnest end-to-end slice of the core flow",
+          "anchor": "walking skeleton"
+        }
+      ],
+      "reject": [
+        "starts the backlog at a feature row rather than an end-to-end slice",
+        "fills the input's gaps with assumptions it never surfaces",
+        "pads the value-add list to look thorough"
+      ]
+    },
+    {
+      "id": "rerun-with-existing-brief",
+      "prompt": "init this project",
+      "decoys": ["project-adopt", "checkpoint"],
+      "expect": [
+        {
+          "behavior": "treats an existing product brief as a resume/revision and confirms scope instead of starting over",
+          "anchor": "Re-run safety"
+        },
+        {
+          "behavior": "routes foundation defects into an upstream-candidates section without blocking on them",
+          "anchor": "ready-to-file issue/PR against the foundation"
+        },
+        {
+          "behavior": "waits for explicit sign-off before committing the inception output",
+          "anchor": "wait for explicit sign-off"
+        }
+      ],
+      "reject": [
+        "overwrites the existing product brief",
+        "blocks the derived project on an upstream fix",
+        "commits the inception output before sign-off"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "skill": "checkpoint",
+  "scenarios": [
+    {
+      "id": "healthy-continue",
+      "prompt": "checkpoint and keep going",
+      "decoys": ["tidy", "live-verify"],
+      "expect": [
+        {
+          "behavior": "stages only the files belonging to the finished work rather than blind-adding a dirty tree",
+          "anchor": "git add -A"
+        },
+        {
+          "behavior": "continues only when the whole next step fits the remaining window with margin to spare",
+          "anchor": "2× margin"
+        },
+        {
+          "behavior": "runs the adapter's cache prune as post-push housekeeping",
+          "anchor": "cache.prune"
+        }
+      ],
+      "reject": [
+        "hands off with a resume prompt even though the window is healthy",
+        "does half of both — commits, then neither continues nor hands off cleanly",
+        "runs the deeper tidy pass unprompted"
+      ]
+    },
+    {
+      "id": "three-strikes-handoff",
+      "prompt": "we've hit this same build error three times now — should we keep pushing on it?",
+      "decoys": ["retro", "live-verify"],
+      "expect": [
+        {
+          "behavior": "declares the session unhealthy on a three-times-repeated obstacle regardless of remaining window",
+          "anchor": "Three strikes"
+        },
+        {
+          "behavior": "hands off with a diagnosis of the wrong assumption instead of coaching out another retry",
+          "anchor": "coach it out in-window"
+        },
+        {
+          "behavior": "suggests a retro pass so the obstacle becomes a codified lesson",
+          "anchor": "suggest a `retro` pass"
+        }
+      ],
+      "reject": [
+        "offers one more attempt at the same obstacle in this window",
+        "treats remaining context as sufficient grounds to continue"
+      ]
+    },
+    {
+      "id": "handoff-launch-line",
+      "prompt": "wrap this step up, context is getting tight",
+      "decoys": ["doc-audit", "project-audit"],
+      "expect": [
+        {
+          "behavior": "writes the resume prompt to disk rather than leaving it in scrollback",
+          "anchor": "resume prompt to disk"
+        },
+        {
+          "behavior": "marks every carried finding by where it was verified so the next session re-verifies the assumed ones",
+          "anchor": "verified-where"
+        },
+        {
+          "behavior": "ends the response with the model × effort launch recommendation as the literal last line",
+          "anchor": "Launch: <model> @ <effort>"
+        },
+        {
+          "behavior": "watches CI to green before ending the session, per the provider recipe",
+          "anchor": "references/ci-watch.md"
+        }
+      ],
+      "reject": [
+        "pastes the resume prompt only into the response with nothing on disk",
+        "omits the launch line, leaving the relaunch model unstated",
+        "treats a borderline window as healthy"
+      ]
+    }
+  ]
+}

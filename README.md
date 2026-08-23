@@ -179,6 +179,11 @@ The canonical consumer block is four lines:
   `--check` exists to catch exactly that.
 - **Keep skill bodies generic.** Project facts go in the adapter (mechanical params)
   or the project's agent memory (recipes/gotchas) — never hardcoded in a skill.
+- **Skill bodies are eval-gated.** Each skill carries three scenarios in
+  `.github/skill-evals/<skill>.json`; every expected behavior anchors to a literal
+  the body must still contain, so editing a rule away fails CI instead of passing
+  the shape-and-size gates. `node .github/skill-evals.mjs --report` prints the same
+  fixtures as a model-graded run sheet for a `harness-audit` pass.
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
   `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
   behavior change (CI gates the six sites). Every release commit gets an annotated tag
@@ -205,4 +210,5 @@ The canonical consumer block is four lines:
   [docs/archive/PROJECT_AUDIT_2026-08-19.md](docs/archive/PROJECT_AUDIT_2026-08-19.md).
   Harness-currency baseline **92.4/100**
   ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
-  first `harness-audit` run — deductions map to rows 20–22).
+  first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
+  0.17.0, row 21 in 0.18.0, row 22 open).

@@ -1,0 +1,75 @@
+{
+  "skill": "retro",
+  "scenarios": [
+    {
+      "id": "post-milestone-harvest",
+      "prompt": "retro on this milestone",
+      "decoys": ["doc-audit", "harness-audit"],
+      "expect": [
+        {
+          "behavior": "sweeps for knowledge rebuilt from scratch that an earlier session already learned",
+          "anchor": "Re-derivations"
+        },
+        {
+          "behavior": "routes each lesson to exactly one cheapest durable home",
+          "anchor": "One lesson, one home"
+        },
+        {
+          "behavior": "proposes the routed list rather than applying it",
+          "anchor": "Propose, don't apply"
+        }
+      ],
+      "reject": [
+        "applies the skill edits it proposes without sign-off",
+        "files the same lesson into several surfaces at once",
+        "harvests lessons during the work instead of after it"
+      ]
+    },
+    {
+      "id": "repeated-manual-step",
+      "prompt": "make sure this doesn't happen again",
+      "decoys": ["checkpoint", "live-verify"],
+      "expect": [
+        {
+          "behavior": "counts a manual step performed three or more times as an automation candidate",
+          "anchor": "3+ times"
+        },
+        {
+          "behavior": "routes a reminder that must fire at a moment to a hook candidate",
+          "anchor": "Hook candidate"
+        },
+        {
+          "behavior": "records rejected hook ideas as well as accepted ones",
+          "anchor": "record rejected hook ideas"
+        }
+      ],
+      "reject": [
+        "proposes a hook that blocks the tool call instead of advising",
+        "puts a one-off fact into the always-loaded instruction file"
+      ]
+    },
+    {
+      "id": "record-rejections",
+      "prompt": "what should we learn from this session?",
+      "decoys": ["doc-audit", "project-audit"],
+      "expect": [
+        {
+          "behavior": "records explicit rejections in the project's decision log so lessons are not re-harvested",
+          "anchor": "Record explicit rejections"
+        },
+        {
+          "behavior": "drops one-off noise explicitly rather than leaving it to be re-proposed",
+          "anchor": "one-off noise"
+        },
+        {
+          "behavior": "reserves the instruction file for rules every future session must hold",
+          "anchor": "only rules every future"
+        }
+      ],
+      "reject": [
+        "leaves rejected ideas unrecorded so the next retro re-proposes them",
+        "adds every lesson to the always-loaded instruction file regardless of budget"
+      ]
+    }
+  ]
+}

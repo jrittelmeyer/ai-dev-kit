@@ -1,0 +1,75 @@
+{
+  "skill": "live-verify",
+  "scenarios": [
+    {
+      "id": "pre-commit-verify",
+      "prompt": "does this checkout change actually work?",
+      "decoys": ["checkpoint", "project-audit"],
+      "expect": [
+        {
+          "behavior": "treats a green gate as the entry ticket, not as verification",
+          "anchor": "entry ticket"
+        },
+        {
+          "behavior": "builds and runs a fresh production-shaped artifact",
+          "anchor": "production-shaped artifact"
+        },
+        {
+          "behavior": "observes the actual output, since reaching the code path only proves routing",
+          "anchor": "proves routing, not behavior"
+        }
+      ],
+      "reject": [
+        "declares the change verified off a green lint/type/build gate",
+        "confirms only that the new code path was reached"
+      ]
+    },
+    {
+      "id": "standing-dev-server",
+      "prompt": "the dev server is already running — just check it there",
+      "decoys": ["tidy", "checkpoint"],
+      "expect": [
+        {
+          "behavior": "refuses to verify against dev mode because it masks production-only failures",
+          "anchor": "dev modes mask production-only failures"
+        },
+        {
+          "behavior": "reads exactly one domain reference, keyed on the project type",
+          "anchor": "read exactly one"
+        },
+        {
+          "behavior": "confirms readiness by the adapter's declared readiness kind",
+          "anchor": "verify.ready.kind"
+        }
+      ],
+      "reject": [
+        "verifies against the running dev process",
+        "repurposes or disturbs the standing dev server",
+        "reads every domain reference instead of the one that applies"
+      ]
+    },
+    {
+      "id": "undrivable-flow",
+      "prompt": "verify the email integration works — we have no API key locally",
+      "decoys": ["dep-check", "doc-audit"],
+      "expect": [
+        {
+          "behavior": "checks project memory for recipes like ports, seeds, and live-mode toggles before re-deriving them",
+          "anchor": "per-project recipes"
+        },
+        {
+          "behavior": "reports what was driven with verbatim evidence rather than a summary",
+          "anchor": "verbatim evidence"
+        },
+        {
+          "behavior": "states explicitly what could not be driven and remains unverified",
+          "anchor": "list what remains unverified"
+        }
+      ],
+      "reject": [
+        "reports \"should work\" for the flow it could not drive",
+        "lets an undriven flow pass silently into the verified column"
+      ]
+    }
+  ]
+}

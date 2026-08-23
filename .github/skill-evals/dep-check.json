@@ -1,0 +1,80 @@
+{
+  "skill": "dep-check",
+  "scenarios": [
+    {
+      "id": "add-new-package",
+      "prompt": "add date-fns to the project",
+      "decoys": ["live-verify", "project-audit"],
+      "expect": [
+        {
+          "behavior": "resolves the version from the registry instead of searching the web or recalling it",
+          "anchor": "One registry query beats any number of web searches"
+        },
+        {
+          "behavior": "prefers the newest release older than the release-age window",
+          "anchor": "release-age window"
+        },
+        {
+          "behavior": "exact-pins packages that publish frequently",
+          "anchor": "Exact-pin"
+        }
+      ],
+      "reject": [
+        "names a version from model memory or a blog post",
+        "installs the newest release the same day it was published",
+        "applies a loose range to a fast-publishing package"
+      ]
+    },
+    {
+      "id": "renovate-major-triage",
+      "prompt": "should I merge this Dependabot major version bump?",
+      "decoys": ["checkpoint", "project-audit"],
+      "expect": [
+        {
+          "behavior": "re-checks release age at merge time rather than trusting the PR-open date",
+          "anchor": "at merge time"
+        },
+        {
+          "behavior": "reads the release notes for breaking changes before accepting a major",
+          "anchor": "breaking changes"
+        },
+        {
+          "behavior": "checks the project's memory and docs for standing holds gated on an upstream event",
+          "anchor": "standing holds"
+        }
+      ],
+      "reject": [
+        "merges on a green CI check alone",
+        "re-breaks a settled decision by merging a deliberately held major"
+      ]
+    },
+    {
+      "id": "env-gated-integration",
+      "prompt": "which version of the payments SDK should we pull in?",
+      "decoys": ["live-verify", "project-init"],
+      "expect": [
+        {
+          "behavior": "collects the publish date alongside the version and tag landscape",
+          "anchor": "publish date"
+        },
+        {
+          "behavior": "treats last-publish date and repo activity as an abandonment signal",
+          "anchor": "abandonment proxy"
+        },
+        {
+          "behavior": "verifies the project still builds and runs with the integration's env unset",
+          "anchor": "Graceful degradation"
+        },
+        {
+          "behavior": "records the chosen version, pin style, release date, and why in the commit or PR body",
+          "anchor": "Record the decision"
+        }
+      ],
+      "reject": [
+        "installs a next/beta/canary tag by accident",
+        "recommends a package the registry flags as deprecated",
+        "leaves the pin rationale out of the commit body"
+      ]
+    }
+  ]
+}

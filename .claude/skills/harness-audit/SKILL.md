@@ -52,15 +52,17 @@ reports, never in this body.
 
 ## 4. Rubric diff
 
-Run the project's mechanical skill linter first if one exists and don't
-re-litigate what it enforces. Then score the judgment layer against the
-refreshed authorities:
+Run the project's mechanical skill linter and eval runner first where they
+exist, and don't re-litigate what they enforce. Then score the judgment layer
+against the refreshed authorities:
 
 - Description quality (what + when, third person, trigger phrases) and the
   always-loaded token budget.
 - Disclosure structure: body size vs references/ split; scripts where
   determinism beats prose ("solve, don't defer").
-- Eval presence: do nontrivial skills have testable scenarios anywhere?
+- Eval presence: do nontrivial skills have testable scenarios anywhere? Where
+  an eval harness exists, run its graded pass and score the behaviors it
+  surfaces, not merely the fixtures' existence.
 - Hook coverage: events used vs events the harness currently offers, each
   unused event a recorded accept/reject, guardrail vs noise balance.
 - Tool-server leanness: each connected server's context cost vs observed use.

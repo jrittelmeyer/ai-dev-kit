@@ -1,5 +1,53 @@
 # ai-dev-kit changelog
 
+## 0.18.0 — 2026-08-23
+
+Per-skill eval scenarios (row B2-21) — the largest deduction on the
+harness-currency baseline (Eval presence 78/100, −22) and the one genuinely
+missing practice the first `harness-audit` found. Every other gate checked the
+skill *surface*: `skill-lint` covers frontmatter shape, budgets, and reference
+resolution; the smoke suites cover handler contracts and install behavior.
+Nothing checked whether a skill *body* still says what it is supposed to say,
+so a refactor could delete checkpoint's three-strikes rule or dep-check's
+release-age window and leave CI green.
+
+- **`.github/skill-evals/<skill>.json`** — 3 scenarios per skill, 30 total, 94
+  anchored behaviors. Each scenario is one fixture serving two tiers: a
+  `prompt`, the `expect[]` behaviors (each carrying a literal `anchor` into the
+  skill body, or into a bundled file via `in`), `reject[]` rubric lines, and
+  `decoys[]` — sibling skills the prompt must not route to.
+- **`.github/skill-evals.mjs`** — zero-dep runner, `skill-lint`'s ERR/warn
+  split. **ERR ⇒ exit 1:** unresolved anchors (the regression guard), coverage
+  (every skill, ≥3 scenarios), fixture schema, anchors under 8 chars, decoys
+  that aren't skills. **warn only:** the routing check — prompt-vs-description
+  term overlap against each declared decoy, warning when a decoy *strictly*
+  outranks the intended skill. A crude proxy by construction, so it never
+  knife-edges the build; its value is collision detection across ten
+  descriptions sharing one always-loaded budget.
+- **`--report`** emits the model-graded tier as a run sheet (prompt + expected
+  behaviors + rejects, grouped by skill) for a manual or agent-driven pass.
+  Deliberately not in CI: model grading there would mean an API key secret,
+  per-run cost across four matrix legs, and nondeterministic reds.
+- **`harness-audit` 0.1.1** — step 4 runs the eval runner alongside the linter,
+  and scores Eval presence from the graded pass rather than from whether
+  fixtures exist.
+Verification: skill-evals **10 skills · 30 scenarios · 94 anchors**, 0/0 —
+shown failing first, renaming checkpoint's `**Three strikes:**` heading reds
+the run and names the behavior the anchor stood for; restored green. The gate
+caught two of its own authoring defects: line-wrapped anchors in
+`project-adopt` and `project-init` that matched no contiguous body text,
+rewritten to single-line phrases. `--report` renders 436 lines over all 30
+scenarios. Sampled graded pass across checkpoint · dep-check · project-adopt
+(9 scenarios): every `expect` traces to a distinct body rule and every
+`reject` is one the body actively forbids — though several expects restate
+their rule closely enough that the model tier confirms the skill loaded more
+than it probes judgment; sharpening that is fixture wording, not a gate
+change. Full suite: skill-lint 10 skills 0/0 (descriptions unmoved at 897
+tokens), smoke-hooks 42, smoke-installer 56, check-version **0.18.0 × 6
+sites**, scratch install 34 files + idempotent re-run 0 written + `--check`;
+self-install re-run wrote 3 (harness-audit body, adapter gate array, config
+copy) and root `--check` green.
+
 ## 0.17.0 — 2026-08-23
 
 Plugin-marketplace packaging — phase 4 closes the modernization program

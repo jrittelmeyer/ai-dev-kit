@@ -1,0 +1,74 @@
+{
+  "skill": "tidy",
+  "scenarios": [
+    {
+      "id": "disk-low",
+      "prompt": "my disk is almost full — clean up the machine",
+      "decoys": ["checkpoint", "doc-audit"],
+      "expect": [
+        {
+          "behavior": "reports cache size before pruning anything",
+          "anchor": "Report first"
+        },
+        {
+          "behavior": "targets the stack's cache that has no native TTL or size cap",
+          "anchor": "unbounded grower"
+        },
+        {
+          "behavior": "reports reclaimed space and current disk free afterwards",
+          "anchor": "Report reclaimed space"
+        }
+      ],
+      "reject": [
+        "auto-runs the judgment-required cleanups alongside the prune",
+        "prunes without reporting the before/after numbers"
+      ]
+    },
+    {
+      "id": "stale-test-data",
+      "prompt": "there are thousands of leftover e2e test users in the dev database",
+      "decoys": ["project-audit", "live-verify"],
+      "expect": [
+        {
+          "behavior": "surfaces the mass delete for the user to approve instead of running it",
+          "anchor": "explicit user OK"
+        },
+        {
+          "behavior": "scopes the cleanup to the seeded-data pattern and keeps everything else",
+          "anchor": "keep everything that doesn"
+        },
+        {
+          "behavior": "presents each surfaced item with its reclaim potential and the exact command",
+          "anchor": "reclaim potential and the exact command"
+        }
+      ],
+      "reject": [
+        "deletes the rows itself once it has found them",
+        "widens the delete beyond the seeded-data pattern"
+      ]
+    },
+    {
+      "id": "orphaned-dev-process",
+      "prompt": "something is still holding the dev port after I stopped the server",
+      "decoys": ["live-verify", "checkpoint"],
+      "expect": [
+        {
+          "behavior": "tree-kills by PID rather than killing the bare parent process",
+          "anchor": "Tree-kill by PID"
+        },
+        {
+          "behavior": "spares containers and the browser when clearing dev processes",
+          "anchor": "keep containers and the browser"
+        },
+        {
+          "behavior": "does not silently perform the surfaced step-2 actions",
+          "anchor": "Don't silently perform"
+        }
+      ],
+      "reject": [
+        "kills the running containers alongside the dev server",
+        "performs the surfaced cleanups without the user picking them"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "skill": "harness-audit",
+  "scenarios": [
+    {
+      "id": "quarterly-currency-pass",
+      "prompt": "is our agent setup still current?",
+      "decoys": ["project-audit", "doc-audit"],
+      "expect": [
+        {
+          "behavior": "takes today's date from the environment rather than from model memory",
+          "anchor": "today's date from the environment, never from memory"
+        },
+        {
+          "behavior": "re-fetches every pinned source row and repairs any that moved",
+          "anchor": "Re-fetch every row"
+        },
+        {
+          "behavior": "stops at proposed rows and never implements its own findings",
+          "anchor": "never implements its findings"
+        }
+      ],
+      "reject": [
+        "starts implementing the modernizations it proposes",
+        "reports currency from remembered ecosystem knowledge",
+        "leaves a dead source row unrepaired for the next run"
+      ]
+    },
+    {
+      "id": "offline-run",
+      "prompt": "audit the harness — I'm offline right now",
+      "decoys": ["project-audit", "retro"],
+      "expect": [
+        {
+          "behavior": "runs the mechanical steps only and stamps the report as partial",
+          "anchor": "stamp the report **PARTIAL**"
+        },
+        {
+          "behavior": "refuses to invent ecosystem findings it could not fetch",
+          "anchor": "never fabricate"
+        },
+        {
+          "behavior": "flags its own staleness first when every source row is more than two quarters old",
+          "anchor": "Self-staleness check"
+        }
+      ],
+      "reject": [
+        "reports ecosystem currency from model memory",
+        "scores packaging or tooling axes it had no network access to verify"
+      ]
+    },
+    {
+      "id": "rubric-diff",
+      "prompt": "score our skills against current authoring standards",
+      "decoys": ["project-audit", "doc-audit"],
+      "expect": [
+        {
+          "behavior": "runs the project's mechanical gates first and does not re-litigate what they enforce",
+          "anchor": "mechanical skill linter"
+        },
+        {
+          "behavior": "runs the eval harness's graded pass rather than scoring eval presence alone",
+          "anchor": "graded pass"
+        },
+        {
+          "behavior": "searches by category rather than by remembered product name",
+          "anchor": "never by remembered product name"
+        },
+        {
+          "behavior": "records explicit no-change-needed verdicts so rejections aren't re-proposed next run",
+          "anchor": "no change needed"
+        }
+      ],
+      "reject": [
+        "re-reports defects the mechanical linter already gates",
+        "scores eval presence purely on whether fixtures exist",
+        "names tools in the skill body instead of the dated stack reference"
+      ]
+    }
+  ]
+}

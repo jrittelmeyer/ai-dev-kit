@@ -26,6 +26,8 @@ jobs:
         run: node .github/check-version.mjs
       - name: Skill surface lints clean
         run: node .github/skill-lint.mjs
+      - name: Skill eval anchors resolve
+        run: node .github/skill-evals.mjs
       - name: Install into a scratch project
         run: node install.mjs --adapter adapters/next-web-boilerplate.json --dest scratch --hooks
       - name: Re-run is idempotent (0 files written)
