@@ -9,10 +9,49 @@
       "type": "string",
       "description": "Project name (informational)."
     },
+    "projectType": {
+      "type": "string",
+      "enum": [
+        "web-app",
+        "api-service",
+        "cli",
+        "library",
+        "game",
+        "data",
+        "mobile",
+        "desktop",
+        "other"
+      ],
+      "description": "Dispatches skills' per-domain reference procedures (e.g. live-verify reads references/<type>.md). Absent → skills infer the type from the repo (manifests, engine project files) and say so."
+    },
+    "ecosystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Language/registry facts dep-check and friends read. Supersedes packageManager for non-JS projects; both may coexist.",
+      "properties": {
+        "runtime": {
+          "type": "string",
+          "description": "Primary runtime/toolchain, free string: node · python · rust · go · dotnet · jvm · unity · unreal · godot · …"
+        },
+        "manifestFiles": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Dependency manifests to watch (package.json, pyproject.toml, Cargo.toml, go.mod, *.csproj, packages.config, …)."
+        },
+        "registryQuery": {
+          "type": "string",
+          "description": "Command template printing published versions/dates for {pkg} (e.g. `npm view {pkg} versions --json`, `pip index versions {pkg}`, `cargo search {pkg} --limit 1`)."
+        },
+        "addCommand": {
+          "type": "string",
+          "description": "Command template adding {pkg} at {version} per the project's package manager."
+        }
+      }
+    },
     "packageManager": {
       "type": "string",
       "enum": ["pnpm", "npm", "yarn", "bun"],
-      "description": "Shapes registry queries and script invocations."
+      "description": "v1 (JS-only) — prefer `ecosystem.*` for new adapters; still honored. Shapes registry queries and script invocations."
     },
     "gate": {
       "type": "array",
@@ -27,10 +66,49 @@
         "e2e": { "type": "string" }
       }
     },
+    "verify": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How live-verify runs the built artifact and observes it — any project shape (server, game, CLI, library, pipeline). Supersedes prodVerify (still honored; skills read verify first and fall back).",
+      "properties": {
+        "build": {
+          "type": "string",
+          "description": "Produces a fresh production-shaped build/artifact."
+        },
+        "run": {
+          "type": "string",
+          "description": "Runs the artifact: serve on the dedicated port, headless engine scene, CLI invocation, consumer-harness import, sample pipeline slice."
+        },
+        "ready": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "How the skill knows the run is up / done and healthy.",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["http", "tcp-port", "exit-code", "log-line", "file-exists", "manual"]
+            },
+            "port": { "type": "integer", "description": "For http/tcp-port: the dedicated verify port (never the dev port)." },
+            "url": { "type": "string", "description": "For http: the readiness URL." },
+            "pattern": { "type": "string", "description": "For log-line: the readiness/success pattern." },
+            "path": { "type": "string", "description": "For file-exists: the artifact/output path." }
+          }
+        },
+        "observe": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Commands or flow descriptions that exercise changed behavior and produce observable output (curl the endpoint, run the golden-output case, load the test scene)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Env/origin/seed facts an agent needs before driving flows."
+        }
+      }
+    },
     "prodVerify": {
       "type": "object",
       "additionalProperties": false,
-      "description": "How live-verify serves a production build without disturbing a standing dev server.",
+      "description": "v1 (server-shaped) — prefer `verify` for new adapters; still honored as the fallback. How live-verify serves a production build without disturbing a standing dev server.",
       "properties": {
         "build": {
           "type": "string",
@@ -127,7 +205,14 @@
       "properties": {
         "provider": {
           "type": "string",
-          "enum": ["github-actions", "gitlab-ci", "other"]
+          "enum": [
+            "github-actions",
+            "gitlab-ci",
+            "azure-devops",
+            "jenkins",
+            "circleci",
+            "other"
+          ]
         },
         "workflow": {
           "type": "string",

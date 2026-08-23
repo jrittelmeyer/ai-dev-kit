@@ -1,5 +1,19 @@
 {
   "project": "ai-dev-kit",
+  "projectType": "library",
+  "ecosystem": {
+    "runtime": "node"
+  },
+  "verify": {
+    "build": "node install.mjs --adapter adapters/ai-dev-kit.json --hooks",
+    "run": "node install.mjs --check",
+    "ready": { "kind": "exit-code" },
+    "observe": [
+      "node .github/smoke-hooks.mjs",
+      "node .github/smoke-installer.mjs"
+    ],
+    "notes": "The kit's live loop is its own install: self-install, drift-check, then the smoke suites drive every handler and installer path."
+  },
   "gate": [
     "node install.mjs --check",
     "node .github/skill-lint.mjs",

@@ -11,7 +11,15 @@
  *    list stay untouched.
  */
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
@@ -284,5 +292,53 @@ try {
   rmSync(scratch, { recursive: true, force: true });
 }
 
+// ---- adapter fixtures: every shipped adapter installs, re-installs to zero,
+// and --checks green. next-web-boilerplate.json is the frozen v1 regression
+// fixture; godot-game/rust-cli exercise the v2 fields (projectType ·
+// ecosystem · verify) and prove the schema growth stayed additive.
+const fixtures = readdirSync("adapters")
+  .filter((f) => f.endsWith(".json") && f !== "project.schema.json")
+  .sort();
+for (const fixture of fixtures) {
+  const fdest = mkdtempSync(join(tmpdir(), "adk-fixture-"));
+  const frun = (...extra) =>
+    spawnSync(process.execPath, [installer, "--dest", fdest, ...extra], { encoding: "utf8" });
+  try {
+    const first = frun("--adapter", join("adapters", fixture), "--hooks");
+    check(`fixture ${fixture}: installs clean`, first.status === 0, (first.stderr ?? "").trim());
+    const again = frun("--adapter", join("adapters", fixture), "--hooks");
+    check(
+      `fixture ${fixture}: idempotent re-run`,
+      again.status === 0 && (again.stdout ?? "").includes("0 file(s) written"),
+      (again.stdout ?? "").trim(),
+    );
+    const drift = frun("--check");
+    check(`fixture ${fixture}: --check green`, drift.status === 0, (drift.stderr ?? "").trim());
+  } finally {
+    rmSync(fdest, { recursive: true, force: true });
+  }
+}
+
+// A v2 enum violation must die loudly pre-write, like any schema violation.
+const badDir = mkdtempSync(join(tmpdir(), "adk-badadapter-"));
+try {
+  const badAdapter = join(badDir, "bad.json");
+  writeFileSync(badAdapter, `${JSON.stringify({ projectType: "spaceship" })}\n`);
+  const bad = spawnSync(
+    process.execPath,
+    [installer, "--dest", join(badDir, "dest"), "--adapter", badAdapter],
+    { encoding: "utf8" },
+  );
+  check("fixture: projectType enum violation exits 1", bad.status === 1, `exit ${bad.status}`);
+  check(
+    "fixture: violation names the enum",
+    (bad.stderr ?? "").includes("projectType"),
+    (bad.stderr ?? "").trim(),
+  );
+  check("fixture: violation writes nothing", !existsSync(join(badDir, "dest", ".claude")));
+} finally {
+  rmSync(badDir, { recursive: true, force: true });
+}
+
 if (failures > 0) process.exit(1);
-console.log("installer smoke: all merge + stale + advisory cases passed.");
+console.log("installer smoke: all merge + stale + advisory + fixture cases passed.");

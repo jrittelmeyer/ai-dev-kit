@@ -1,0 +1,40 @@
+{
+  "project": "rust-cli-example",
+  "projectType": "cli",
+  "ecosystem": {
+    "runtime": "rust",
+    "manifestFiles": ["Cargo.toml"],
+    "registryQuery": "cargo search {pkg} --limit 1",
+    "addCommand": "cargo add {pkg}@{version}"
+  },
+  "gate": [
+    "cargo fmt --check",
+    "cargo clippy --all-targets -- -D warnings",
+    "cargo build --release"
+  ],
+  "test": {
+    "unit": "cargo test"
+  },
+  "verify": {
+    "build": "cargo build --release",
+    "run": "target/release/mycli --version",
+    "ready": { "kind": "exit-code" },
+    "observe": [
+      "target/release/mycli process tests/fixtures/sample.txt --json — assert the emitted JSON shape",
+      "target/release/mycli render tests/fixtures/case1.md — compare against tests/golden/case1.out"
+    ],
+    "notes": "Exit codes are the contract: 0 success, 2 usage error. Drive both a TTY and a piped invocation — output formatting differs."
+  },
+  "depPolicy": {
+    "releaseAgeDays": 7
+  },
+  "docs": {
+    "dir": "docs",
+    "status": "README.md",
+    "backlog": "docs/BACKLOG.md"
+  },
+  "ci": {
+    "provider": "github-actions",
+    "workflow": "ci"
+  }
+}

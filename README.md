@@ -5,9 +5,12 @@
 A portable, versioned library of agentic-development skills — the working method
 distilled from building
 [next-web-boilerplate](https://github.com/jrittelmeyer/next-web-boilerplate),
-packaged so any project can adopt it. Skill bodies are **generic**; everything
-project-specific lives in one small adapter config. One command installs the kit
-into a project; re-run it from a fresh clone to stay current.
+packaged so **any project of any type** — web app, game, CLI, library, data
+pipeline — can adopt it. Skill bodies are **generic**: everything
+project-specific lives in one small adapter config, and per-domain mechanics
+(web · game · cli · library · data) load on demand from each skill's
+`references/`. One command installs the kit into a project; re-run it from a
+fresh clone to stay current.
 
 **Version:** see [VERSION](VERSION) · **History:** [CHANGELOG.md](CHANGELOG.md) ·
 **Machine-readable index:** [manifest.json](manifest.json) ·
@@ -23,9 +26,9 @@ into a project; re-run it from a fresh clone to stay current.
 | `project-audit` | Score the repo /100 per feature group; emit a prioritized backlog | "how good is this really?" |
 | `tidy` | Prune the unbounded build cache; surface judgment-required machine cleanups | checkpoint boundary / low disk |
 | `dep-check` | Registry-verify version, release age, and pin policy before any dependency change | adding/upgrading a dependency |
-| `live-verify` | Fresh prod build + drive the real flow — behavioral proof before commit | before committing product changes |
+| `live-verify` | Fresh production-shaped run (served build / game export / CLI binary / packed library) + drive the real flow — behavioral proof before commit | before committing product changes |
 | `project-init` | Inception: plan docs / raw idea → discovery + competitive scan → product brief → status/backlog regenerated to a 100 bar | once, on a fresh scaffold |
-| `project-adopt` | Brownfield inception: existing codebase → parity contract + theirs-vs-template disposition map → product brief + migration map → port backlog | once, on an existing app |
+| `project-adopt` | Brownfield inception: existing codebase → parity contract + theirs-vs-foundation disposition map → product brief + migration map → port backlog | once, on an existing app |
 
 The intended lifecycle (machine-readable in `manifest.json` → `pipeline`):
 
@@ -93,10 +96,13 @@ drift/stale-only.
 ## The adapter contract
 
 Skills read `.claude/ai-dev-kit.config.json` at run time for project parameters —
-package manager, gate commands, prod-verify port, cache commands, doc paths, commit
-style, hygiene targets, dependency policy. Schema:
-[adapters/project.schema.json](adapters/project.schema.json) · reference example:
-[adapters/next-web-boilerplate.json](adapters/next-web-boilerplate.json).
+project type, ecosystem/toolchain, gate commands, the verify recipe (build · run ·
+readiness · observations), cache commands, doc paths, commit style, hygiene
+targets, dependency policy. Schema:
+[adapters/project.schema.json](adapters/project.schema.json) · fixture examples:
+web [adapters/next-web-boilerplate.json](adapters/next-web-boilerplate.json) ·
+game [adapters/godot-game.json](adapters/godot-game.json) ·
+CLI [adapters/rust-cli.json](adapters/rust-cli.json).
 
 Every field is optional — a skill missing a field derives it from the repo (and says
 so) rather than failing. After install the config belongs to the project: edit it

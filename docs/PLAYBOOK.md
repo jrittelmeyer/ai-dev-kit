@@ -215,10 +215,10 @@ skills with active triggers).
 
 **What.** A project enters the pipeline through one structured inception pass, by
 one of two doors. **Greenfield** (`project-init`): idea (or plan docs) → discovery
-(gap analysis, value-add candidates, competitive landscape, template fit-map).
+(gap analysis, value-add candidates, competitive landscape, foundation fit-map).
 **Brownfield** (`project-adopt`): an existing codebase → a full product survey that
 doubles as the **parity contract** (every human-observable surface the port must
-preserve) → an honest theirs-vs-template **disposition map**. Both doors converge
+preserve) → an honest theirs-vs-foundation **disposition map**. Both doors converge
 the same way: one batched question round → a product brief that defines the
 feature groups and the quality bar → regenerated status + backlog whose completion
 *is* the 100 score → sign-off → row 1.
@@ -228,7 +228,7 @@ each unmade decision (tenancy, monetization, the MVP cut) costs a rebuild when i
 surfaces mid-program. And a backlog derived from a scored bar makes "done" a
 measurement, not a mood. For adoption, the disposition map guards against the two
 failure modes of every port: reverence (keeping inferior legacy plumbing) and
-arrogance (discarding load-bearing custom logic the template can't replace).
+arrogance (discarding load-bearing custom logic the foundation can't replace).
 
 **Practice.** Restate before analyzing — a wrong restatement is cheapest to catch
 first. Split value-adds honestly into *already-free* vs *new build*. Date-stamp
@@ -238,19 +238,19 @@ impressions; grade the reference honestly (live-local / live-remote / static-onl
 and let the grade set each row's parity evidence; every disposition row carries a
 *why*, and since 0.8.0 the why must clear a **two-tiered meaningful-improvement
 bar** — the product surface defaults to keep-theirs (a wash keeps theirs; churn
-is a cost) while the foundation keeps the template presumption — with contested
+is a cost) while the foundation tier keeps the target's presumption — with contested
 subsystems recording a real tech-choice comparison (no wash by ignorance), the
 incoming **agentic layer** surveyed and dispositioned like product code, and the
 parity contract enumerated into a pending-spec map right behind the walking
 skeleton, so "nothing lost" is proven by suites at the adopting repo's
 thresholds rather than asserted. The first backlog row
 is always the walking skeleton — greenfield: the thinnest live-verified slice of
-the core flow; brownfield: scaffold + extracted tokens + one core page,
+the core flow; brownfield: scaffold + extracted tokens + one core surface,
 parity-verified against the original.
 
 **Automation.** The project-init and project-adopt skills mechanize the pass. No
-hook — the template's getting-started docs point at them (a post-scaffold nudge is
-text, not machinery).
+hook — the foundation's getting-started docs point at them (a post-scaffold nudge
+is text, not machinery).
 
 **Composes with.** plan-gate (#2 — the inception sign-off is the biggest plan-gate
 there is), project-audit (which scores against the brief's groups + bar ever after),

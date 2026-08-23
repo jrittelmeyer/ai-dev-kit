@@ -22,11 +22,11 @@ missing field → derive it from the repo and say so.
   write the message to a scratchpad file and `git commit -F <file>` (inline `-m`
   quoting breaks on PowerShell 5.1).
 - Push. **If this checkpoint ends the session** (step 2 says hand off), watch CI to
-  green now. On GitHub Actions: `gh run list --commit <full 40-char sha>` (a short sha
-  silently matches nothing) → the adapter's `ci.workflow` run → `gh run watch <id>`,
-  then **confirm** with `gh run view <id> --json status,conclusion` (watch's
-  `--exit-status` is unreliable). If instead you're continuing with more work that
-  ends in its own watched CI run, one watch at the end covers the tree.
+  green now — provider recipes (find the run for this exact sha → watch → confirm
+  the conclusion via a JSON query, never the stream alone) are in
+  [references/ci-watch.md](references/ci-watch.md), keyed on the adapter's
+  `ci.provider`. If instead you're continuing with more work that ends in its own
+  watched CI run, one watch at the end covers the tree.
 - **Housekeeping (after push):** run the adapter's `cache.prune` command if defined —
   local build caches often have no TTL or size cap and grow by gigabytes per build, so
   pruning at every checkpoint bounds them at the exact cadence they grow (a pre-push

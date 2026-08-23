@@ -1,5 +1,69 @@
 # ai-dev-kit changelog
 
+## 0.15.0 — 2026-08-23
+
+Any-project portability — phase 2 of the modernization program (row B1-18).
+Formally overturns the "web-shape = accepted scope" classification from the
+2026-08-19 audit: skill bodies are now domain-neutral skeletons, per-domain
+mechanics load on demand from each skill's `references/`, and the adapter
+schema carries the mechanical facts for any project type.
+
+- **Adapter schema v2** (`adapters/project.schema.json`) — purely additive:
+  `projectType` (web-app · api-service · cli · library · game · data · mobile
+  · desktop · other) dispatches per-domain references; `ecosystem` (runtime,
+  manifestFiles, registryQuery/addCommand templates) generalizes dependency
+  facts beyond JS; `verify` (build · run · ready{kind: http/tcp-port/
+  exit-code/log-line/file-exists/manual} · observe · notes) generalizes
+  live-verify beyond a served port; `ci.provider` enum gains azure-devops ·
+  jenkins · circleci. `packageManager` and `prodVerify` stay valid as
+  documented v1 fallbacks — every existing adapter validates unchanged
+  (proven in smoke).
+- **Fixture adapters**: `adapters/godot-game.json` (game: headless engine
+  runs, log-line readiness, golden-image note) and `adapters/rust-cli.json`
+  (cli: exit-code readiness, golden outputs); `adapters/ai-dev-kit.json`
+  migrates to v2 (`projectType: library`, verify = self-install + smokes) —
+  the dogfood proof a non-web adapter drives the skills;
+  `adapters/next-web-boilerplate.json` frozen as the v1 regression fixture.
+- **Progressive disclosure across the kit** (installer needed zero changes —
+  `syncSkill` already walks recursively): live-verify →
+  `references/{web,game,cli,library,data}.md` with a ~60-line dispatch body;
+  dep-check → `references/registries.md` (npm · PyPI · crates.io · Go ·
+  NuGet · Maven · RubyGems · Composer · engine asset stores); project-audit →
+  `references/taxonomies.md` (feature-group starters per project type; brief
+  overrides); checkpoint → `references/ci-watch.md` (per-provider CI-watch
+  recipes — the GitHub hardcode leaves the body); tidy →
+  `references/hygiene-recipes.md` (Turborepo/engine caches, platform
+  commands, container prunes); doc-audit → `references/hunts.md` (the seven
+  hunts' mechanics; body back under its own 3k split heuristic; token math
+  unified on chars/4); project-adopt → `references/disposition-map.md` +
+  the inception pair now shares a byte-identical
+  `references/inception-shared.md` (scaffold guard · question round · brief
+  shape · doc registration · doc regeneration · sign-off gate), enforced by
+  the linter's shared-by-copy check.
+- **Generalization**: "the template" → "the target foundation" across both
+  inception skills, PLAYBOOK technique 10, README, and the deck;
+  project-adopt gains the no-foundation escape hatch project-init already
+  had; project-audit's bar/calibration/inclusion language covers products,
+  not just starters, with GitHub named as one forge among equals.
+- **skill-lint armed**: size-grandfather list emptied (every body now under
+  the 3k warn band); shared-by-copy byte-equality active on the inception
+  pair.
+- README, PLAYBOOK, and deck rewritten to the any-project scope (fixture
+  trio linked; portability slide names the per-domain references).
+
+Skills (all minor — bodies restructured): checkpoint 0.4.0 · doc-audit 0.3.0
+· project-audit 0.2.0 · tidy 0.2.0 · dep-check 0.2.0 · live-verify 0.2.0 ·
+project-init 0.3.0 · project-adopt 0.5.0.
+
+Verification: smoke-installer grows a fixtures loop — every shipped adapter
+installs clean, re-installs to "0 file(s) written", and `--check`s green
+(4 fixtures × 3 checks), plus a projectType enum-violation triple (exits 1
+pre-write, names the field, writes nothing) — 53 checks total; smoke-hooks
+36 unchanged; skill-lint 8 skills clean, 0 errors / 0 warnings, description
+total ≈719 tokens; check-version 0.15.0 × 5; scratch install + idempotent
+re-run + `--check`; self-install re-run (incl. `--global` for doc-audit)
+refreshed the tracked dogfood copies; root `--check` green.
+
 ## 0.14.0 — 2026-08-23
 
 Skill-lint CI gate + rot burn-down — phase 1 of the four-phase modernization

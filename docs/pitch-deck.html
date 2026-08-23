@@ -208,7 +208,7 @@
 <body>
 
 <section class="slide">
-  <p class="eyebrow">ai-dev-kit · v0.14.0</p>
+  <p class="eyebrow">ai-dev-kit · v0.15.0</p>
   <h1>A portable operating method for agentic development.</h1>
   <p class="lede">Eight skills, four hooks, and twelve techniques that turn AI-assisted
   building into a repeatable pipeline — token-lean, verification-first, and installable
@@ -245,7 +245,7 @@
   <div class="grid">
     <div class="card">
       <div class="card-head"><h3>project-init</h3><span class="chip">once, at inception</span></div>
-      <p>Idea or plan docs in; discovery out — gap analysis, competitive scan, template
+      <p>Idea or plan docs in; discovery out — gap analysis, competitive scan, foundation
       fit-map, one batched question round — then a product brief and a backlog whose
       completion is the 100 score.</p>
       <p class="meta">precedes → <b>the whole pipeline</b> · scored ever after by <b>project-audit</b></p>
@@ -253,9 +253,9 @@
     <div class="card">
       <div class="card-head"><h3>project-adopt</h3><span class="chip">once, on an existing app</span></div>
       <p>An existing codebase in; a port program out — the app surveyed into a parity
-      contract, a theirs-vs-template disposition map under a two-tiered improvement
-      bar (the product surface stays yours by default; the foundation defaults to the
-      template), then a migration map and a backlog that lands it surface-identical —
+      contract, a theirs-vs-foundation disposition map under a two-tiered improvement
+      bar (the product surface stays yours by default; the foundation tier defaults to
+      the target's), then a migration map and a backlog that lands it surface-identical —
       parity proven by test suites, not asserted.</p>
       <p class="meta">sibling of <b>project-init</b> · parity evidence graded by how the original runs</p>
     </div>
@@ -268,15 +268,17 @@
     </div>
     <div class="card">
       <div class="card-head"><h3>dep-check</h3><span class="chip auto">auto-nudged</span></div>
-      <p>Registry-verify before any dependency change: real version, dist-tags,
-      release-age window, pin policy, peers, standing holds. Never versions from blog
-      posts or model memory.</p>
+      <p>Registry-verify before any dependency change: real version, tags,
+      release-age window, pin policy, peers, standing holds — recipes for npm, PyPI,
+      crates.io, Go, NuGet, Maven, engine stores. Never versions from blog posts or
+      model memory.</p>
       <p class="meta">hook fires on → <b>package.json edits · pm add/update/install</b></p>
     </div>
     <div class="card">
       <div class="card-head"><h3>live-verify</h3><span class="chip auto">auto-nudged</span></div>
-      <p>The gate proves it compiles; only driving the flow proves it works. Fresh prod
-      build on a dedicated port, exercise the actual change, report verbatim evidence.</p>
+      <p>The gate proves it compiles; only driving the flow proves it works. Fresh
+      production-shaped run — served build, game export, CLI binary, packed library —
+      exercise the actual change, report verbatim evidence.</p>
       <p class="meta">hook fires before → <b>every git commit</b> · precedes checkpoint</p>
     </div>
     <div class="card">
@@ -293,8 +295,8 @@
     </div>
     <div class="card">
       <div class="card-head"><h3>tidy</h3><span class="chip">on demand</span></div>
-      <p>Prune the unbounded local build cache; surface — never auto-run — the
-      judgment-required cleanups: orphaned dev servers, stale e2e users, dangling images.</p>
+      <p>Prune the unbounded local build/engine cache; surface — never auto-run — the
+      judgment-required cleanups: orphaned dev processes, stale test data, dangling images.</p>
       <p class="meta">invoked from → <b>checkpoint</b> (deeper pass) · pre-push backstop</p>
     </div>
   </div>
@@ -359,13 +361,17 @@
 
 <section class="slide">
   <p class="eyebrow">05 · Portability</p>
-  <h2>Generic skills. One adapter file. Any project.</h2>
-  <p class="lede">Skill bodies never hardcode a project — package manager, gate
-  commands, ports, doc paths all live in one adapter config the skills read at run
-  time. Missing fields degrade gracefully: the skill derives from the repo and says so.</p>
+  <h2>Generic skills. One adapter file. Any project type.</h2>
+  <p class="lede">Skill bodies never hardcode a project — project type, toolchain,
+  gate commands, verify recipe, doc paths all live in one adapter config the skills
+  read at run time; per-domain mechanics (web · game · CLI · library · data) load
+  on demand from each skill's references. Missing fields degrade gracefully: the
+  skill derives from the repo and says so.</p>
   <ol class="steps">
-    <li><div>Write your adapter — or start from the reference
-      (<code>adapters/next-web-boilerplate.json</code>, schema-validated at install, every field optional).</div></li>
+    <li><div>Write your adapter — or start from a fixture: web
+      (<code>adapters/next-web-boilerplate.json</code>), game
+      (<code>adapters/godot-game.json</code>), CLI (<code>adapters/rust-cli.json</code>) —
+      schema-validated at install, every field optional.</div></li>
     <li><div>Run <code>node install.mjs --adapter … --dest &lt;project-root&gt; --global --hooks</code> —
       byte-identical skill installs, hook handlers, idempotent settings merge that
       touches only kit-owned entries.</div></li>
@@ -382,8 +388,9 @@
   machine-readable <code>manifest.json</code> with the composition graph) and has no
   dependency on any host repo. Since 0.5.0 it lives in its own repository —
   <a href="https://github.com/jrittelmeyer/ai-dev-kit">jrittelmeyer/ai-dev-kit</a> —
-  imported into next-web-boilerplate and any similar project by the same one-command
-  install. The method travels; only the adapter is yours to write.</p>
+  imported into next-web-boilerplate — and any web app, game, CLI, library, or data
+  project — by the same one-command install. The method travels; only the adapter is
+  yours to write.</p>
   <div class="callout">
     <p class="eyebrow">The pitch, in one line</p>
     <p>Quality as the default, tokens spent where they buy confidence, and a pipeline
@@ -392,7 +399,7 @@
 </section>
 
 <footer>
-  current as of 2026-08-23 · ai-dev-kit 0.14.0 ·
+  current as of 2026-08-23 · ai-dev-kit 0.15.0 ·
   <a href="https://github.com/jrittelmeyer/ai-dev-kit">jrittelmeyer/ai-dev-kit</a> ·
   <a href="../README.md">README</a> · <a href="../manifest.json">manifest</a> ·
   <a href="PLAYBOOK.md">playbook</a>

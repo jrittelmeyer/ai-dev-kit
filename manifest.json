@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -55,7 +55,7 @@
   "skills": [
     {
       "name": "checkpoint",
-      "version": "0.3.1",
+      "version": "0.4.0",
       "dualHome": false,
       "summary": "Commit + push pending work, judge context health (three strikes on a repeated obstacle = unhealthy), then continue or hand off via an on-disk resume prompt plus a relaunch model × effort recommendation.",
       "triggers": [
@@ -75,7 +75,7 @@
     },
     {
       "name": "doc-audit",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "dualHome": true,
       "summary": "Keep docs, agent context, persistent memory, and showcase docs accurate and token-lean; archive instead of delete; enforce standing-instruction budgets and cache-stable placement (hunt 7).",
       "triggers": [
@@ -94,7 +94,7 @@
     },
     {
       "name": "project-audit",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dualHome": false,
       "summary": "Score every feature group /100 against a best-available bar; verify docs ↔ code; emit a prioritized backlog.",
       "triggers": [
@@ -113,9 +113,9 @@
     },
     {
       "name": "tidy",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dualHome": false,
-      "summary": "Prune the unbounded local build cache; surface (never auto-run) orphaned dev servers, stale e2e users, dangling Docker images.",
+      "summary": "Prune the unbounded local build/engine cache; surface (never auto-run) orphaned dev processes, stale test data, dangling container images — per-stack recipes in references/.",
       "triggers": ["tidy", "clean up the machine", "disk is low", "build cache is huge"],
       "composition": {
         "invokedFrom": "checkpoint (deeper pass)"
@@ -127,9 +127,9 @@
     },
     {
       "name": "dep-check",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "dualHome": false,
-      "summary": "Registry-verify a dependency before adding/upgrading: real version, dist-tags, release-age window, pin policy, peers, standing holds.",
+      "summary": "Registry-verify a dependency before adding/upgrading: real version, tags, release-age window, pin policy, peers, standing holds — per-ecosystem registry recipes in references/.",
       "triggers": [
         "add a dependency",
         "bump/upgrade a package",
@@ -145,16 +145,16 @@
     },
     {
       "name": "live-verify",
-      "version": "0.1.2",
+      "version": "0.2.0",
       "dualHome": false,
-      "summary": "Full gate, then a fresh prod build on a dedicated port, then drive the affected flow and observe real output.",
+      "summary": "Full gate, then a fresh production-shaped run (served build · game export · CLI binary · packed library · sample pipeline slice), then drive the affected flow and observe real output — per-domain mechanics in references/.",
       "triggers": [
         "verify this works",
         "before committing a nontrivial change",
         "after wiring an integration"
       ],
       "composition": {
-        "defersTo": "project verify skill (built-in verify bootstraps one)",
+        "defersTo": "project verify/run skill (harness built-ins bootstrap one)",
         "precedes": "checkpoint"
       },
       "automation": {
@@ -163,9 +163,9 @@
     },
     {
       "name": "project-init",
-      "version": "0.2.1",
+      "version": "0.3.0",
       "dualHome": false,
-      "summary": "One-time inception: plan docs or a raw idea → discovery (gaps, value-adds, competitive scan, template fit-map) → one batched question round → product brief + regenerated status/backlog to a 100 bar → sign-off → the pipeline begins.",
+      "summary": "One-time inception: plan docs or a raw idea → discovery (gaps, value-adds, competitive scan, foundation fit-map) → one batched question round → product brief + regenerated status/backlog to a 100 bar → sign-off → the pipeline begins.",
       "triggers": [
         "init this project",
         "here's my idea for an app",
@@ -189,9 +189,9 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "dualHome": false,
-      "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-template disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation defaults template) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the template foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
+      "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-foundation disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation tier defaults the target's) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the target foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
       "triggers": [
         "adopt this codebase",
         "port my app onto the template",

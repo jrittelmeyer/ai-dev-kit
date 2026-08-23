@@ -1,0 +1,34 @@
+{
+  "project": "godot-game-example",
+  "projectType": "game",
+  "ecosystem": {
+    "runtime": "godot",
+    "manifestFiles": ["project.godot"]
+  },
+  "gate": [
+    "gdformat --check scripts",
+    "godot --headless --check-only project.godot"
+  ],
+  "test": {
+    "unit": "godot --headless -s addons/gut/gut_cmdln.gd -gdir=res://tests -gexit"
+  },
+  "verify": {
+    "build": "godot --headless --export-release \"Windows Desktop\" build/game.exe",
+    "run": "godot --headless res://tests/smoke_scene.tscn",
+    "ready": { "kind": "log-line", "pattern": "SMOKE OK" },
+    "observe": [
+      "godot --headless -s res://tests/drive_core_loop.gd — asserts spawn/score/save output",
+      "load the exported build and drive the changed flow; screenshot-compare where visuals changed"
+    ],
+    "notes": "Headless runs print to stdout; the smoke scene ends with SMOKE OK. Visual changes need the golden-image pass, not just logs."
+  },
+  "docs": {
+    "dir": "docs",
+    "status": "docs/STATUS.md",
+    "backlog": "docs/BACKLOG.md"
+  },
+  "ci": {
+    "provider": "github-actions",
+    "workflow": "ci"
+  }
+}

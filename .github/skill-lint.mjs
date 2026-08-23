@@ -19,13 +19,17 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const SKILLS_DIR = "skills";
-// Body token ceiling grandfathers — the pre-split oversized skills. The
-// portability release splits them into references/ and empties this list.
-const SIZE_GRANDFATHER = new Set(["doc-audit", "project-adopt"]);
+// Body token ceiling grandfathers — emptied by the 0.15.0 reference splits;
+// re-add a name only with a recorded reason.
+const SIZE_GRANDFATHER = new Set([]);
 // Groups of files that must stay byte-identical (shared-by-copy across
-// self-contained skills). Populated when the inception pair gains its shared
-// reference file.
-const SHARED = [];
+// self-contained skills).
+const SHARED = [
+  [
+    "skills/project-init/references/inception-shared.md",
+    "skills/project-adopt/references/inception-shared.md",
+  ],
+];
 
 let errors = 0;
 let warnings = 0;
