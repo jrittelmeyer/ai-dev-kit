@@ -9,8 +9,9 @@ Audit the repo end-to-end with extended thinking: prove the docs match the code,
 score every feature group /100 against the bar "the most competently executed,
 robust, performant starter of its kind available today", and turn every lost point
 into a concrete backlog item. Read-only with respect to product code — outputs are
-docs only (report + backlog + status pointers). Doc paths come from the adapter
-config `.claude/ai-dev-kit.config.json` (`docs` block); discover them if unset.
+docs only (report + backlog + status pointers). Adapter:
+`.claude/ai-dev-kit.config.json` (`docs` block); missing paths → discover them
+from the repo and say so.
 
 ## 1. Inventory (docs first, then code)
 
@@ -42,8 +43,8 @@ config `.claude/ai-dev-kit.config.json` (`docs` block); discover them if unset.
   APIs, not just workflow conclusions** — a green CodeQL run only means the scan
   uploaded; open findings live behind
   `gh api repos/<o>/<r>/code-scanning/alerts?state=open` (and the Dependabot
-  equivalent). Zero open alerts is the checkable claim; a workflow badge is not
-  (learned 2026-07-17: a 100-scoring pass missed 3 open CodeQL alerts this way).
+  equivalent). Zero open alerts is the checkable claim; a workflow badge is not —
+  scoring from badges alone has passed repos carrying open alerts.
   Untriaged issues/PRs and visibly stale dependencies are adoption-killers:
   score them.
 - **Goals & gates:** re-read the repo's stated goals (README/status) against

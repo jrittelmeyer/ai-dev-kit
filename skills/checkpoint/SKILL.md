@@ -8,9 +8,8 @@ description: Commit and push pending work, then either continue to the next back
 Commit + push whatever is pending, then decide: continue to the next step in this
 session, or hand off cleanly with a resume prompt. Never do half of both.
 
-Project parameters (commit style, CI facts, cache-prune command, doc paths) come from
-the adapter config `.claude/ai-dev-kit.config.json`. Where a field is absent, derive
-it from the repo (`git log` for message style, `package.json` scripts) and say so.
+Adapter: `.claude/ai-dev-kit.config.json` (`commit`, `ci`, `cache`, `docs`); a
+missing field → derive it from the repo and say so.
 
 ## 1. Commit & push
 
@@ -97,7 +96,10 @@ the handoff file, a doc, or memory is lost. The prompt must contain, in order:
 Spend capability where judgment lives, not where the plan already decided. From
 the step shape §2 estimated, recommend the cheapest configuration that executes
 the next step *well* — name a tier of the harness's current ladder (e.g.
-Haiku < Sonnet < Opus < Fable, late-2026) and a reasoning effort (low → max):
+Haiku < Sonnet < Opus < Fable, late-2026 — an aging example: verify against the
+lineup the session actually offers) and a reasoning effort (low → max):
+<!-- lint-ok: dated — deliberate example ladder; re-checked each harness-audit -->
+
 
 - **Mechanical** — an approved plan with named files, docs/config-only edits,
   release chores, gate re-runs: smallest tier that drives the tools reliably,

@@ -11,8 +11,8 @@ a two-minute check that prevents the expensive failure modes: installing a
 just-published broken release, a prerelease masquerading as current, an abandoned
 package, or a silent breaking major.
 
-Adapter config: `.claude/ai-dev-kit.config.json` → `depPolicy` (`releaseAgeDays`,
-`exactPin`) and `packageManager`. Defaults: 7-day window, judgment-based pinning.
+Adapter: `.claude/ai-dev-kit.config.json` (`depPolicy`, `packageManager`);
+defaults: 7-day window, judgment-based pinning.
 
 ## 1. Query the registry, not the web
 

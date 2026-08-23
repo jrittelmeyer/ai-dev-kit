@@ -11,12 +11,11 @@ converged product brief, mended context docs, and a regenerated status doc + ban
 backlog whose completion **is** a 100/100 `project-audit` score for *this product* —
 then the lifecycle pipeline begins at row 1.
 
-Project parameters come from the adapter config `.claude/ai-dev-kit.config.json`:
-`init.scaffold` (mechanical scaffold command; `{name}` → the app name),
-`init.productBrief` (default `docs/PRODUCT.md`), plus the `docs` block for
-status/backlog/context paths. Where a field is absent, derive it from the repo and say
-so. Flags: `--deep` (research fan-out), `--name <app-name>`. On a repo with no
-template heritage, skip the scaffold and fit-map — the rest applies unchanged.
+Adapter: `.claude/ai-dev-kit.config.json` (`init.scaffold` — `{name}` → the app
+name, `init.productBrief` default `docs/PRODUCT.md`, `docs` block); a missing
+field → derive it from the repo and say so. Flags: `--deep` (research fan-out),
+`--name <app-name>`. On a repo with no template heritage, skip the scaffold and
+fit-map — the rest applies unchanged.
 
 Everything here is analysis and docs until the final gate — **this skill writes no
 product code.**

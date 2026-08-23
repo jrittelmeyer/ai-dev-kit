@@ -2,6 +2,7 @@
   "project": "ai-dev-kit",
   "gate": [
     "node install.mjs --check",
+    "node .github/skill-lint.mjs",
     "node .github/smoke-hooks.mjs",
     "node .github/smoke-installer.mjs",
     "node .github/check-version.mjs"

@@ -1,5 +1,65 @@
 # ai-dev-kit changelog
 
+## 0.14.0 — 2026-08-23
+
+Skill-lint CI gate + rot burn-down — phase 1 of the four-phase modernization
+program (any-project portability → harness-audit + retro → plugin-marketplace
+packaging; backlog rows 18–20, plan user-approved 2026-08-23 after an
+ecosystem research pass against the Agent Skills authoring standard).
+
+- **New `.github/skill-lint.mjs`** — zero-dep lint of the skill surface, wired
+  as a CI step ("Skill surface lints clean") and into the self-adapter's gate
+  array. Errors gate; heuristics warn. Checks: dir/SKILL.md structure ·
+  frontmatter shape (incl. `>-` folded descriptions, allowed keys, name = dir)
+  · description ≤1024 chars, third-person, "Use when…" clause · body ≤500
+  lines with token warn/error bands (doc-audit + project-adopt grandfathered
+  until the phase-2 splits) · path hygiene (backslashes, absolute drives,
+  hook-wiring variables in prose) · reference resolution, one-level nesting,
+  TOC-for-long-refs · BOM/CRLF · bare-date freshness with `lint-ok: dated`
+  suppression (±3 lines) · manifest ⇄ skills bijection + semver · shared-by-
+  copy byte-equality (armed in phase 2) · wired-handler existence. Prints the
+  always-loaded description-token table (warn >900).
+- **Hook handlers strip a leading UTF-8 BOM** before parsing (all four):
+  PowerShell 5.1 pipes BOM-prefix stdin, which parse-failed into a false
+  silent exit 0 — the known same-class mechanism in the hook-visibility Watch
+  row, now closed at the handler. CONTRIBUTING's hand-test trap note updated;
+  Watch row annotated.
+- **install.mjs ships `hooks/hooks.json`** next to the handlers
+  (`.claude/hooks/ai-dev-kit/hooks.json`, exact-name match — other `*.json`
+  variants never ship), so consumers hold the canonical wiring locally,
+  drift-guarded like everything else.
+- **Rot fixes:** doc-audit no longer hardcodes its repo URL or an outdated
+  install command (it is the global dual-home skill — stale copies on other
+  machines were naming a distribution channel); project-audit's dated
+  war-story generalized into the timeless rule; live-verify and the README
+  stop naming the retired `verify` built-in (now `run`); checkpoint's example
+  model ladder gains a "verify against the session's lineup" hedge plus a
+  lint suppression.
+- **Token trims:** project-adopt description 516 → 384 chars (every manifest
+  trigger phrase preserved); the adapter-config preamble collapsed to one
+  canonical `Adapter: …; missing field → derive and say so` line across all
+  8 skills. Always-loaded description total ≈782 → ≈723 tokens.
+- **New root `AGENTS.md`** (33 lines) — the kit now practices the
+  standing-instruction discipline it teaches: non-inferable rules only
+  (source-vs-install, five-stamp bump, program discipline, advise-never-block,
+  zero-dep, no-silent-renames), pointers for everything else.
+- **Backlog:** rows 18–20 opened (program phases 2–4); B4-16 annotated as
+  superseded-on-ship by row 20.
+
+Skills: project-adopt 0.4.0 (description/trigger surface); checkpoint 0.3.1 ·
+doc-audit 0.2.1 · project-init 0.2.1 · project-audit 0.1.1 · live-verify 0.1.2
+· dep-check 0.1.1 · tidy 0.1.1 (wording/preamble only).
+
+Verification: smoke-hooks 36 — the 4 new BOM-prefixed cases shown failing
+against pre-strip handlers (exit 0, fired=false) then green; smoke-installer
+38 — the hooks.json shipping case shown failing pre-fix; skill-lint green on
+the 8 skills (0 errors / 0 warnings) and its error paths proven on a
+deliberately broken fixture tree (13 distinct errors, exit 1); five stamps
+bumped together; self-install re-run (incl. `--global` for doc-audit)
+refreshed the tracked dogfood copies; full local suite green (scratch install
+→ idempotent re-run → scratch `--check` → skill-lint → smoke-hooks 36 →
+smoke-installer 38 → check-version 0.14.0 × 5 → root `--check`).
+
 ## 0.13.0 — 2026-08-12
 
 checkpoint 0.3.0 — a handoff now ends with a launch recommendation.

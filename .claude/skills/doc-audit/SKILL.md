@@ -191,14 +191,14 @@ recommended option and say so in the report.
   file — that has quietly regrown a verbose per-step log. The fix pattern: keep a
   compact build-progress table as the record, move the prose into the history
   archive, and (re)state the rule "don't reintroduce the append-log."
-- **Dual-home rule:** this skill's canonical source lives in the ai-dev-kit repo
-  (github.com/jrittelmeyer/ai-dev-kit → `skills/doc-audit/`); the project copy
-  (`.claude/skills/doc-audit/`) and the global copy (`~/.claude/skills/doc-audit/`)
-  are both installer output — edit the kit source in a clone and re-run
-  `node install.mjs --global --dest <project-root>`, never edit
-  the installed copies (`install.mjs --check` guards against drift). Project-specific
-  designations — *which* files form the showcase set, where they live — belong in
-  that project's memory, not in this file.
+- **Dual-home rule:** this skill's canonical source is the ai-dev-kit repo's
+  `skills/doc-audit/`; the project copy (`.claude/skills/doc-audit/`) and the
+  global copy (`~/.claude/skills/doc-audit/`) are both installer output — edit
+  kit source in a clone and re-run its installer per the kit README (installed
+  versions: `.claude/ai-dev-kit.installed.json`), never edit the installed
+  copies (`install.mjs --check` guards drift). Project-specific designations —
+  *which* files form the showcase set, where they live — belong in that
+  project's memory, not in this file.
 - **Never name a project's local-only docs inside committed files** (including the
   in-repo copy of this skill). The exclusion usually exists precisely to keep them
   out of a public repo; the project's memory carries the pointer.

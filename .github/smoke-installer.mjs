@@ -128,6 +128,15 @@ try {
     `exit ${first.status}: ${first.stderr}`,
   );
 
+  // The canonical wiring ships next to the handlers, so a consumer wiring hooks
+  // by hand (or auditing what --hooks merged) has the local source of truth.
+  const shippedWiring = join(scratch, ".claude", "hooks", "ai-dev-kit", "hooks.json");
+  check(
+    "handlers: hooks.json wiring ships next to the handlers",
+    existsSync(shippedWiring) &&
+      readFileSync(shippedWiring, "utf8") === readFileSync("hooks/hooks.json", "utf8"),
+  );
+
   const merged = JSON.parse(readFileSync(settingsPath, "utf8"));
   const markerHooks = (event) =>
     (merged.hooks[event] ?? []).flatMap((e) => e.hooks ?? []).filter(carriesMarker);

@@ -12,8 +12,8 @@ and package `clean` scripts don't touch it — it can reach 100 GB in days). So 
 skill's core job is pruning that cache; the rest it *surfaces* rather than runs,
 because those need judgment.
 
-Project parameters come from the adapter config `.claude/ai-dev-kit.config.json`
-(`cache`, `hygiene`); where a field is absent, ask or skip that section.
+Adapter: `.claude/ai-dev-kit.config.json` (`cache`, `hygiene`); a missing field →
+ask or skip that section.
 
 ## 1. Prune the build cache (safe, automatic)
 

@@ -203,12 +203,15 @@ if (withGlobal) {
 }
 
 // 3. Hook handlers — installed alongside skills (and drift-guarded the same way);
-//    inert until the hook config is merged into settings via --hooks.
+//    inert until the hook config is merged into settings via --hooks. The
+//    canonical wiring (hooks.json, exactly — never other *.json variants) ships
+//    too, so consumers hold the source of truth next to the handlers.
 const hooksSrc = join(kitRoot, "hooks");
 const hooksDest = join(dest, ".claude", "hooks", "ai-dev-kit");
 for (const file of walk(hooksSrc)) {
-  if (file.endsWith(".mjs")) {
-    syncFile(file, join(hooksDest, relative(hooksSrc, file)));
+  const rel = relative(hooksSrc, file);
+  if (rel.endsWith(".mjs") || rel === "hooks.json") {
+    syncFile(file, join(hooksDest, rel));
   }
 }
 

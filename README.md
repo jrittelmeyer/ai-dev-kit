@@ -44,7 +44,7 @@ theirs-vs-template, and regenerates the docs into a port program that lands the
 app surface-identical on the template foundation — with the template's relevant
 features lit up.
 
-`code-review`, `simplify`, and `verify` are Claude Code built-ins the kit composes
+`code-review`, `simplify`, and `run` are Claude Code built-ins the kit composes
 with rather than reimplements.
 
 ## Install into a project
@@ -58,8 +58,9 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
 
 - Requires Node ≥ 22 (pure Node, zero dependencies); CI runs the floor (22) and
   current (24) on ubuntu + windows.
-- Copies `skills/*` → `<project>/.claude/skills/` (byte-identical) and hook handlers
-  (`hooks/*.mjs`) → `.claude/hooks/ai-dev-kit/`.
+- Copies `skills/*` → `<project>/.claude/skills/` (byte-identical) and the hook
+  handlers plus their canonical wiring (`hooks/*.mjs`, `hooks/hooks.json`) →
+  `.claude/hooks/ai-dev-kit/`.
 - `--global` also installs dual-home skills (`doc-audit`) → `~/.claude/skills/`.
 - `--adapter <file>` validates the adapter against
   [adapters/project.schema.json](adapters/project.schema.json) (types · enums ·

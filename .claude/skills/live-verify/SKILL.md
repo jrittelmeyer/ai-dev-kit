@@ -9,9 +9,10 @@ The gate proves the code compiles; only driving the flow proves it works. This s
 codifies the verify-by-running discipline: every nontrivial change gets observed
 doing its job in a production-shaped environment before it's committed.
 
-If the project has its own verify skill (the built-in `verify` skill bootstraps one),
-defer to it for the mechanics and use this skill as the checklist. Adapter config:
-`.claude/ai-dev-kit.config.json` → `gate`, `prodVerify`.
+If the project has its own verify/run skill (many harnesses ship a built-in that
+bootstraps one per project), defer to it for the mechanics and use this skill as
+the checklist. Adapter: `.claude/ai-dev-kit.config.json` (`gate`, `prodVerify`);
+a missing field → derive it from the repo and say so.
 
 ## 1. Run the full gate
 

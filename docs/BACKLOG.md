@@ -9,11 +9,16 @@ Source: [PROJECT_AUDIT_2026-08-19](archive/PROJECT_AUDIT_2026-08-19.md)
 (aggregate 97.9/100, fourth audit; chain: baseline
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) → post-B3
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
-[97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9).
+[97.4](archive/PROJECT_AUDIT_2026-08-12.md) → 97.9). Rows 18–20: the
+2026-08-23 modernization program — user-approved plan, phase 1 shipped as
+0.14.0 (CHANGELOG); phases run in row order, plan already signed off.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-19: zero issues/PRs) | Public +1 | M |
+| B1 | 18 | portability | Any-project portability (program phase 2): adapter schema v2 (`projectType` · `ecosystem` · `verify`), per-domain `references/` splits in all oversized/coupled skills, godot-game + rust-cli fixture adapters, lint grandfather list emptied — overturns the "web-shape = accepted scope" classification | Lifecycle +2 · Inception +2 | L |
+| B2 | 19 | skills | harness-audit (periodic ecosystem-currency audit of any project's agent harness) + retro (compounding-engineering harvest) + `docs/PERMISSIONS.md` + PreCompact advisory hook (program phase 3) | new surface · Docs +1 | M |
+| B3 | 20 | packaging | Plugin-marketplace packaging (`.claude-plugin/` + `hooks/plugin-hooks.json` twin, 6th version-stamp site) — supersedes B4-16 on ship (program phase 4) | Public +2 | M |
+| B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (gate re-confirmed shut 2026-08-19: zero issues/PRs); row 20 supersedes on ship | Public +1 | M |
 
 Watch (externally gated, re-check each audit):
 
@@ -42,3 +47,6 @@ Watch (externally gated, re-check each audit):
   no changelog entry attributes the change. Full per-session observation
   log in kit memory. A silent probe = intermittency datapoint; only a
   full-session all-silent run matching 2026-08-09 reopens visibility.
+  The known same-class mechanism (BOM-prefixed stdin parse-failing into a
+  silent exit) is closed at the handler as of 0.14.0 — handlers strip a
+  leading BOM, so any future silence cannot be that mechanism.

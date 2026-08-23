@@ -1,6 +1,6 @@
 ---
 name: project-adopt
-description: Adopt an existing codebase onto this template — survey it into a parity contract, build an honest theirs-vs-template disposition map, converge on a product brief + migration map, and regenerate the living docs into a port program. Use when the user has an existing app to migrate onto the template — or to merge/upgrade it with the template's features — says "adopt this codebase" / "port my app to this boilerplate" / "merge the boilerplate into my app", or drops source code into the intake dir.
+description: Adopt an existing codebase onto this template — survey it into a parity contract and an honest theirs-vs-template disposition map, converge a product brief + migration map, and regenerate the living docs into a port program. Use to adopt/port/migrate an app onto this template or boilerplate, merge/upgrade it with the template's features, or when source code lands in the intake dir.
 ---
 
 # project-adopt
@@ -15,13 +15,11 @@ port's parity specs and carried suites at the adopting repo's enforced threshold
 with the template features that pass the meaningful-improvement bar (§3) baked
 in* — then the lifecycle pipeline begins at row 1.
 
-Project parameters come from the adapter config `.claude/ai-dev-kit.config.json`:
-`init.productBrief` (default `docs/PRODUCT.md`), `init.migrationMap` (default
-`docs/MIGRATION.md`), `init.sourceDir` (drop-dir convention, default
-`intake/source/`), `init.scaffold` (mechanical scaffold; `{name}` → the app name),
-plus the `docs` block for status/backlog/context paths. Where a field is absent,
-derive it from the repo and say so. Flags: `--deep` (survey fan-out),
-`--name <app-name>`.
+Adapter: `.claude/ai-dev-kit.config.json` (`init.productBrief` default
+`docs/PRODUCT.md`, `init.migrationMap` default `docs/MIGRATION.md`,
+`init.sourceDir` drop dir default `intake/source/`, `init.scaffold` — `{name}` →
+the app name, `docs` block); a missing field → derive it from the repo and say
+so. Flags: `--deep` (survey fan-out), `--name <app-name>`.
 
 Everything here is analysis and docs until the final gate — **this skill writes no
 product code.**

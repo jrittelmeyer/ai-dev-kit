@@ -75,6 +75,33 @@ for (const handler of handlers) {
   }
 }
 
+// BOM sweep: PowerShell 5.1 pipes prefix stdin with a UTF-8 BOM. A BOM'd valid
+// event must still fire — without the strip, JSON.parse throws and stdin
+// tolerance turns a live event into a false silent exit 0 (the CONTRIBUTING
+// hand-test trap, now closed at the handler).
+const bomEvents = [
+  ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }],
+  ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git commit -m x" } }],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/tidy/SKILL.md" } }],
+  ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "CLAUDE.md" } }],
+];
+for (const [handler, event] of bomEvents) {
+  const res = spawnSync(process.execPath, [handler], {
+    input: "\uFEFF" + JSON.stringify(event),
+    encoding: "utf8",
+  });
+  const fired = (res.stdout ?? "").includes("additionalContext");
+  if (res.status !== 0 || !fired) {
+    failures++;
+    console.error(
+      `FAIL ${handler} BOM-prefixed stdin → exit ${res.status}, fired=${fired}, ` +
+        "expected fired=true",
+    );
+  } else {
+    console.log(`ok   ${handler} BOM-prefixed stdin → fires`);
+  }
+}
+
 // Every wired hook must be exec form — command "node", the handler path as the
 // sole ${CLAUDE_PROJECT_DIR}-anchored args entry. Exec form bypasses the shell,
 // so the 0.7.2 quoting class (bare $VAR reading as $null under PowerShell, an
@@ -143,6 +170,6 @@ try {
 
 if (failures > 0) process.exit(1);
 console.log(
-  `${cases.length + handlers.length * garbage.length + 1} hook smoke cases passed ` +
-    "(garbage stdin + config override included), all wired hooks exec-form anchored.",
+  `${cases.length + handlers.length * garbage.length + bomEvents.length + 1} hook smoke cases passed ` +
+    "(garbage stdin + BOM stdin + config override included), all wired hooks exec-form anchored.",
 );
