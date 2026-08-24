@@ -244,6 +244,27 @@ Ordered by breadth of value to downstream projects, then depth, then effort.
 
 Plus the two Watch rows (externally gated; hook-visibility backs no deduction).
 
+## Addendum — found at checkpoint (row 32)
+
+Recorded after the scores above were fixed; it does not change them (the
+deduction it would carry, Hooks Corr −1, is already taken by row 27's finding).
+
+Dogfooding this pass's own checkpoint surfaced a **false positive in a shipped
+hook**. `hooks/live-verify-reminder.mjs:27` gates on
+`/\bgit\b[^|&;]*\bcommit\b/`. The segment-boundary character class excludes
+`|`, `&`, and `;` — but **not newlines**. A multi-line Bash block whose first
+line contains `git` and whose later line contains the word `commit` therefore
+matches across the line break: here, `SHA=$(git rev-parse HEAD)` followed by
+`gh run list --commit "$SHA"` drew the commit reminder with no commit
+anywhere in the command.
+
+Reproduced directly against the handler, with two controls staying silent
+(`git rev-parse HEAD` alone; `git log | grep commit`, the pipe case the class
+already covers), isolating the defect to the missing newline boundary. Cost is
+one spurious advisory — the hook is advise-only — but the smoke suite's
+`live-verify` cases are all single-line, so nothing guards the class. Fix is
+`[^|&;\n\r]` plus a multi-line smoke case. → row 32.
+
 ## Considered and excluded (visible decisions, no rows)
 
 - **`inventory.mjs` prefers `.claude/skills` over `skills/`, and lists each

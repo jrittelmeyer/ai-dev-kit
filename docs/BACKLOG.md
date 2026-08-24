@@ -23,6 +23,7 @@ gap). Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 | B2 | 26 | testing | `smoke-hooks` tally counts every assertion (53), not just the case arrays (42) | Testing +1 | S |
 | B2 | 27 | hooks | `compact-reorient` guards on the payload's `source === "compact"`; smoke fixtures carry `source`; record a verdict for the new `fork` matcher | Hooks +1 | S |
 | B2 | 28 | testing | Run and archive a model-graded `skill-evals --report` pass, so eval presence is effectiveness-backed rather than anchor-backed | Testing +1 | M |
+| B2 | 32 | hooks | `live-verify-reminder` false-fires on multi-line commands — its segment-boundary class `[^\|&;]` omits newlines, so `git` on one line + the word `commit` on another (e.g. `gh run list --commit`) matches. Add `\n`/`\r` to the class; smoke the multi-line case | Hooks +1 | S |
 | B3 | 29 | testing | `skill-lint` enforces the spec's reserved-word rule (`name` may not contain "anthropic"/"claude") | Testing +1 | S |
 | B3 | 30 | docs | Add a `plugins-reference` row to `harness-audit`'s `sources.md` — the auto-discovery + version-management authority the packaging route depends on | Docs +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
