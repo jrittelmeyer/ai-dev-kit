@@ -1,5 +1,55 @@
 # ai-dev-kit changelog
 
+## 0.20.0 — 2026-08-24
+
+Hook event-surface re-review (row B1-23, the one substantive row from the
+2026-08-24 project audit) plus the `SessionStart` payload guard (row B2-27).
+PLAYBOOK #9 requires that active *and* rejected automations be recorded; the
+harness had grown to 31 documented hook events while the kit's decision log
+carried a verdict on two. That is a currency gap, not a defect in what was
+built — and it is exactly what the periodic audit exists to catch.
+
+- **`manifest.json` → `hooks.reviewed` now records an accept/reject verdict for
+  all 31 events**, keyed by bare event name with matcher-level nuance in the
+  verdict text. A new `reviewedAgainst` field names the source, the date, and
+  the finding that organizes the whole pass: only **11** of the 31 events can
+  return `hookSpecificOutput.additionalContext`. The other 20 can block, act on
+  files, or notify the human — none of which is "advise the agent" — so the
+  kit's advise-never-block policy rules them out by construction rather than by
+  taste.
+- **No new hooks.** Every candidate the audit named was weighed and rejected on
+  the evidence: `ConfigChange(skills)` looked like the gap-closer for skills
+  mutated outside the file tools, but it has no context channel and a blocked
+  change surfaces no message to the user *or* to Claude; `FileChanged` catches
+  changes no tool matcher sees, but its `systemMessage` never reaches the model;
+  `Setup` fires only under `--init-only`/`-p --init`, never on a normal start;
+  `SubagentStart` can inject context, but the one subagent risk is already
+  caught post-hoc by `skill-drift-guard`. `Stop` — the checkpoint-nag question
+  that has been answered informally since 0.2.0 — is now written down.
+- **`hooks/compact-reorient.mjs`** — guards on the payload's `source` as well as
+  `hook_event_name`, so a mis-wired matcher can no longer turn the hook into a
+  per-session nudge (the exact risk its own comment claimed to defend against).
+  The guard is deliberately negative: a payload with no `source` still fires, so
+  a harness that omits the field cannot silently kill the hook. `fork` is
+  excluded on purpose — a forked session inherits its parent's context, so its
+  orientation is intact.
+- **`.github/smoke-hooks.mjs`** — pins the 31-event surface and asserts the
+  decision log covers it, that every verdict states a disposition, and that no
+  event is wired in `hooks.handlers` while recorded as rejected. When the
+  harness adds event 32, this is the tripwire that says the kit owes it a
+  verdict, instead of the gap waiting for the next audit. Five new
+  `compact-reorient` cases cover each `source` value; the BOM fixture now
+  carries `source: "compact"` so it models the real payload.
+
+Verification: the four `source`-guard cases and the decision-log assert were
+each shown failing against the pre-fix tree first — `startup`, `resume`,
+`clear`, and `fork` all fired the reorientation nudge, and the log reported 30
+of 31 events unrecorded. Full gate green after: scratch install (35 files) →
+idempotent re-run (0 written, 35 unchanged) → scratch `--check` (33 files) →
+`skill-lint` (10 skills clean, 897 description tokens) → `skill-evals`
+(10 skills · 30 scenarios · 94 anchors) → `smoke-hooks` (47) →
+`smoke-installer` (56) → `check-version` (6 sites) → root `--check`.
+
 ## 0.19.0 — 2026-08-24
 
 harness-audit inventory script (row B3-22, the second and last row from the

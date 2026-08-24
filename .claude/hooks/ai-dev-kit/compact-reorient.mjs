@@ -26,6 +26,15 @@ try {
 // name so a mis-wired matcher can't turn this into an every-event nudge.
 if (input?.hook_event_name !== "SessionStart") process.exit(0);
 
+// The SessionStart payload carries `source` (startup|resume|clear|compact|fork).
+// Enforce the compact-only contract from the payload too, so a mis-wired matcher
+// can't turn this into a per-session nudge. Deliberately a NEGATIVE guard: a
+// payload with no `source` still fires, because the matcher remains the primary
+// scope and a harness that omits the field must not silently kill the hook.
+// `fork` is excluded on purpose — a forked session inherits its parent's context,
+// so orientation is intact; compaction is the entry where it is not.
+if (input.source !== undefined && input.source !== "compact") process.exit(0);
+
 const additionalContext =
   "ai-dev-kit compact-reorient: this session just resumed from context compaction. Before " +
   "continuing, re-open the project's status doc and the current backlog row (adapter " +

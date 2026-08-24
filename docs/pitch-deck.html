@@ -208,9 +208,9 @@
 <body>
 
 <section class="slide">
-  <p class="eyebrow">ai-dev-kit · v0.19.0</p>
+  <p class="eyebrow">ai-dev-kit · v0.20.0</p>
   <h1>A portable operating method for agentic development.</h1>
-  <p class="lede">Eight skills, four hooks, and twelve techniques that turn AI-assisted
+  <p class="lede">Ten skills, five hooks, and thirteen techniques that turn AI-assisted
   building into a repeatable pipeline — token-lean, verification-first, and installable
   into any project in one command. Distilled from shipping a production monorepo to a
   verified 100/100.</p>
@@ -353,8 +353,11 @@
     a sentence — a wrong block halts legitimate work and trains bypass. Handlers are
     pure-Node stdin→stdout scripts (Windows-safe, no jq), drift-guarded like skills,
     each proven by piped-event smoke tests on two OSes. The rejections are recorded
-    too: no Stop-hook nag, no cache hook, no calendar audit nudge — existing cadence
-    covers them.</p>
+    too — and not selectively: the manifest carries an accept/reject verdict for all
+    <b>31</b> hook events the harness documents, with a test that fails when a new one
+    appears unjudged. Only 11 of those events can inject context at all; the rest can
+    block, act, or notify a human, which is why no Stop-hook nag, cache hook, or
+    calendar audit nudge exists.</p>
   </div>
 </section>
 
@@ -422,7 +425,7 @@
 </section>
 
 <footer>
-  current as of 2026-08-24 · ai-dev-kit 0.19.0 ·
+  current as of 2026-08-24 · ai-dev-kit 0.20.0 ·
   <a href="https://github.com/jrittelmeyer/ai-dev-kit">jrittelmeyer/ai-dev-kit</a> ·
   <a href="../README.md">README</a> · <a href="../manifest.json">manifest</a> ·
   <a href="PLAYBOOK.md">playbook</a>

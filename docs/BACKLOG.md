@@ -8,7 +8,8 @@ report. Every row enters plan → sign-off → build.
 Source: [PROJECT_AUDIT_2026-08-24](archive/PROJECT_AUDIT_2026-08-24.md)
 (aggregate 96.8/100, fifth audit — a deliberate decrease: the 0.14.0–0.19.0
 surface is strong, but the pass found doc drift plus a hook-surface currency
-gap). Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
+gap). Rows 23 and 27 closed in 0.20.0 — the hook decision log now covers all 31
+harness events and `smoke-hooks` keeps it complete. Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) → 96.8. Harness-currency baseline
@@ -17,11 +18,9 @@ gap). Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 23 | hooks | Re-review the harness's ~31-event surface; record an accept/reject verdict per event in `manifest.json`, wire any that clear the automation-review bar | Hooks +3 | M |
 | B1 | 24 | installer | Fix `install.mjs` docblock + `--help` to name `hooks/installer-hooks.json` as the `--hooks` merge source; add a smoke assert so it can't drift again | Installer +1, Testing +1 | S |
 | B1 | 25 | skills | `harness-audit`'s documented `node scripts/inventory.mjs` fails from a project root (the path is skill-relative) — fix the body and the script's usage line | Lifecycle +1 | S |
-| B2 | 26 | testing | `smoke-hooks` tally counts every assertion (53), not just the case arrays (42) | Testing +1 | S |
-| B2 | 27 | hooks | `compact-reorient` guards on the payload's `source === "compact"`; smoke fixtures carry `source`; record a verdict for the new `fork` matcher | Hooks +1 | S |
+| B2 | 26 | testing | `smoke-hooks` tally under-reports: it counts the case arrays (47), not every assertion actually run (59) | Testing +1 | S |
 | B2 | 28 | testing | Run and archive a model-graded `skill-evals --report` pass, so eval presence is effectiveness-backed rather than anchor-backed | Testing +1 | M |
 | B2 | 32 | hooks | `live-verify-reminder` false-fires on multi-line commands — its segment-boundary class `[^\|&;]` omits newlines, so `git` on one line + the word `commit` on another (e.g. `gh run list --commit`) matches. Add `\n`/`\r` to the class; smoke the multi-line case | Hooks +1 | S |
 | B3 | 29 | testing | `skill-lint` enforces the spec's reserved-word rule (`name` may not contain "anthropic"/"claude") | Testing +1 | S |

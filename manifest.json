@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -59,9 +59,39 @@
         "fires": "a session resuming from context compaction — one-shot reorientation nudge (status doc + current row + re-verify assumed findings)"
       }
     ],
+    "reviewedAgainst": "https://code.claude.com/docs/en/hooks — 31 documented events, full-surface pass 2026-08-24 (0.20.0). Only 11 events can return hookSpecificOutput.additionalContext (SessionStart, Setup, SubagentStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, Stop, SubagentStop); the other 20 can only block, act, or talk to the human, and the kit's policy is advise-never-block. .github/smoke-hooks.mjs asserts this log covers the full surface.",
     "reviewed": {
-      "PreCompact": "rejected 0.16.0 — the event cannot inject additionalContext per the current hooks contract (verified at build); the accepted mechanism is SessionStart(compact)",
-      "SessionStart(startup|resume|clear)": "rejected 0.16.0 — a per-session nudge is latency and noise; orientation on normal starts is the resume-prompt's job. Only the compact matcher is wired: compaction is the one entry where disorientation is the default"
+      "SessionStart": "accepted 0.16.0 for the `compact` matcher only (compact-reorient) — compaction is the one entry point where disorientation is the default. `startup|resume|clear` rejected 0.16.0: a per-session nudge is latency and noise, and orientation on a normal start is the resume prompt's job. `fork` rejected 0.20.0: a forked session inherits its parent's context, so orientation is intact",
+      "Setup": "rejected 0.20.0 — fires only under `--init-only`, `-p --init`, or `-p --maintenance`, never on normal startup, so an orientation or drift nudge here would essentially never reach an interactive session; SessionStart already covers per-session entry",
+      "InstructionsLoaded": "rejected 0.20.0 — observability only: no additionalContext, no decision control, runs asynchronously. Nothing to advise with",
+      "UserPromptSubmit": "rejected 0.20.0 — accepts additionalContext but fires on every prompt; a standing nudge at that frequency is the same noise trade already rejected for SessionStart(startup). Facts that apply to every prompt belong in CLAUDE.md, which loads without running a script",
+      "UserPromptExpansion": "rejected 0.20.0 — matches skill/command names, but a kit skill's own SKILL.md already carries its rules; re-injecting them at expansion pays for the same content twice. PLAYBOOK #9: the skill trigger already covers it",
+      "MessageDisplay": "rejected 0.20.0 — display-only. `displayContent` rewrites what the human sees while the transcript and the model keep the original text, so it cannot advise the agent",
+      "PreToolUse": "accepted 0.2.0 — live-verify-reminder (matcher Bash, if: \"Bash(git *)\"): fires before a commit, the last moment the agent can still run the verify recipe",
+      "PermissionRequest": "rejected 0.20.0 — decision-only (`decision.behavior` allow/deny) with no context channel; auto-answering a permission prompt is a block-class action the kit's trust contract excludes",
+      "PostToolUse": "accepted 0.2.0 — dep-check-nudge, skill-drift-guard, context-guard: the tool result is the moment the agent can still act on what it just did",
+      "PostToolUseFailure": "rejected 0.20.0 — accepts additionalContext and checkpoint's three-strikes rule is the natural payload, but strike counting needs cross-call state a stateless handler cannot hold, and firing on every tool error (a typo'd grep, a missing file) is an intolerable false-positive rate. Revisit only with a session state file",
+      "PostToolBatch": "rejected 0.20.0 — fires once per batch with the full tool set, but supports no matcher; the kit's three PostToolUse nudges are per-file and per-command decisions that need exactly the matcher scoping this event cannot express, and there is no batch-level fact worth injecting on its own",
+      "PermissionDenied": "rejected 0.20.0 — `retry` only, no context channel; re-driving a denied tool call is the user's decision, not a hook's",
+      "Notification": "rejected 0.20.0 — a user-facing surface (permission prompts, idle, auth, elicitation dialogs) with no context channel to the agent",
+      "SubagentStart": "rejected 0.20.0 — can inject context into a spawning subagent, but no kit invariant is subagent-specific: the one real risk, a subagent editing `.claude/skills/` directly, is already caught by skill-drift-guard, whose PostToolUse hook fires for subagent tool calls too. A generic per-spawn nudge is the SessionStart(startup) noise trade again",
+      "SubagentStop": "rejected 0.20.0 — feedback loops back into a subagent that has finished; the parent-side equivalent is a PostToolUse hook on the Agent tool, which is already the kit's wired event",
+      "TaskCreated": "rejected 0.20.0 — cancel/block only; no context channel, and cancelling a task is a block",
+      "TaskCompleted": "rejected 0.20.0 — exit-2 or `continue: false` blocking only; the kit's hooks advise, never block",
+      "Stop": "rejected 0.20.0 — the checkpoint-nag candidate, reviewed and rejected since 0.2.0 and recorded here for the first time: `/checkpoint` at step boundaries is a standing agreement plus a skill trigger, and a nag at every turn end is noise. That it accepts additionalContext and continues the conversation makes it worse, not better — an unwanted extra turn",
+      "StopFailure": "rejected 0.20.0 — matches API and transport error classes (rate_limit, overloaded, billing_error); no context channel, and nothing project-shaped to advise about",
+      "TeammateIdle": "rejected 0.20.0 — blocking-shaped (exit 2 / `continue: false`) and scoped to teammate sessions the kit does not model",
+      "ConfigChange": "rejected 0.20.0 — the `skills` matcher looked like the gap-closer for `.claude/skills/` mutated outside the file tools, but the event has no additionalContext: it can only block, and a blocked change surfaces no message to the user or to Claude (debug log only). A silent block is the exact opposite of advise-never-block; `install.mjs --check` remains the drift guard",
+      "CwdChanged": "rejected 0.20.0 — returns `watchPaths` and `systemMessage` only, and the systemMessage is a terminal notification that does not reach the model",
+      "DirectoryAdded": "rejected 0.20.0 — with the `slash_command` matcher its systemMessage does reach Claude on the next turn, so a context channel exists, but `/add-dir` is rare and nothing in the kit's lifecycle keys off it. Reconsider if a multi-root workflow lands",
+      "FileChanged": "rejected 0.20.0 — a filesystem watcher that catches changes no tool matcher sees, genuinely attractive for skill and adapter drift, but it has no additionalContext and its systemMessage does not reach the SDK message stream. It can act on files or notify the human; it cannot advise the agent",
+      "WorktreeCreate": "rejected 0.20.0 — the contract is a worktree path on stdout and a failure fails creation; not an advisory surface",
+      "WorktreeRemove": "rejected 0.20.0 — teardown notification with no context channel",
+      "PreCompact": "rejected 0.16.0, re-verified 0.20.0 — the event cannot inject additionalContext (it is a top-level `decision` event); the accepted mechanism is SessionStart(compact)",
+      "PostCompact": "rejected 0.20.0 — the newer twin of PreCompact, with no decision control and no additionalContext at all; SessionStart(compact) remains the only mechanism for compact reorientation",
+      "SessionEnd": "rejected 0.20.0 — the session is over: no context channel and no turn left in which the agent could act",
+      "Elicitation": "rejected 0.20.0 — answers MCP form prompts on the agent's behalf (accept/decline/cancel), automating a human decision that SECURITY.md's trust contract puts out of scope",
+      "ElicitationResult": "rejected 0.20.0 — the same MCP elicitation surface after the response; overriding submitted form content is out of scope for the same reason"
     }
   },
   "skills": [

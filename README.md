@@ -142,7 +142,7 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
-| `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear) |
+| `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear/fork; the handler also guards on the payload's `source`, so a mis-wired matcher can't widen it) |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe;
 a malformed event exits 0 silently), installed to `.claude/hooks/ai-dev-kit/` and
@@ -157,7 +157,13 @@ Watch row in [docs/BACKLOG.md](docs/BACKLOG.md).
 Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag, a
 tidy/cache hook, and any calendar/session-counter doc-audit nudge — existing
 cadence (standing agreement, husky pre-push, audits on real need) covers them,
-and a nag would be noise. Hooks changed in `settings.json` load at session start;
+and a nag would be noise. The full decision log lives in `manifest.json` →
+`hooks.reviewed`, which carries an accept/reject verdict for **every one of the
+harness's 31 hook events** (re-reviewed 2026-08-24) — the organizing fact being
+that only 11 of them can return `additionalContext` at all, and the other 20 can
+only block, act, or notify the human. `smoke-hooks` asserts the log stays
+complete, so a newly added event surfaces as a failing test rather than silent
+drift. Hooks changed in `settings.json` load at session start;
 an already-running session may need `/hooks` opened once (or a restart) to pick
 them up.
 
@@ -216,5 +222,6 @@ The canonical consumer block is four lines:
   Harness-currency baseline **92.4/100**
   ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
   first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
-  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). **Next:** B1 rows 23–25 (hook
-  event-surface re-review, then two S-effort fixes).
+  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Row 23 (hook event-surface
+  re-review) and row 27 closed in 0.20.0. **Next:** B1 rows 24–25, two S-effort
+  fixes (`install.mjs` `--help` filename, `harness-audit` inventory path).
