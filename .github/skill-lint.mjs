@@ -124,6 +124,9 @@ for (const dir of dirs) {
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(dir) || dir.length > 64) {
     err(`${id}: dir name must be lowercase-hyphen, ≤64 chars`);
   }
+  if (/anthropic|claude/i.test(dir)) {
+    err(`${id}: dir name contains a reserved word ("anthropic"/"claude")`);
+  }
   const skillPath = join(SKILLS_DIR, dir, "SKILL.md");
   if (!existsSync(skillPath)) {
     err(`${id}: missing SKILL.md`);

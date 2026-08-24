@@ -72,7 +72,8 @@ against the refreshed authorities:
 - Tool-server leanness: each connected server's context cost vs observed use.
 - Permissions: least-privilege shape, dead entries, undocumented broad grants.
 - Packaging currency: how the harness ecosystem distributes this kind of
-  surface today vs how this project does.
+  surface today vs how this project does — skipped (not scored from memory)
+  when step 2 stamped the run PARTIAL for no network access.
 
 ## 5. Report
 

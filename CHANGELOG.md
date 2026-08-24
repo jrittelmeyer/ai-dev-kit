@@ -1,5 +1,36 @@
 # ai-dev-kit changelog
 
+## 0.22.0 — 2026-08-24
+
+Six S-effort rows from the 2026-08-24 project-audit + skill-evals passes
+(B3-29, 30, 33, 34, 35, 36) — one enforcement rule, one new source row, and
+three skill-procedure fixes.
+
+- **`skill-lint` now enforces the reserved-word rule** — a skill dir name
+  containing "anthropic" or "claude" (case-insensitive) fails CI. No existing
+  skill violates it (row B3-29).
+- **`harness-audit`'s `sources.md` gains a `plugins-reference` row** — the
+  auto-discovery + version-management authority the packaging route (B4-16/31)
+  depends on, fetch-verified against `code.claude.com/docs/en/plugins-reference`
+  (row B3-30).
+- **`harness-audit` step 4's Packaging-currency axis is now gated behind
+  step 2's PARTIAL/no-network branch** — an offline run skips scoring it
+  instead of scoring from stale local knowledge, matching how the other
+  ecosystem-dependent axes already behave (row B3-33).
+- **`project-adopt`'s sign-off gate (§8) gains an explicit pre-sign-off
+  check** — every disposition-map row's evidence label must match the
+  reference grade recorded at intake (§1) before it's presented; the prior
+  "marked as such" wording was a labeling instruction, not a guard
+  (row B3-34).
+- **`project-init`'s intake (§1) now checks for an existing product brief
+  before the "neither provided" stop** — a bare re-run with an existing brief
+  and no new input resumes from it instead of halting to demand fresh input
+  (row B3-35).
+- **`retro`'s instruction-file bullet now cross-references the Drop
+  bullet** — a single memorable incident is Drop territory unless it recurs
+  or generalizes into a statable rule, closing the ambiguity between the two
+  routing options (row B3-36).
+
 ## 0.21.0 — 2026-08-24
 
 Four S-effort cleanups from the 2026-08-24 project audit (rows B1-24, B1-25,

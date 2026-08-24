@@ -229,4 +229,7 @@ The canonical consumer block is four lines:
   model-graded `skill-evals --report` pass) closed docs-only — 92/96 lines
   PASS across all 10 skills, 4 genuine wording gaps rowed at 33–36; see
   [docs/archive/SKILL_EVALS_2026-08-24.md](docs/archive/SKILL_EVALS_2026-08-24.md).
-  **Next:** B3 rows 29, 30, or 33–36 — all S-effort, no plan scoped yet.
+  Rows 29, 30, and 33–36 (skill-lint reserved-word enforcement, a
+  `plugins-reference` source row, and three skill-procedure fixes) closed in
+  0.22.0. **Next:** only B4-16/31 remain, both deferred/advised-against — the
+  open S-effort backlog is empty.
