@@ -19,7 +19,8 @@ the sign-off gate.
 
 ## 1. Inventory the local surface
 
-Run `scripts/inventory.mjs` first (`node scripts/inventory.mjs [projectRoot]`) — it measures per-skill
+Run `scripts/inventory.mjs` first (`node .claude/skills/harness-audit/scripts/inventory.mjs [projectRoot]`
+from the consumer's project root) — it measures per-skill
 description chars/≈tokens, body ≈tokens, and references/scripts files, plus
 every wired hook event/matcher/handler, straight from the working tree
 (zero-dep, no network, report-only). Layer judgment on top rather than

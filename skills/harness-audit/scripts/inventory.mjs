@@ -5,7 +5,8 @@
  * events) so a harness-audit run starts from numbers instead of hand-counts.
  * Report-only: never fails, never writes files.
  *
- * Usage: node scripts/inventory.mjs [projectRoot]  (defaults to cwd)
+ * Usage: node .claude/skills/harness-audit/scripts/inventory.mjs [projectRoot]
+ *        (run from the consumer's project root; projectRoot defaults to cwd)
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";

@@ -223,5 +223,7 @@ The canonical consumer block is four lines:
   ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
   first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
   0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Row 23 (hook event-surface
-  re-review) and row 27 closed in 0.20.0. **Next:** B1 rows 24–25, two S-effort
-  fixes (`install.mjs` `--help` filename, `harness-audit` inventory path).
+  re-review) and row 27 closed in 0.20.0. Rows 24, 25, 26, and 32 (installer
+  `--help` doc drift, `harness-audit` inventory path, `smoke-hooks` tally,
+  `live-verify-reminder` multi-line false-fire) closed in 0.21.0. **Next:** B2
+  row 28, a model-graded `skill-evals --report` pass.

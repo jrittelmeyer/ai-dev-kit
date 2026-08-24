@@ -1,5 +1,37 @@
 # ai-dev-kit changelog
 
+## 0.21.0 — 2026-08-24
+
+Four S-effort cleanups from the 2026-08-24 project audit (rows B1-24, B1-25,
+B2-32, B2-26) — a doc-drift sweep plus one behavior fix, no new surface.
+
+- **`install.mjs` docblock + `--help` now name the real `--hooks` merge
+  source**, `hooks/installer-hooks.json` — both previously said
+  `hooks/hooks.json`, the plugin-form twin that never ships to an installer
+  consumer. A consumer following `--help` to hand-wire hooks would have copied
+  unresolvable `${CLAUDE_PLUGIN_ROOT}`-anchored entries. `smoke-installer` now
+  asserts `--help` names the correct file and rejects the wrong one, so the
+  prose can't drift again (row B1-24).
+- **`harness-audit`'s inventory script usage fixed** — the skill body and the
+  script's own usage comment documented `node scripts/inventory.mjs
+  [projectRoot]`, which fails ("Cannot find module") when run from a
+  consumer's project root because the path is skill-relative. Both now
+  document the installed path,
+  `.claude/skills/harness-audit/scripts/inventory.mjs` (row B1-25).
+- **`live-verify-reminder.mjs` no longer false-fires across a newline** — its
+  segment-boundary class `[^|&;]` excluded pipe/and/semicolon but not `\n`/`\r`,
+  so a multi-line command with `git` on one line and an unrelated `commit`
+  substring on another (e.g. `gh run list --commit`) matched as if it were a
+  real `git … commit` invocation. `\n`/`\r` are now excluded too; a
+  `smoke-hooks` case reproduces the false-fire against the old regex before
+  asserting the fix (row B2-32).
+- **`smoke-hooks`'s closing tally now counts every assertion actually run**,
+  not the case-array literal it previously summed — it reported 47 while 59
+  asserts (wiring, parity, config-override, decision-log checks) ran
+  uncounted. A running `asserts` counter replaces the hardcoded formula, so
+  the number in the CI log can no longer drift from what the script does
+  (row B2-26).
+
 ## 0.20.0 — 2026-08-24
 
 Hook event-surface re-review (row B1-23, the one substantive row from the

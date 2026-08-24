@@ -17,8 +17,8 @@
  * stale file left in a kit-owned dir by a renamed/removed kit file — a plain
  * install prunes those leftovers. Skills in `.claude/skills/` that the manifest
  * doesn't list are left untouched. `--hooks`
- * merges hooks/hooks.json into `.claude/settings.json` — only entries whose command
- * or args carry the kit's handler-path marker are ever replaced.
+ * merges hooks/installer-hooks.json into `.claude/settings.json` — only entries
+ * whose command or args carry the kit's handler-path marker are ever replaced.
  */
 import {
   existsSync,
@@ -48,7 +48,7 @@ Flags:
   --adapter <file>       Project adapter JSON — schema-validated, then copied
                          verbatim to .claude/ai-dev-kit.config.json.
   --global               Also install dual-home skills to ~/.claude/skills/.
-  --hooks                Merge hooks/hooks.json into .claude/settings.json
+  --hooks                Merge hooks/installer-hooks.json into .claude/settings.json
                          (kit-owned entries replaced by marker; user hooks kept).
   --check                Report drift/stale files against kit source; exit 1 if any.
   --help, -h             Show this help and exit.

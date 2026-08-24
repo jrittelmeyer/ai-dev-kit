@@ -70,6 +70,19 @@ try {
   check("flags: --help exits 0", help.status === 0, `exit ${help.status}`);
   check("flags: --help prints usage", (help.stdout ?? "").includes("Usage"));
   check("flags: --help writes nothing", !existsSync(join(scratch, ".claude")));
+  // The --hooks merge source is hooks/installer-hooks.json (hooks/hooks.json is
+  // the plugin-form twin) — --help must name the real file, or a consumer
+  // hand-wiring hooks from the doc copies unresolvable ${CLAUDE_PLUGIN_ROOT} paths.
+  check(
+    "flags: --help names installer-hooks.json as the --hooks merge source",
+    (help.stdout ?? "").includes("hooks/installer-hooks.json"),
+    (help.stdout ?? "").trim(),
+  );
+  check(
+    "flags: --help does not name hooks/hooks.json as the --hooks merge source",
+    !(help.stdout ?? "").includes("hooks/hooks.json"),
+    (help.stdout ?? "").trim(),
+  );
 
   // ---- settings merge from a pre-populated settings.json ----
   const settingsPath = join(scratch, ".claude", "settings.json");

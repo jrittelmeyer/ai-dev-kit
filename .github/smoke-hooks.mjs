@@ -17,6 +17,7 @@ const cases = [
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git add -A && git commit -m x" } }, true],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git -c core.autocrlf=false commit -m x" } }, true],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git log | grep commit" } }, false],
+  ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git log\ngh run list --commit abc123" } }, false],
   ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/checkpoint/SKILL.md" } }, true],
   ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "src/app.ts" } }, false],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "AGENTS.md" } }, true],
@@ -45,7 +46,11 @@ const cases = [
 ];
 
 let failures = 0;
+// Counts every assertion actually run (not the literal case arrays), so the
+// closing tally can't drift from what the loops below actually check.
+let asserts = 0;
 for (const [handler, event, shouldFire] of cases) {
+  asserts++;
   const res = spawnSync(process.execPath, [handler], {
     input: JSON.stringify(event),
     encoding: "utf8",
@@ -75,6 +80,7 @@ const handlers = [
 const garbage = ["", "not json", "null"];
 for (const handler of handlers) {
   for (const raw of garbage) {
+    asserts++;
     const res = spawnSync(process.execPath, [handler], { input: raw, encoding: "utf8" });
     const fired = (res.stdout ?? "").includes("additionalContext");
     if (res.status !== 0 || fired) {
@@ -101,6 +107,7 @@ const bomEvents = [
   ["hooks/compact-reorient.mjs", { hook_event_name: "SessionStart", session_id: "s1", source: "compact" }],
 ];
 for (const [handler, event] of bomEvents) {
+  asserts++;
   const res = spawnSync(process.execPath, [handler], {
     input: "\uFEFF" + JSON.stringify(event),
     encoding: "utf8",
@@ -137,6 +144,7 @@ for (const [file, anchor] of WIRING) {
   for (const [event, entries] of Object.entries(wired)) {
     for (const entry of entries) {
       for (const hook of entry.hooks ?? []) {
+        asserts++;
         const arg = Array.isArray(hook.args) ? (hook.args[0] ?? "") : "";
         const base = arg.match(/([\w-]+\.mjs)$/)?.[1];
         const ok =
@@ -164,6 +172,7 @@ for (const [file, anchor] of WIRING) {
 }
 // Parity: the two wiring files must describe the same hooks — same events,
 // matchers, handlers, if-clauses, timeouts — differing only in the anchor.
+asserts++;
 if (shapes.get(WIRING[0][0]) === shapes.get(WIRING[1][0])) {
   console.log("ok   installer-hooks.json ≡ hooks.json (wiring parity, anchors aside)");
 } else {
@@ -176,6 +185,7 @@ if (shapes.get(WIRING[0][0]) === shapes.get(WIRING[1][0])) {
 // the adapter config from the root, not the cwd: drive it from a fixture subdir and
 // assert a custom contextDir still fires.
 const fixture = mkdtempSync(join(tmpdir(), "adk-ctx-"));
+asserts++;
 try {
   mkdirSync(join(fixture, ".claude"), { recursive: true });
   mkdirSync(join(fixture, "sub"), { recursive: true });
@@ -223,6 +233,7 @@ const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
 const reviewed = manifest.hooks?.reviewed ?? {};
 const missing = EVENT_SURFACE.filter((e) => !(e in reviewed));
 const extra = Object.keys(reviewed).filter((e) => !EVENT_SURFACE.includes(e));
+asserts++;
 if (missing.length || extra.length) {
   failures++;
   if (missing.length)
@@ -237,6 +248,7 @@ if (missing.length || extra.length) {
 // the log and the wiring disagree.
 const wiredEvents = new Set((manifest.hooks?.handlers ?? []).map((h) => h.event));
 for (const [event, verdict] of Object.entries(reviewed)) {
+  asserts++;
   const disposition = String(verdict).split(" ")[0];
   if (!["accepted", "rejected", "partial"].includes(disposition)) {
     failures++;
@@ -251,6 +263,7 @@ for (const [event, verdict] of Object.entries(reviewed)) {
   }
 }
 for (const event of wiredEvents) {
+  asserts++;
   if (!(event in reviewed)) {
     failures++;
     console.error(`FAIL manifest hooks.handlers wires ${event} with no hooks.reviewed verdict`);
@@ -259,6 +272,7 @@ for (const event of wiredEvents) {
 
 if (failures > 0) process.exit(1);
 console.log(
-  `${cases.length + handlers.length * garbage.length + bomEvents.length + 1} hook smoke cases passed ` +
-    "(garbage stdin + BOM stdin + config override included), all wired hooks exec-form anchored.",
+  `${asserts} hook smoke asserts passed ` +
+    "(fire/silent cases + garbage stdin + BOM stdin + wiring/parity + config override + decision-log " +
+    "completeness), all wired hooks exec-form anchored.",
 );

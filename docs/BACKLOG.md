@@ -9,7 +9,9 @@ Source: [PROJECT_AUDIT_2026-08-24](archive/PROJECT_AUDIT_2026-08-24.md)
 (aggregate 96.8/100, fifth audit — a deliberate decrease: the 0.14.0–0.19.0
 surface is strong, but the pass found doc drift plus a hook-surface currency
 gap). Rows 23 and 27 closed in 0.20.0 — the hook decision log now covers all 31
-harness events and `smoke-hooks` keeps it complete. Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
+harness events and `smoke-hooks` keeps it complete. Rows 24, 25, 26, and 32
+closed in 0.21.0 — the `--help`/inventory-path doc drift and the
+`live-verify-reminder` multi-line false-fire. Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) → 96.8. Harness-currency baseline
@@ -18,11 +20,7 @@ harness events and `smoke-hooks` keeps it complete. Chain: [90.4](archive/PROJEC
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 24 | installer | Fix `install.mjs` docblock + `--help` to name `hooks/installer-hooks.json` as the `--hooks` merge source; add a smoke assert so it can't drift again | Installer +1, Testing +1 | S |
-| B1 | 25 | skills | `harness-audit`'s documented `node scripts/inventory.mjs` fails from a project root (the path is skill-relative) — fix the body and the script's usage line | Lifecycle +1 | S |
-| B2 | 26 | testing | `smoke-hooks` tally under-reports: it counts the case arrays (47), not every assertion actually run (59) | Testing +1 | S |
 | B2 | 28 | testing | Run and archive a model-graded `skill-evals --report` pass, so eval presence is effectiveness-backed rather than anchor-backed | Testing +1 | M |
-| B2 | 32 | hooks | `live-verify-reminder` false-fires on multi-line commands — its segment-boundary class `[^\|&;]` omits newlines, so `git` on one line + the word `commit` on another (e.g. `gh run list --commit`) matches. Add `\n`/`\r` to the class; smoke the multi-line case | Hooks +1 | S |
 | B3 | 29 | testing | `skill-lint` enforces the spec's reserved-word rule (`name` may not contain "anthropic"/"claude") | Testing +1 | S |
 | B3 | 30 | docs | Add a `plugins-reference` row to `harness-audit`'s `sources.md` — the auto-discovery + version-management authority the packaging route depends on | Docs +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
