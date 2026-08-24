@@ -16,13 +16,20 @@ closed in 0.21.0 — the `--help`/inventory-path doc drift and the
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) → 96.8. Harness-currency baseline
 [92.4](archive/HARNESS_AUDIT_2026-08-23.md); its rows 20–22 closed in
-0.17.0–0.19.0.
+0.17.0–0.19.0. Row 28 closed by the model-graded
+[SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md) pass — 92/96
+expect+reject lines PASS across all 10 skills; the 4 genuine wording gaps it
+found are rowed below (33–36) rather than fixed inline, per the pass's own
+propose-don't-apply doctrine.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B2 | 28 | testing | Run and archive a model-graded `skill-evals --report` pass, so eval presence is effectiveness-backed rather than anchor-backed | Testing +1 | M |
 | B3 | 29 | testing | `skill-lint` enforces the spec's reserved-word rule (`name` may not contain "anthropic"/"claude") | Testing +1 | S |
 | B3 | 30 | docs | Add a `plugins-reference` row to `harness-audit`'s `sources.md` — the auto-discovery + version-management authority the packaging route depends on | Docs +1 | S |
+| B3 | 33 | skills | `harness-audit` offline-run: gate step 4's ecosystem-dependent rubric axes (packaging currency at minimum) behind the same network-access check as step 2/3, so `PARTIAL` mode skips scoring them instead of scoring from stale local knowledge | Testing +1 | S |
+| B3 | 34 | skills | `project-adopt`: add an explicit pre-sign-off check that every disposition-map row's evidence label matches the reference grade recorded at intake — the current "marked as such" wording is a labeling instruction, not a guard | Testing +1 | S |
+| B3 | 35 | skills | `project-init` §1: reorder intake so existing-brief detection runs before the "neither provided" unconditional stop — a bare re-run with an existing brief and no new input should resume-and-confirm from the brief, not halt demanding fresh input | Testing +1 | S |
+| B3 | 36 | skills | `retro`'s instruction-file routing bullet: add a one-line disambiguator — a single incident, however memorable, is Drop territory unless it recurs or generalizes into a statable rule | Testing +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists, so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 

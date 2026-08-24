@@ -225,5 +225,8 @@ The canonical consumer block is four lines:
   0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Row 23 (hook event-surface
   re-review) and row 27 closed in 0.20.0. Rows 24, 25, 26, and 32 (installer
   `--help` doc drift, `harness-audit` inventory path, `smoke-hooks` tally,
-  `live-verify-reminder` multi-line false-fire) closed in 0.21.0. **Next:** B2
-  row 28, a model-graded `skill-evals --report` pass.
+  `live-verify-reminder` multi-line false-fire) closed in 0.21.0. Row 28 (a
+  model-graded `skill-evals --report` pass) closed docs-only — 92/96 lines
+  PASS across all 10 skills, 4 genuine wording gaps rowed at 33–36; see
+  [docs/archive/SKILL_EVALS_2026-08-24.md](docs/archive/SKILL_EVALS_2026-08-24.md).
+  **Next:** B3 rows 29, 30, or 33–36 — all S-effort, no plan scoped yet.
