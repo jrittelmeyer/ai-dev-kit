@@ -37,7 +37,8 @@ The intended lifecycle (machine-readable in `manifest.json` → `pipeline`):
 ```text
 orient → plan-gate → [dep-check] → build → live-verify
       → code-review / simplify → checkpoint (→ tidy)
-      → periodic: doc-audit · project-audit
+      → periodic: doc-audit · project-audit · harness-audit
+      → post-milestone: retro
 ```
 
 `project-init` and `project-adopt` sit *before* the loop — the one-time inception
@@ -80,14 +81,16 @@ node ai-dev-kit/install.mjs --adapter ai-dev-kit/adapters/<your-project>.json --
 - Requires Node ≥ 22 (pure Node, zero dependencies); CI runs the floor (22) and
   current (24) on ubuntu + windows.
 - Copies `skills/*` → `<project>/.claude/skills/` (byte-identical) and the hook
-  handlers plus their canonical wiring (`hooks/*.mjs`, `hooks/hooks.json`) →
-  `.claude/hooks/ai-dev-kit/`.
+  handlers plus their canonical wiring (`hooks/*.mjs`, and
+  `hooks/installer-hooks.json` — which ships *as* `hooks.json`) →
+  `.claude/hooks/ai-dev-kit/`. The plugin-form `hooks/hooks.json` never ships
+  to an installer consumer.
 - `--global` also installs dual-home skills (`doc-audit`) → `~/.claude/skills/`.
 - `--adapter <file>` validates the adapter against
   [adapters/project.schema.json](adapters/project.schema.json) (types · enums ·
   unknown keys) and writes it verbatim to `.claude/ai-dev-kit.config.json`; a
   violation fails the install before anything is written.
-- `--hooks` merges `hooks/hooks.json` into `.claude/settings.json` — only entries
+- `--hooks` merges `hooks/installer-hooks.json` into `.claude/settings.json` — only entries
   whose command or args carry the `.claude/hooks/ai-dev-kit/` marker are ever
   replaced; every other setting is preserved. Omit it to wire hooks manually.
   The trust contract for what those hooks may do in a session is pinned in
@@ -203,13 +206,15 @@ The canonical consumer block is four lines:
   git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
   subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
   other 0.7.2 deferral — shipped in 0.11.0.
-- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → **97.9/100**
-  (2026-08-19, fourth audit: 0.13.0 verified, zero drift, zero new
-  deductions; hooks reach 100) — remaining rows in
-  [docs/BACKLOG.md](docs/BACKLOG.md), latest report
-  [docs/archive/PROJECT_AUDIT_2026-08-19.md](docs/archive/PROJECT_AUDIT_2026-08-19.md).
+- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → **96.8/100**
+  (2026-08-24, fifth audit — a deliberate decrease: the 0.14.0–0.19.0 surface
+  verified strong, but the pass found doc drift in four files and a
+  hook-surface currency gap; the adapter contract holds at 100 and the deck at
+  zero stale claims) — rows in [docs/BACKLOG.md](docs/BACKLOG.md), latest
+  report
+  [docs/archive/PROJECT_AUDIT_2026-08-24.md](docs/archive/PROJECT_AUDIT_2026-08-24.md).
   Harness-currency baseline **92.4/100**
   ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
   first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
-  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Backlog is Watch-rows-only; next
-  harness-audit run re-scores against the baseline.
+  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). **Next:** B1 rows 23–25 (hook
+  event-surface re-review, then two S-effort fixes).

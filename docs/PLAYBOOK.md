@@ -17,7 +17,8 @@ Format per entry: **What · Why · Practice · Automation · Composes with.**
 ```text
 orient → plan-gate → [dep-check] → build → live-verify
       → code-review / simplify → checkpoint (→ tidy)
-      → periodic: doc-audit · project-audit
+      → periodic: doc-audit · project-audit · harness-audit
+      → post-milestone: retro
 ```
 
 **Why.** A fixed loop turns quality from a per-task negotiation into a default. Each
@@ -205,7 +206,7 @@ standing agreement or skill trigger cover it without machinery? Ship it as
 context-injection (never a deny), keep handlers dumb and fast (the *reading agent*
 is the smart part), and record active + rejected automations in the manifest.
 
-**Automation.** The four shipped hooks passed this review; the manifest's
+**Automation.** The five shipped hooks passed this review; the manifest's
 `automation` fields carry the active/reviewed record.
 
 **Composes with.** the hooks, the manifest, dep-check + live-verify (the two
