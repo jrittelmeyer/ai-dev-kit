@@ -8,8 +8,9 @@
  * Checks: dir/SKILL.md structure · frontmatter shape (incl. `>-` folded
  * descriptions) · description length + third-person + "Use when…" clause ·
  * body line/token budgets (grandfather list below, emptied by the reference
- * splits) · path hygiene (backslashes, absolute drives, hook-wiring variables
- * in prose) · reference resolution + one-level nesting + TOC-for-long-refs ·
+ * splits) · path hygiene (backslashes, absolute drives — prose files only;
+ * bundled scripts are exempt, hook-wiring variables in prose) ·
+ * reference resolution + one-level nesting + TOC-for-long-refs ·
  * encoding (BOM/CRLF) · bare-date freshness (suppress with a
  * `lint-ok: dated — <reason>` comment within 3 lines) · manifest.json ⇄
  * skills/ bijection with semver versions · shared-by-copy byte-equality ·
@@ -89,15 +90,19 @@ function fileChecks(path) {
       for (let d = -3; d <= 3; d++) suppressed.add(i + d);
     }
   });
+  // Path-hygiene checks (backslash paths, absolute drives) target prose that
+  // mentions filesystem paths; script source legitimately contains backslash
+  // escapes (regex literals, \r\n) that aren't paths at all.
+  const isCode = /\.(mjs|js|cjs|ts)$/.test(p);
   lines.forEach((line, i) => {
     const at = `${p}:${i + 1}`;
     if (/\$\{CLAUDE_PROJECT_DIR\}/.test(line)) {
       err(`${at}: \${CLAUDE_PROJECT_DIR} is hook-wiring vocabulary — meaningless in skill prose`);
     }
-    if (/\b[\w.-]+\\[\w.-]+/.test(line)) {
+    if (!isCode && /\b[\w.-]+\\[\w.-]+/.test(line)) {
       err(`${at}: backslash path — skills use forward slashes everywhere`);
     }
-    if (/(^|[\s`("'])[A-Za-z]:[\\/]/.test(line)) {
+    if (!isCode && /(^|[\s`("'])[A-Za-z]:[\\/]/.test(line)) {
       err(`${at}: absolute drive path — skills must stay machine-portable`);
     }
     if (/\b20\d{2}\b/.test(line) && !suppressed.has(i) && !datedFileOk) {

@@ -1,5 +1,35 @@
 # ai-dev-kit changelog
 
+## 0.19.0 — 2026-08-24
+
+harness-audit inventory script (row B3-22, the second and last row from the
+0.16.0 harness-audit baseline) — §1 of the skill asked for a cost split of
+per-skill description/body sizes and wired hook events; before this, every
+run hand-counted those from the working tree.
+
+- **`skills/harness-audit/scripts/inventory.mjs`** — zero-dep, no network,
+  report-only. Emits two markdown tables: per-skill description chars/≈tokens,
+  body ≈tokens, and references/scripts files; and every wired hook
+  event/matcher/handler across `hooks/hooks.json`, `hooks/installer-hooks.json`,
+  and any installed `.claude/hooks/*/hooks.json`. Lives inside the skill
+  (not `.github/`) because it travels with the skill into every project that
+  installs `harness-audit` — a `.github/`-only script would only ever measure
+  this repo.
+- `harness-audit` 0.1.2 — step 1 now runs the script first and layers
+  judgment (version, always-loaded/on-demand split, handler runtimes) on top
+  instead of hand-counting from scratch.
+- Not added to the CI `gate` array: it's a reporting aid the skill invokes on
+  demand, not a pass/fail check.
+
+Verification: `node skills/harness-audit/scripts/inventory.mjs .` against
+this repo's own working tree — the description-token total it reports
+(≈897) matches the harness-audit 0.18.0 baseline exactly, and the hooks table
+lists all 5 handlers across all 3 wiring files (source ×2, installed ×1).
+Full gate green: scratch install → idempotent re-run → scratch `--check` →
+`skill-lint` → `skill-evals` (10 skills · 30 scenarios · 94 anchors) →
+`smoke-hooks` (42) → `smoke-installer` (56) → `check-version` → root
+`--check`.
+
 ## 0.18.0 — 2026-08-23
 
 Per-skill eval scenarios (row B2-21) — the largest deduction on the

@@ -211,4 +211,5 @@ The canonical consumer block is four lines:
   Harness-currency baseline **92.4/100**
   ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
   first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
-  0.17.0, row 21 in 0.18.0, row 22 open).
+  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Backlog is Watch-rows-only; next
+  harness-audit run re-scores against the baseline.

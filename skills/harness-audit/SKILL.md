@@ -19,12 +19,15 @@ the sign-off gate.
 
 ## 1. Inventory the local surface
 
-Enumerate what the project's harness actually is, with a cost split of
-**always-loaded vs on-demand**:
+Run `scripts/inventory.mjs` first (`node scripts/inventory.mjs [projectRoot]`) — it measures per-skill
+description chars/≈tokens, body ≈tokens, and references/scripts files, plus
+every wired hook event/matcher/handler, straight from the working tree
+(zero-dep, no network, report-only). Layer judgment on top rather than
+hand-counting:
 
-- Skills: name · description chars · body tokens (≈ chars/4) · references/
-  and scripts/ presence · version (from the kit stamp or frontmatter).
-- Hooks: events wired · matcher shapes · wiring form · handler runtimes.
+- Skills: the script's table, plus version (from the kit stamp or
+  frontmatter) and a cost split of **always-loaded vs on-demand**.
+- Hooks: the script's table, plus wiring form and handler runtimes.
 - Instruction files: `AGENTS.md` / `CLAUDE.md` (root + leaves), their sizes.
 - Connected tool servers (MCP config), permissions/allowlists in settings,
   subagent and command definitions, packaging (installer, plugin manifest),
