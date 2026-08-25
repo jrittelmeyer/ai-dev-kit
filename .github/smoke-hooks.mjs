@@ -326,6 +326,46 @@ function assertCase(label, res, wantStatus, wantOut = null) {
   }
 }
 
+// compact-reorient doc naming: the nudge names the adapter's status/backlog
+// docs only when they exist at the adapter paths — a scaffold can delete the
+// docs while shipping .claude/ verbatim, and pointing at nonexistent files on
+// every compaction is the failure this guards (the consumer-recorded condition
+// for adopting the --hooks wiring).
+{
+  const compactEvent = { hook_event_name: "SessionStart", session_id: "s1", source: "compact" };
+  const dir = enforcementFixture({ docs: { status: "docs/STATUS.md", backlog: "docs/BACKLOG.md" } });
+  try {
+    mkdirSync(join(dir, "docs"), { recursive: true });
+    writeFileSync(join(dir, "docs", "STATUS.md"), "# status\n");
+    // backlog deliberately NOT created
+    const res = runEnforcement("hooks/compact-reorient.mjs", compactEvent, dir);
+    asserts++;
+    const out = res.stdout ?? "";
+    if (res.status !== 0 || !out.includes("docs/STATUS.md") || out.includes("docs/BACKLOG.md")) {
+      failures++;
+      console.error(
+        `FAIL hooks/compact-reorient.mjs doc naming → exit ${res.status}; must name the existing ` +
+          `status doc and omit the missing backlog. stdout: ${out.slice(0, 200)}`,
+      );
+    } else {
+      console.log("ok   hooks/compact-reorient.mjs → names only docs that exist");
+    }
+    rmSync(join(dir, "docs", "STATUS.md"));
+    const bare = runEnforcement("hooks/compact-reorient.mjs", compactEvent, dir);
+    asserts++;
+    if (bare.status !== 0 || !(bare.stdout ?? "").includes("additionalContext") || (bare.stdout ?? "").includes("docs/STATUS.md")) {
+      failures++;
+      console.error(
+        `FAIL hooks/compact-reorient.mjs no-docs fallback → exit ${bare.status}, stdout ${JSON.stringify((bare.stdout ?? "").slice(0, 120))}`,
+      );
+    } else {
+      console.log("ok   hooks/compact-reorient.mjs → generic fallback when adapter docs are absent");
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
 // checkpoint-autorun: inert without opt-in; a dirty opted-in git repo blocks
 // once (decision on stdout) and the TTL lock makes the immediate rerun silent;
 // stop_hook_active and pending-question stops stay silent even when dirty.

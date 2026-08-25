@@ -1,5 +1,23 @@
 # ai-dev-kit changelog
 
+## 0.23.1 — 2026-08-25
+
+One consumer-recorded condition discharged so next-web-boilerplate can adopt
+the `--hooks` wiring.
+
+- **`compact-reorient` names the status/backlog docs only when they exist** at
+  the adapter's `docs.status`/`docs.backlog` paths, falling back to generic
+  wording otherwise. next-web-boilerplate's CONVENTIONS.md documented exactly
+  this as the blocker for wiring the handler: its `init-app --slim` scaffold
+  deletes the docs while shipping `.claude/` verbatim, so a generated project
+  would get a nudge pointing at nonexistent files on every compaction,
+  forever, silently ("adopt the wiring after that lands" — landed).
+
+Verification: smoke-hooks grows two fixture cases (names only the existing
+doc; generic fallback with no docs) — 135 asserts green locally alongside the
+other four gates; consumer wiring adopted in next-web-boilerplate in the same
+program step.
+
 ## 0.23.0 — 2026-08-25
 
 Fleet-audit upstream release: the 2026-08-25 five-consumer audit
