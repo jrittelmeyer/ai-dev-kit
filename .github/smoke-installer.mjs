@@ -91,7 +91,11 @@ try {
     matcher: "Bash",
     hooks: [{ type: "command", command: "node", args: ["scripts/my-own-hook.mjs"] }],
   };
+  // Stop became a kit event in 0.23.0 (stop-gate + checkpoint-autorun), so the
+  // user's Stop entry now exercises "user entry on a kit event survives";
+  // Notification stays foreign (rejected in the manifest decision log).
   const userStop = { matcher: "", hooks: [{ type: "command", command: "echo user-stop" }] };
+  const userNotify = { matcher: "", hooks: [{ type: "command", command: "echo user-notify" }] };
   const seeded = {
     permissions: { allow: ["Bash(pnpm test:*)"] },
     hooks: {
@@ -139,6 +143,7 @@ try {
         },
       ],
       Stop: [userStop],
+      Notification: [userNotify],
     },
   };
   mkdirSync(join(scratch, ".claude"), { recursive: true });
@@ -173,7 +178,14 @@ try {
     (merged.hooks[event] ?? []).flatMap((e) => e.hooks ?? []).filter(carriesMarker);
 
   check("preserve: non-hook top-level key survives", eq(merged.permissions, seeded.permissions));
-  check("preserve: foreign event (Stop) survives verbatim", eq(merged.hooks.Stop, [userStop]));
+  check(
+    "preserve: foreign event (Notification) survives verbatim",
+    eq(merged.hooks.Notification, [userNotify]),
+  );
+  check(
+    "preserve: user entry on the (now-kit) Stop event survives",
+    (merged.hooks.Stop ?? []).some((e) => eq(e, userStop)),
+  );
   check(
     "preserve: user entry on a kit event survives",
     (merged.hooks.PreToolUse ?? []).some((e) => eq(e, userPre)),
