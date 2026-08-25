@@ -19,7 +19,10 @@ closed in 0.21.0 — the `--help`/inventory-path doc drift and the
 0.17.0–0.19.0. Row 28 closed by the model-graded
 [SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md) pass — 92/96
 expect+reject lines PASS across all 10 skills; the 4 genuine wording gaps it
-found were rowed as 33–36 and closed, along with 29–30, in 0.22.0.
+found were rowed as 33–36 and closed, along with 29–30, in 0.22.0. The
+2026-08-25 fleet audit (`archive/FLEET_UPGRADE_PLAN_2026-08-25.md`) drove
+0.23.0/0.23.1 — consumer-pattern upstreams incl. the opt-in enforcement hook
+class — and filed no new kit rows; both B4 rows stand unchanged.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
@@ -55,4 +58,7 @@ Watch (externally gated, re-check each audit):
   stdin parse-failing into a silent exit) is closed at the handler as of
   0.14.0. Re-confirmed 2026-08-24: the hooks contract still grants
   `additionalContext` to `PreToolUse`, `PostToolUse`, and `SessionStart`, so
-  all five handlers target supported events.
+  all five advisory handlers target supported events; the three 0.23.0
+  enforcement handlers use the separately documented blocking mechanisms
+  (Stop exit-2/decision-block, PostToolUse exit-2) rather than
+  `additionalContext`.

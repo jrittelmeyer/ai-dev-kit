@@ -318,7 +318,7 @@
 
 <section class="slide">
   <p class="eyebrow">03 · The hooks</p>
-  <h2>Automation that advises, never blocks.</h2>
+  <h2>Advises by default — blocking only where the project opts in.</h2>
   <div class="tablewrap"><table>
     <tr><th>Handler</th><th>Fires on</th><th>Injects</th></tr>
     <tr>
@@ -346,6 +346,21 @@
       <td>a session resuming from context compaction (only that)</td>
       <td>"re-open status + current row; re-verify assumed findings"</td>
     </tr>
+    <tr>
+      <td><code>stop-gate</code> · opt-in</td>
+      <td>session end with the configured fast gate failing</td>
+      <td>blocks (exit 2) — the session can't end broken; inert without <code>enforcement.stopGate</code></td>
+    </tr>
+    <tr>
+      <td><code>checkpoint-autorun</code> · opt-in</td>
+      <td>idle with a dirty tree or unpushed commits</td>
+      <td>blocks once for an autonomous checkpoint turn; inert without <code>enforcement.checkpointAutorun</code></td>
+    </tr>
+    <tr>
+      <td><code>banned-api-guard</code> · opt-in</td>
+      <td>a banned pattern landing under a guarded path</td>
+      <td>blocks (exit 2) — domain law at edit time; inert without <code>enforcement.bannedApis</code></td>
+    </tr>
   </table></div>
   <div class="callout">
     <p class="eyebrow">Policy</p>
@@ -355,9 +370,11 @@
     each proven by piped-event smoke tests on two OSes. The rejections are recorded
     too — and not selectively: the manifest carries an accept/reject verdict for all
     <b>31</b> hook events the harness documents, with a test that fails when a new one
-    appears unjudged. Only 11 of those events can inject context at all; the rest can
-    block, act, or notify a human, which is why no Stop-hook nag, cache hook, or
-    calendar audit nudge exists.</p>
+    appears unjudged. Blocking exists only behind the per-project adapter
+    <code>enforcement</code> block — the 0.23.0 reversal of the Stop-event rejection,
+    made on consumer evidence via retro, with the unconfigured default still
+    advise-only. No cache hook or calendar audit nudge exists; those rejections
+    stand.</p>
   </div>
 </section>
 
