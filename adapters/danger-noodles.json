@@ -1,0 +1,54 @@
+{
+  "project": "danger-noodles",
+  "projectType": "game",
+  "ecosystem": {
+    "runtime": "node",
+    "manifestFiles": ["package.json"],
+    "registryQuery": "npm view {pkg} versions --json",
+    "addCommand": "npm install {pkg}@{version}"
+  },
+  "gate": ["npm run ci"],
+  "test": {
+    "unit": "npm test"
+  },
+  "verify": {
+    "build": "npm run build",
+    "run": "npm run sim:headless",
+    "ready": { "kind": "exit-code" },
+    "observe": [
+      "npm run sim:headless — deterministic scripted-bot run over the fixed-point sim",
+      "npm run test:net-lab — two headless peers over the real WebRTC lockstep path",
+      "npm run dev — boot the client and play by hand (visual changes need eyes)"
+    ],
+    "notes": "Deterministic fixed-point sim (THE LAW, docs/tech/determinism.md); golden replay fixtures in tests/golden/ are feel-regression evidence and only change via the tune-feel workflow. Deployed: Cloudflare Pages + fly.io signaling + Hetzner coturn — the test:prod-infra / test:public-deploy e2e scripts drive the real infrastructure."
+  },
+  "docs": {
+    "dir": "docs",
+    "status": "roadmap.md",
+    "backlog": "docs/design/claude-backlog.md",
+    "backlogHuman": "docs/design/testing-backlog.md",
+    "contextDir": "docs",
+    "archiveDir": "docs/audits"
+  },
+  "commit": {
+    "style": "conventional",
+    "trailers": false,
+    "useFileFlag": true
+  },
+  "ci": {
+    "provider": "github-actions",
+    "workflow": "CI"
+  },
+  "hygiene": {
+    "devPorts": [5173, 4173]
+  },
+  "depPolicy": {
+    "releaseAgeDays": 7
+  },
+  "contextBudget": {
+    "agentsMdMaxLines": 150,
+    "contextDocSplitTokens": 3000,
+    "memoryIndexMaxTokens": 700,
+    "memoryFileMaxTokens": 1500
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "project": "smash-gods",
+  "projectType": "game",
+  "ecosystem": {
+    "runtime": "node",
+    "manifestFiles": ["package.json"],
+    "registryQuery": "npm view {pkg} versions --json",
+    "addCommand": "npm install {pkg}@{version}"
+  },
+  "gate": ["npm run ci"],
+  "test": {
+    "unit": "npm test"
+  },
+  "verify": {
+    "build": "npm run build",
+    "run": "npm run preview",
+    "ready": { "kind": "http", "port": 4173, "url": "http://localhost:4173" },
+    "observe": [
+      "npm run cross-env — Node-vs-browser sim-hash parity over the fixed-point sim",
+      "npm run dev — boot the client and play by hand (feel changes need eyes + the tune-feel journal)"
+    ],
+    "notes": "Deterministic fixed-point sim (the law of this era, docs/tech/determinism.md); Three.js render layer. perf-budget runs in `npm run ci`. Deployed via Docker/fly.toml."
+  },
+  "docs": {
+    "dir": "docs",
+    "status": "roadmap.md",
+    "backlog": "docs/design/claude-backlog.md",
+    "backlogHuman": "docs/design/testing-backlog.md",
+    "contextDir": "docs",
+    "archiveDir": "docs/archive"
+  },
+  "commit": {
+    "style": "conventional",
+    "trailers": false,
+    "useFileFlag": true
+  },
+  "ci": {
+    "provider": "github-actions",
+    "workflow": "CI"
+  },
+  "hygiene": {
+    "devPorts": [5173, 4173]
+  },
+  "depPolicy": {
+    "releaseAgeDays": 7
+  },
+  "contextBudget": {
+    "agentsMdMaxLines": 150,
+    "contextDocSplitTokens": 3000,
+    "memoryIndexMaxTokens": 700,
+    "memoryFileMaxTokens": 1500
+  }
+}
