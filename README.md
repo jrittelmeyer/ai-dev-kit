@@ -133,8 +133,12 @@ freely — `--check` never fails on it (schema issues print an advisory only).
 
 ## Automation (hooks)
 
-Five Claude Code hooks make the lifecycle self-reinforcing. **All of them advise,
-never block** — they inject a reminder into the agent's context; the agent decides.
+Eight Claude Code hooks make the lifecycle self-reinforcing. The five advisory
+handlers **advise, never block** — they inject a reminder into the agent's
+context; the agent decides. The three enforcement handlers (0.23.0) ship wired
+but **inert**: each blocks only where the project's user-owned adapter config
+carries its `enforcement` key — absent config, the advise-only default is
+unchanged.
 
 | Handler | Event · matcher | Fires on |
 | --- | --- | --- |
@@ -143,6 +147,9 @@ never block** — they inject a reminder into the agent's context; the agent dec
 | `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 | `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear/fork; the handler also guards on the payload's `source`, so a mis-wired matcher can't widen it) |
+| `stop-gate.mjs` · opt-in | Stop | `enforcement.stopGate.commands` failing at session end — exit 2 feeds the failure back so the session can't end broken (generalized from the danger-noodles/smash-gods/wyrd consumer originals) |
+| `checkpoint-autorun.mjs` · opt-in | Stop | idle with a dirty tree or unpushed commits (`enforcement.checkpointAutorun`) — blocks once for an autonomous checkpoint turn; loop-guarded (`stop_hook_active` + TTL lock), skips pending-question and mid-rebase stops (ported from next-web-boilerplate) |
+| `banned-api-guard.mjs` · opt-in | PostToolUse · `Edit\|Write` | a banned pattern landing under a guarded path (`enforcement.bannedApis` — path-scoped, comment-stripped; the determinism-guard pattern generalized) |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe;
 a malformed event exits 0 silently), installed to `.claude/hooks/ai-dev-kit/` and
@@ -154,10 +161,12 @@ smoke-proven in CI on ubuntu + windows; live sessions on recent harness versions
 surface the injections consistently (both hook classes, first probe) — the
 residual onset-variance question from one older harness version is tracked as a
 Watch row in [docs/BACKLOG.md](docs/BACKLOG.md).
-Reviewed and deliberately **not** automated: a Stop-hook checkpoint nag, a
-tidy/cache hook, and any calendar/session-counter doc-audit nudge — existing
-cadence (standing agreement, husky pre-push, audits on real need) covers them,
-and a nag would be noise. The full decision log lives in `manifest.json` →
+Reviewed and deliberately **not** automated: a tidy/cache hook and any
+calendar/session-counter doc-audit nudge — existing cadence (standing
+agreement, husky pre-push, audits on real need) covers them, and a nag would
+be noise. The Stop-hook checkpoint rejection was **reversed in 0.23.0** on
+consumer evidence (next-web-boilerplate ran it in production sessions) — as
+the opt-in `checkpoint-autorun` above, never by default. The full decision log lives in `manifest.json` →
 `hooks.reviewed`, which carries an accept/reject verdict for **every one of the
 harness's 31 hook events** (re-reviewed 2026-08-24) — the organizing fact being
 that only 11 of them can return `additionalContext` at all, and the other 20 can

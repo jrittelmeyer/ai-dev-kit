@@ -15,9 +15,10 @@ pointed at, not restated here.
 - **Program discipline:** forward-only banded backlog (`docs/BACKLOG.md`); every
   row goes plan → explicit sign-off → build; a test that claims to catch a bug
   is shown failing first; CHANGELOG entries end with a Verification paragraph.
-- **Hooks advise, never block:** a handler exits 0 and injects context; the
-  agent decides. Exec-form wiring (`command: "node"` + one anchored `args`
-  entry) is a smoke-enforced invariant.
+- **Hooks advise by default:** an advisory handler exits 0 and injects context;
+  the agent decides. Blocking (exit 2) exists only in the enforcement handlers,
+  each inert without its adapter `enforcement` key. Exec-form wiring
+  (`command: "node"` + one anchored `args` entry) is a smoke-enforced invariant.
 - **Zero dependencies:** pure Node ≥ 22 — no package.json, no npm packages, no
   shell-specific scripts.
 - **Never rename a skill directory** without a migration plan — stale-prune only

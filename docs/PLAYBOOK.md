@@ -194,11 +194,16 @@ assumes current memory).
 
 **What.** Automation enters the system only through review: name the candidate,
 weigh nudge-value against noise, and record the decision — including the
-rejections. Everything that fires automatically **advises, never blocks**.
+rejections. Everything that fires by default **advises, never blocks**; blocking
+exists only behind a per-project adapter `enforcement` opt-in, and a recorded
+decision can be *reversed* the same way it was made — 0.23.0 reversed the
+Stop-hook rejection on consumer evidence (a retro output, not a re-litigation).
 
 **Why.** A wrong block halts legitimate work and trains people to bypass the
 system; a wrong advisory costs one sentence of context. And un-recorded rejections
 get re-litigated forever — "why is there no Stop-hook?" deserves a written answer.
+When consumers build the rejected machinery anyway and it works, that evidence is
+the review reopening, with the opt-in keeping the default honest.
 
 **Practice.** For each candidate hook: does it fire at the moment the agent can
 act on it? Is the false-positive rate tolerable at that frequency? Would a

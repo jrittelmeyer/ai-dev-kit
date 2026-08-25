@@ -1,5 +1,59 @@
 # ai-dev-kit changelog
 
+## 0.23.0 — 2026-08-25
+
+Fleet-audit upstream release: the 2026-08-25 five-consumer audit
+(next-web-boilerplate · civicmatch · smash-gods · danger-noodles · wyrd,
+report `docs/archive/FLEET_UPGRADE_PLAN_2026-08-25.md`) found four
+consumer-built patterns that outperformed the kit — this release absorbs
+them. First release with a blocking hook class: **opt-in only**, every
+enforcement handler inert without the project's adapter `enforcement` key.
+
+- **Three enforcement handlers** (wired by `--hooks`, inert without adapter
+  opt-in): `stop-gate.mjs` (Stop — the session may not end with
+  `enforcement.stopGate.commands` failing; generalized from the
+  danger-noodles/smash-gods/wyrd originals), `banned-api-guard.mjs`
+  (PostToolUse Edit|Write — path-scoped banned-pattern tripwire per
+  `enforcement.bannedApis`; generalized from determinism-guard), and
+  `checkpoint-autorun.mjs` (Stop — one autonomous checkpoint turn when idle
+  with pending work, per `enforcement.checkpointAutorun`; ported from
+  next-web-boilerplate). The manifest's Stop-event rejection is reversed to
+  `partial` on consumer evidence via retro; hooks policy is now "advise by
+  default — blocking only behind adapter opt-in" (SECURITY.md trust contract
+  updated to match).
+- **Adapter schema grows** `enforcement` (above), `docs.backlogHuman` (the
+  dual-backlog split the game consumers run), and
+  `contextBudget.skillDescriptionMaxTokens` (already live in
+  next-web-boilerplate's config as an unknown key — now contractual; the nwb
+  adapter fixture carries 909).
+- **`install.mjs --check` distinguishes a never-installed dest** (no
+  `ai-dev-kit.installed.json`) from real drift — it now says NOT INSTALLED
+  with the install command instead of "DRIFT in 33 file(s): edit kit source",
+  which was actively misleading advice for a fresh dest.
+- **`optional/contrarian/`** — first optional asset: the plan-gate dissent
+  subagent + `ExitPlanMode` nudge (consumer-proven in next-web-boilerplate
+  and civicmatch), copy-once templates the project then owns; README with
+  wiring snippet included. Smoke-held to the same fire/silent/garbage/BOM
+  contract as installed handlers.
+- **`dep-check` 0.2.2** — `references/registries.md` gains
+  advisory-suppression hygiene: every audit-ignore carries an inline
+  `# discharge YYYY-MM-DD -- <action>` comment, past-due discharges are
+  findings, fail-closed CI checkers preferred (civicmatch's
+  `check-audit-ignores` pattern).
+- **`smoke-hooks` grows enforcement coverage** — fixture-driven cases for all
+  three handlers (inert-without-config, loop guards incl. BOM'd
+  `stop_hook_active`, block paths, TTL-lock rerun silence) plus the optional
+  nudge; 133 asserts.
+
+Verification: all five CI gates green locally on Windows (check-version — 6
+stamps agree at 0.23.0; skill-lint — 10 skills clean; skill-evals — 30
+scenarios, 94 anchors resolved; smoke-installer; smoke-hooks — 133 asserts,
+every enforcement case fixture-driven with real spawned processes and a real
+`git init` repo for checkpoint-autorun). `install.mjs --check` re-run against a
+never-installed dest (smash-gods — the new NOT INSTALLED branch, exit 1) and
+an installed consumer (wyrd — honest behind-kit DRIFT listing the 0.23.0
+files, exit 1).
+
 ## 0.22.0 — 2026-08-24
 
 Six S-effort rows from the 2026-08-24 project-audit + skill-evals passes

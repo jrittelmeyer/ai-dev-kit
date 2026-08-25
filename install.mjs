@@ -345,7 +345,16 @@ if (checkMode) {
 
 // 9. Report.
 if (checkMode) {
-  if (drifted.length > 0) {
+  if (drifted.length > 0 && !existsSync(join(dest, ".claude", "ai-dev-kit.installed.json"))) {
+    // No install stamp: this dest was never installed (or the stamp was
+    // removed) — "edit kit source" advice would mislead here.
+    console.error(
+      `ai-dev-kit ${manifest.version}: NOT INSTALLED at this dest — ${drifted.length} kit file(s) absent or unmatched.`,
+    );
+    console.error(
+      "Fix: node <kit>/install.mjs --adapter <kit>/adapters/<project>.json --dest <project> [--global --hooks].",
+    );
+  } else if (drifted.length > 0) {
     console.error(`ai-dev-kit ${manifest.version}: DRIFT in ${drifted.length} file(s):`);
     for (const f of drifted) {
       console.error(`  ${f}`);

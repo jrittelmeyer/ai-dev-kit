@@ -147,6 +147,10 @@
           "description": "The read-first-on-resume status/handoff doc."
         },
         "backlog": { "type": "string" },
+        "backlogHuman": {
+          "type": "string",
+          "description": "Optional second backlog for human-blocked rows (needs a verdict, hardware, or account only the user has). Pairs with `backlog` (the agent-continuable track) — projects running the dual-track split keep 'never both blocked at once' as the working rule."
+        },
         "contextDir": {
           "type": "string",
           "description": "Agent context docs, loaded on demand."
@@ -181,6 +185,77 @@
         "memoryFileMaxTokens": {
           "type": "integer",
           "description": "Per-memory-file ceiling (default 1500)."
+        },
+        "skillDescriptionMaxTokens": {
+          "type": "integer",
+          "description": "Combined ceiling for all always-loaded skill descriptions (frontmatter `description:` lines load every session). doc-audit flags when the installed set exceeds it."
+        }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Opt-in blocking hooks. The handlers ship (and may be wired) with every install but each no-ops unless its key is set here — absent key = advise-only kit behavior, unchanged.",
+      "properties": {
+        "stopGate": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Stop-hook gate: the session may not end with these commands failing (exit 2 feeds failures back). Loop-guarded via stop_hook_active; skips before dependencies are installed.",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Commands run in order at session end (e.g. a fast typecheck + unit-test pair — keep it under ~2 minutes)."
+            },
+            "timeoutSeconds": {
+              "type": "integer",
+              "description": "Per-command timeout (default 150)."
+            }
+          }
+        },
+        "bannedApis": {
+          "type": "array",
+          "description": "Path-scoped banned-pattern guards (the determinism-guard pattern generalized): each entry blocks listed regex patterns from entering files under its paths.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "description": "Label used in the block message." },
+              "paths": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Repo-relative directory prefixes the guard watches."
+              },
+              "excludePaths": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "Repo-relative files/prefixes exempt from the guard."
+              },
+              "extensions": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "File extensions guarded (default ['.ts', '.tsx', '.js', '.mjs'])."
+              },
+              "rules": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "pattern": { "type": "string", "description": "JS regex source matched per line (comments stripped first)." },
+                    "why": { "type": "string", "description": "Shown in the block message — what to use instead." }
+                  },
+                  "required": ["pattern", "why"]
+                }
+              },
+              "docs": { "type": "string", "description": "Doc path cited in the block message." }
+            },
+            "required": ["paths", "rules"]
+          }
+        },
+        "checkpointAutorun": {
+          "type": "boolean",
+          "description": "true = the Stop hook nudges one autonomous checkpoint turn when the tree is dirty or unpushed at session end (skips mid-rebase/merge and pending-question stops)."
         }
       }
     },
