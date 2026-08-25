@@ -221,24 +221,16 @@ The canonical consumer block is four lines:
   git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
   subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
   other 0.7.2 deferral — shipped in 0.11.0.
-- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → **96.8/100**
-  (2026-08-24, fifth audit — a deliberate decrease: the 0.14.0–0.19.0 surface
-  verified strong, but the pass found doc drift in four files and a
-  hook-surface currency gap; the adapter contract holds at 100 and the deck at
-  zero stale claims) — rows in [docs/BACKLOG.md](docs/BACKLOG.md), latest
-  report
-  [docs/archive/PROJECT_AUDIT_2026-08-24.md](docs/archive/PROJECT_AUDIT_2026-08-24.md).
+- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → 96.8 →
+  **97.1/100** (2026-08-25, sixth audit — the 0.20.0–0.23.1 surface incl. the
+  opt-in enforcement class verified strong; the pass found the adapter
+  validator's `required` gap and one release tagged on a red-CI sha) — rows in
+  [docs/BACKLOG.md](docs/BACKLOG.md), latest report
+  [docs/archive/PROJECT_AUDIT_2026-08-25.md](docs/archive/PROJECT_AUDIT_2026-08-25.md).
   Harness-currency baseline **92.4/100**
-  ([docs/archive/HARNESS_AUDIT_2026-08-23.md](docs/archive/HARNESS_AUDIT_2026-08-23.md),
-  first `harness-audit` run — deductions mapped to rows 20–22; row 20 closed in
-  0.17.0, row 21 in 0.18.0, row 22 in 0.19.0). Row 23 (hook event-surface
-  re-review) and row 27 closed in 0.20.0. Rows 24, 25, 26, and 32 (installer
-  `--help` doc drift, `harness-audit` inventory path, `smoke-hooks` tally,
-  `live-verify-reminder` multi-line false-fire) closed in 0.21.0. Row 28 (a
-  model-graded `skill-evals --report` pass) closed docs-only — 92/96 lines
-  PASS across all 10 skills, 4 genuine wording gaps rowed at 33–36; see
-  [docs/archive/SKILL_EVALS_2026-08-24.md](docs/archive/SKILL_EVALS_2026-08-24.md).
-  Rows 29, 30, and 33–36 (skill-lint reserved-word enforcement, a
-  `plugins-reference` source row, and three skill-procedure fixes) closed in
-  0.22.0. **Next:** only B4-16/31 remain, both deferred/advised-against — the
-  open S-effort backlog is empty.
+  ([HARNESS_AUDIT_2026-08-23](docs/archive/HARNESS_AUDIT_2026-08-23.md));
+  model-graded eval evidence 92/96
+  ([SKILL_EVALS_2026-08-24](docs/archive/SKILL_EVALS_2026-08-24.md)).
+  **Next:** B1-37 (validator `required` enforcement), then B2-38/39
+  (enforcement config hardening · release green-gate), B3-40/41; B4-16/31 stay
+  deferred/advised-against.

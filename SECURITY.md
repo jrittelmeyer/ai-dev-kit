@@ -12,8 +12,8 @@ explicitly opts in.
 
 `install.mjs --hooks` wires eight hook entries into `.claude/settings.json`;
 matching events then run the kit's handlers out of
-`.claude/hooks/ai-dev-kit/`. Two contract classes, each auditable in around
-100 lines per handler (kit source `hooks/`):
+`.claude/hooks/ai-dev-kit/`. Two contract classes, each handler auditable in
+under 140 lines (kit source `hooks/`):
 
 - **Five advisory handlers** (dep-check-nudge, live-verify-reminder,
   skill-drift-guard, context-guard, compact-reorient): emit an

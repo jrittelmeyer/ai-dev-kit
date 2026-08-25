@@ -5,42 +5,42 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-24](archive/PROJECT_AUDIT_2026-08-24.md)
-(aggregate 96.8/100, fifth audit — a deliberate decrease: the 0.14.0–0.19.0
-surface is strong, but the pass found doc drift plus a hook-surface currency
-gap). Rows 23 and 27 closed in 0.20.0 — the hook decision log now covers all 31
-harness events and `smoke-hooks` keeps it complete. Rows 24, 25, 26, and 32
-closed in 0.21.0 — the `--help`/inventory-path doc drift and the
-`live-verify-reminder` multi-line false-fire. Chain: [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
+Source: [PROJECT_AUDIT_2026-08-25](archive/PROJECT_AUDIT_2026-08-25.md)
+(aggregate 97.1/100, sixth audit — the 0.20.0–0.23.1 surface verified strong;
+rows 37–41 recover the pass's named deductions: the adapter validator's
+`required` gap, enforcement config hardening, the release green-gate, and
+enforcement secondary-guard coverage). Chain:
+[90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
-[97.9](archive/PROJECT_AUDIT_2026-08-19.md) → 96.8. Harness-currency baseline
-[92.4](archive/HARNESS_AUDIT_2026-08-23.md); its rows 20–22 closed in
-0.17.0–0.19.0. Row 28 closed by the model-graded
-[SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md) pass — 92/96
-expect+reject lines PASS across all 10 skills; the 4 genuine wording gaps it
-found were rowed as 33–36 and closed, along with 29–30, in 0.22.0. The
-2026-08-25 fleet audit (`archive/FLEET_UPGRADE_PLAN_2026-08-25.md`) drove
-0.23.0/0.23.1 — consumer-pattern upstreams incl. the opt-in enforcement hook
-class — and filed no new kit rows; both B4 rows stand unchanged.
+[97.9](archive/PROJECT_AUDIT_2026-08-19.md) →
+[96.8](archive/PROJECT_AUDIT_2026-08-24.md) → 97.1. Harness-currency baseline
+[92.4](archive/HARNESS_AUDIT_2026-08-23.md); model-graded eval evidence in
+[SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md); the 2026-08-25
+fleet audit ([FLEET_UPGRADE_PLAN_2026-08-25](archive/FLEET_UPGRADE_PLAN_2026-08-25.md))
+drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B1 | 37 | installer | `validateAdapter` implements `required` (the schema uses it since 0.23.0 — a `bannedApis` entry missing `paths`/`rules` currently passes validation and fail-opens the guard at runtime); fix the docblock's coverage claim; smoke case for the rejection + `--check` advisory | Adapter +2, Installer +1 | S |
+| B2 | 38 | hooks | Enforcement config hardening: stop-gate clamps invalid `timeoutSeconds` (≤0 / non-integer → default 150); banned-api-guard surfaces a non-compiling `pattern` (install/`--check` advisory + one-shot stderr note) instead of silently skipping a blocking rule | Hooks +2 | S |
+| B2 | 39 | release | Mechanize the release ritual's green-gate: README steps gain a pre-tag check that the target sha's CI concluded `success`; AGENTS.md pins that a release commit is self-contained (self-install + fixture updates in the same commit) | Versioning +2 | S |
+| B3 | 40 | testing | Smoke the enforcement secondary guards (autorun mid-rebase skip, no-upstream inertness, stale-lock retrigger via backdated mtime; stop-gate bad-timeout; banned-api invalid-regex) and cross-check `manifest.hooks.handlers` ↔ the wiring files | Testing +2 | S |
+| B3 | 41 | dogfood | Kit's own adapter opts into `enforcement.stopGate` (fast pair: root `--check` + `skill-lint`) — first-party live coverage of the Stop path; feeds the hook-visibility Watch log | evidence (Watch) | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
-| B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists, so this needs a restructure. **Advised against** at current scale | Public +1 | L |
+| B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
 Watch (externally gated, re-check each audit):
 
 - Harness-side git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
-  launch in a subdirectory (kit-side share closed by B1-1). Re-checked
-  2026-08-09, 2026-08-12, 2026-08-19, and **2026-08-24**: changelog swept
-  through head 2.1.241 with no entry on root resolution (2.1.239's
-  `metadata.pluginRoot` and 2.1.229's marketplace `command` sources are
-  packaging, not resolution). The hooks doc now defines the placeholder as
-  "the project root **where the session started**" — moved from the previously
-  recorded "the project root" — and adds an explicit worktree carve-out
-  (`${CLAUDE_PROJECT_DIR}` stays at the original root when Claude enters a
-  worktree). Subdirectory launches remain unspecified — gate not lifted.
+  launch in a subdirectory (kit-side share closed by B1-1). Re-checked five
+  passes 2026-08-09 → **2026-08-25**: changelog swept through head **2.1.246**
+  with no entry on root resolution. The hooks doc defines the placeholder as
+  "the project root **where the session started**" with a worktree carve-out;
+  subdirectory launches remain unspecified — gate not lifted. Adjacent but
+  distinct: 2.1.245 fixed `if` conditions (`Bash(cat *)` class) false-firing
+  on command substitution — the kit's payload re-guard had already neutralized
+  that class for `live-verify-reminder` (defense-in-depth confirmed).
 - Harness-side hook-injection visibility on Windows (B1-17 outcome, closed
   2026-08-09): a fresh exec-form session's deterministic instruments —
   context-guard probe (memory-file Write) and live-verify `git commit` (run
@@ -56,9 +56,9 @@ Watch (externally gated, re-check each audit):
   intermittency datapoint; only a full-session all-silent run matching
   2026-08-09 reopens visibility. The known same-class mechanism (BOM-prefixed
   stdin parse-failing into a silent exit) is closed at the handler as of
-  0.14.0. Re-confirmed 2026-08-24: the hooks contract still grants
-  `additionalContext` to `PreToolUse`, `PostToolUse`, and `SessionStart`, so
-  all five advisory handlers target supported events; the three 0.23.0
-  enforcement handlers use the separately documented blocking mechanisms
-  (Stop exit-2/decision-block, PostToolUse exit-2) rather than
-  `additionalContext`.
+  0.14.0. Re-confirmed 2026-08-25 against the raw hooks doc: exactly **11**
+  events carry `additionalContext` and all five advisory handlers target
+  supported ones; the three 0.23.0 enforcement handlers use the separately
+  documented blocking mechanisms (Stop decision-block / exit 2, PostToolUse
+  exit 2). The Stop-block path has never fired live kit-side (no adapter opts
+  in) — row 41 proposes the first-party instrument.
