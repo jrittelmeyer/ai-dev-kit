@@ -31,11 +31,19 @@ const tags = new Set(
     .filter(Boolean),
 );
 
+const [newest, ...older] = versions;
+
+if (tags.size === 0) {
+  console.warn(
+    "Advisory: no git tags visible (shallow clone or fork CI without fetch-tags) — skipping tag-currency check.",
+  );
+  process.exit(0);
+}
+
 const floor = [...tags]
   .map((t) => t.slice(1))
   .sort(compareVersions)[0];
 
-const [newest, ...older] = versions;
 const untagged = older.filter((v) => !tags.has(`v${v}`) && compareVersions(v, floor) >= 0);
 
 if (untagged.length > 0) {
@@ -46,5 +54,11 @@ if (untagged.length > 0) {
   );
   console.warn("Fix: cut the missing tags + GitHub Releases, or note why they're intentionally skipped.");
 } else {
-  console.log(`tag currency: all ${older.length} prior shipped version(s) tagged (v${newest} pending its ritual tag).`);
+  const tagged = older.filter((v) => compareVersions(v, floor) >= 0).length;
+  const exempt = older.length - tagged;
+  const newestSuffix = tags.has(`v${newest}`) ? "already tagged" : "pending its ritual tag";
+  console.log(
+    `tag currency: ${tagged} tagged + ${exempt} pre-tagging-era exempt prior shipped version(s) ` +
+      `(v${newest} ${newestSuffix}).`,
+  );
 }

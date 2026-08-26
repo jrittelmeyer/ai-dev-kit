@@ -633,7 +633,8 @@ const SECURITY_LINE_BOUND = 140;
 const hookFiles = readdirSync("hooks").filter((f) => f.endsWith(".mjs"));
 for (const file of hookFiles) {
   asserts++;
-  const lineCount = readFileSync(join("hooks", file), "utf8").split("\n").length;
+  const content = readFileSync(join("hooks", file), "utf8");
+  const lineCount = content.replace(/\n$/, "").split("\n").length;
   if (lineCount >= SECURITY_LINE_BOUND) {
     failures++;
     console.error(

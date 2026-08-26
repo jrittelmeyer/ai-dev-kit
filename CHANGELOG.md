@@ -1,5 +1,19 @@
 # ai-dev-kit changelog
 
+## 0.23.11 — 2026-08-26
+
+B3-46: `check-tag-currency.mjs` polish — the success tally now splits tagged
+vs pre-tagging-era-exempt counts (was reporting all prior entries as
+"tagged", conflating the two); the "pending its ritual tag" suffix on the
+newest entry now only appears when that entry is genuinely untagged; a
+zero-tags guard degrades to an advisory note instead of throwing (`floor`
+was `undefined` on a fork's CI, which fetches no tags by default).
+
+Also fixed `smoke-hooks.mjs`'s SECURITY.md line-bound tripwire (B3-45):
+`split("\n").length` counted the trailing-newline element, so a 139-actual-line
+handler — legal under the documented "under 140" — would false-fail at the
+boundary. Now strips the trailing newline before counting.
+
 ## 0.23.10 — 2026-08-26
 
 B1-44: backfilled tags + GitHub Releases for v0.23.5–v0.23.9 (all shipped
