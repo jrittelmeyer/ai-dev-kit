@@ -1,5 +1,39 @@
 # ai-dev-kit changelog
 
+## 0.23.5 — 2026-08-25
+
+B3-40: enforcement secondary-guard smoke — closes the remaining coverage gaps
+in `checkpoint-autorun.mjs` and adds a manifest/wiring cross-check. (stop-gate
+bad-`timeoutSeconds` and banned-api invalid-regex were already covered by
+0.23.3; this row doesn't duplicate them.)
+
+- **`checkpoint-autorun.mjs` mid-rebase/merge/cherry-pick skip** now has a
+  dedicated case — previously untested, and a status-only assertion couldn't
+  have caught a regression here anyway (see below).
+- **Stale-lock retrigger** (backdated mtime past `LOCK_TTL_MS`) now has a
+  dedicated case, proving the stale-lock-clear path, not just the fresh-lock
+  silence already covered.
+- **No-upstream inertness** (clean tree after a real commit, no upstream
+  configured) now has a dedicated case — the only path through
+  `hasPendingWork()` no prior fixture reached, since every existing fixture
+  used a permanently-dirty tree.
+- **`manifest.json`'s `hooks.handlers` index is now cross-checked against
+  `hooks/hooks.json`'s actual wiring** — a handler added to one and not the
+  other now fails the gate instead of drifting silently.
+- **Fixed a latent test-design flaw found via mutation testing while adding
+  the above:** `checkpoint-autorun.mjs` always exits 0 whether it blocks or
+  stays silent (the signal is JSON on stdout), so the existing "silent" cases
+  that only asserted on exit status could not have caught a regression that
+  made the hook fire anyway. All checkpoint-autorun silent/blocks assertions
+  now go through `assertAutorunSilent`/`assertAutorunBlocks`, which check
+  stdout content.
+
+Verification: every new/changed assertion was mutation-tested — the guard or
+config it covers was temporarily broken and confirmed to turn the assertion
+red, then restored (mid-rebase guard removed, stale-lock TTL check forced
+true, a `hooks.handlers` entry dropped). smoke-hooks grows to 143 asserts (up
+from 139); full 6-command gate green.
+
 ## 0.23.4 — 2026-08-25
 
 B2-39: release ritual gets a mechanized green-gate — v0.23.0 was tagged on a

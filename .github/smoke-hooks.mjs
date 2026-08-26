@@ -5,7 +5,7 @@
  * block — and "fires" means the stdout JSON carries additionalContext.
  */
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -188,6 +188,37 @@ if (shapes.get(WIRING[0][0]) === shapes.get(WIRING[1][0])) {
 } else {
   failures++;
   console.error("FAIL wiring parity: installer-hooks.json and hooks.json describe different hooks");
+}
+
+// manifest.hooks.handlers ↔ wiring cross-check: the manifest's handler index
+// is a separate source from the wiring files above — a hook added to
+// hooks.json but never indexed in the manifest (or vice versa) should fail
+// loudly here instead of drifting unnoticed (B3-40).
+{
+  const pluginWired = JSON.parse(readFileSync("hooks/hooks.json", "utf8")).hooks;
+  const wiredPairs = new Set();
+  for (const [event, entries] of Object.entries(pluginWired)) {
+    for (const entry of entries) {
+      for (const hook of entry.hooks ?? []) {
+        const base = (Array.isArray(hook.args) ? hook.args[0] : "")?.match(/([\w-]+\.mjs)$/)?.[1];
+        if (base) wiredPairs.add(`${event}:${base}`);
+      }
+    }
+  }
+  const manifestHandlers = JSON.parse(readFileSync("manifest.json", "utf8")).hooks?.handlers ?? [];
+  const manifestPairs = new Set(manifestHandlers.map((h) => `${h.event}:${h.file.replace(/^hooks\//, "")}`));
+  const missingFromManifest = [...wiredPairs].filter((p) => !manifestPairs.has(p));
+  const missingFromWiring = [...manifestPairs].filter((p) => !wiredPairs.has(p));
+  asserts++;
+  if (missingFromManifest.length || missingFromWiring.length) {
+    failures++;
+    if (missingFromManifest.length)
+      console.error(`FAIL manifest hooks.handlers is missing wired hook(s): ${missingFromManifest.join(", ")}`);
+    if (missingFromWiring.length)
+      console.error(`FAIL hooks.json is missing manifest-listed handler(s): ${missingFromWiring.join(", ")}`);
+  } else {
+    console.log(`ok   manifest hooks.handlers ≡ hooks.json wiring (${manifestPairs.size} handler/event pairs)`);
+  }
 }
 
 // Config-override case: hooks are spawned with the *session* cwd — any subdirectory —
@@ -429,6 +460,37 @@ function assertCase(label, res, wantStatus, wantOut = null) {
   }
 }
 
+// checkpoint-autorun's block signal is JSON on stdout ({"decision":"block"}),
+// not the exit code — it exits 0 whether silent or firing. A status-only
+// assertCase can't tell the two apart, so every "stays silent" case here must
+// check stdout too, or a regression that makes it fire anyway would still
+// read as passing.
+function assertAutorunSilent(label, res) {
+  asserts++;
+  const blocked = (res.stdout ?? "").includes('"decision":"block"');
+  if (res.status !== 0 || blocked) {
+    failures++;
+    console.error(
+      `FAIL ${label} → exit ${res.status}, stdout ${JSON.stringify((res.stdout ?? "").slice(0, 80))} ` +
+        "— expected silent (no block decision)",
+    );
+  } else {
+    console.log(`ok   ${label}`);
+  }
+}
+function assertAutorunBlocks(label, res) {
+  asserts++;
+  if (res.status !== 0 || !(res.stdout ?? "").includes('"decision":"block"')) {
+    failures++;
+    console.error(
+      `FAIL ${label} → exit ${res.status}, stdout ${JSON.stringify((res.stdout ?? "").slice(0, 80))} ` +
+        "— expected a block decision",
+    );
+  } else {
+    console.log(`ok   ${label}`);
+  }
+}
+
 // checkpoint-autorun: inert without opt-in; a dirty opted-in git repo blocks
 // once (decision on stdout) and the TTL lock makes the immediate rerun silent;
 // stop_hook_active and pending-question stops stay silent even when dirty.
@@ -440,35 +502,70 @@ function assertCase(label, res, wantStatus, wantOut = null) {
       spawnSync("git", args, { cwd: dir, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
     git("init", "-q");
     writeFileSync(join(dir, "pending.txt"), "dirty\n");
-    assertCase("hooks/checkpoint-autorun.mjs no opt-in → silent", runEnforcement("hooks/checkpoint-autorun.mjs", {}, bare), 0);
-    assertCase(
+    assertAutorunSilent("hooks/checkpoint-autorun.mjs no opt-in → silent", runEnforcement("hooks/checkpoint-autorun.mjs", {}, bare));
+    assertAutorunSilent(
       "hooks/checkpoint-autorun.mjs stop_hook_active → silent",
       runEnforcement("hooks/checkpoint-autorun.mjs", { stop_hook_active: true }, dir),
-      0,
     );
-    assertCase(
+    assertAutorunSilent(
       "hooks/checkpoint-autorun.mjs pending question → silent",
       runEnforcement("hooks/checkpoint-autorun.mjs", { last_assistant_message: "Should I proceed?" }, dir),
-      0,
     );
-    const fired = runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir);
-    asserts++;
-    if (fired.status !== 0 || !(fired.stdout ?? "").includes('"decision":"block"')) {
-      failures++;
-      console.error(
-        `FAIL hooks/checkpoint-autorun.mjs dirty opted-in repo → exit ${fired.status}, ` +
-          `stdout ${JSON.stringify((fired.stdout ?? "").slice(0, 80))} — expected a block decision`,
-      );
-    } else {
-      console.log("ok   hooks/checkpoint-autorun.mjs dirty opted-in repo → blocks for checkpoint");
-    }
-    assertCase(
+    // Trigger-scope guard (B3-40): a dirty tree mid-rebase/merge/cherry-pick
+    // means something other than ordinary uncommitted work — must stay silent
+    // even though the tree is dirty and the config is opted in. Must run
+    // before any lock exists, or a fresh lock would silence it for the wrong
+    // reason and mask a regression in this guard.
+    mkdirSync(join(dir, ".git", "rebase-merge"), { recursive: true });
+    assertAutorunSilent(
+      "hooks/checkpoint-autorun.mjs mid-rebase → silent even though dirty",
+      runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir),
+    );
+    rmSync(join(dir, ".git", "rebase-merge"), { recursive: true, force: true });
+    assertAutorunBlocks(
+      "hooks/checkpoint-autorun.mjs dirty opted-in repo → blocks for checkpoint",
+      runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir),
+    );
+    assertAutorunSilent(
       "hooks/checkpoint-autorun.mjs immediate rerun → lock keeps it silent",
       runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir),
-      0,
+    );
+    // Loop guard (B3-40): a lock older than LOCK_TTL_MS is stale and must be
+    // cleared so a genuinely-still-dirty repo can retrigger — not just stay
+    // silent forever after the first block.
+    const lockPath = join(dir, ".claude", ".checkpoint-hook-active");
+    const staleMs = (Date.now() - 11 * 60 * 1000) / 1000;
+    utimesSync(lockPath, staleMs, staleMs);
+    assertAutorunBlocks(
+      "hooks/checkpoint-autorun.mjs stale lock (backdated mtime) → retriggers block",
+      runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir),
     );
   } finally {
     for (const d of [bare, dir]) rmSync(d, { recursive: true, force: true });
+  }
+}
+
+// checkpoint-autorun (B3-40): with no upstream configured, a clean tree after
+// a real commit must stay silent — hasPendingWork()'s `!upstream` early
+// return is only reachable once the dirty-tree short-circuit above it is
+// false, which none of the always-dirty fixtures above ever exercise.
+{
+  const dir = enforcementFixture({ enforcement: { checkpointAutorun: true } });
+  try {
+    const git = (...args) =>
+      spawnSync("git", args, { cwd: dir, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+    git("init", "-q");
+    git("config", "user.email", "smoke@example.com");
+    git("config", "user.name", "Smoke Test");
+    writeFileSync(join(dir, "committed.txt"), "clean\n");
+    git("add", "-A");
+    git("commit", "-q", "-m", "init");
+    assertAutorunSilent(
+      "hooks/checkpoint-autorun.mjs no upstream, clean tree → silent",
+      runEnforcement("hooks/checkpoint-autorun.mjs", {}, dir),
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 }
 
