@@ -420,5 +420,56 @@ try {
   rmSync(reqDir, { recursive: true, force: true });
 }
 
+// B2-38: a bannedApis rule whose pattern doesn't compile as a RegExp must die
+// pre-write (the schema can only assert it's a string, not that it compiles —
+// banned-api-guard.mjs would otherwise skip the rule silently at runtime).
+const patDir = mkdtempSync(join(tmpdir(), "adk-pattern-"));
+try {
+  const badAdapter = join(patDir, "bad.json");
+  writeFileSync(
+    badAdapter,
+    `${JSON.stringify({
+      enforcement: {
+        bannedApis: [{ paths: ["src"], rules: [{ pattern: "(unterminated", why: "x" }] }],
+      },
+    })}\n`,
+  );
+  const bad = spawnSync(
+    process.execPath,
+    [installer, "--dest", join(patDir, "dest"), "--adapter", badAdapter],
+    { encoding: "utf8" },
+  );
+  check("pattern: non-compiling pattern exits 1", bad.status === 1, `exit ${bad.status}`);
+  check(
+    "pattern: violation names the path and reason",
+    (bad.stderr ?? "").includes("rules[0].pattern: not a valid RegExp"),
+    (bad.stderr ?? "").trim(),
+  );
+  check("pattern: violation writes nothing", !existsSync(join(patDir, "dest", ".claude")));
+
+  const advDest = mkdtempSync(join(tmpdir(), "adk-pattern-check-"));
+  const cfgPath = join(advDest, ".claude", "ai-dev-kit.config.json");
+  mkdirSync(dirname(cfgPath), { recursive: true });
+  writeFileSync(
+    cfgPath,
+    `${JSON.stringify({
+      enforcement: {
+        bannedApis: [{ paths: ["src"], rules: [{ pattern: "(unterminated", why: "x" }] }],
+      },
+    })}\n`,
+  );
+  const adv = spawnSync(process.execPath, [installer, "--dest", advDest, "--check"], {
+    encoding: "utf8",
+  });
+  check(
+    "pattern: --check advisory names the non-compiling pattern",
+    (adv.stderr ?? "").includes("rules[0].pattern: not a valid RegExp"),
+    (adv.stderr ?? "").trim(),
+  );
+  rmSync(advDest, { recursive: true, force: true });
+} finally {
+  rmSync(patDir, { recursive: true, force: true });
+}
+
 if (failures > 0) process.exit(1);
 console.log("installer smoke: all merge + stale + advisory + fixture cases passed.");

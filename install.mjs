@@ -146,13 +146,41 @@ function validateAdapter(value, schema, path = "adapter") {
   return errors;
 }
 
+/**
+ * The schema can only assert `pattern` is a string, not that it compiles —
+ * catch a non-compiling `enforcement.bannedApis[].rules[].pattern` here so it
+ * doesn't ship inert (banned-api-guard.mjs skips a broken rule silently at
+ * runtime; this is the install-time counterpart).
+ */
+function validateBannedApiPatterns(config, path = "adapter") {
+  const errors = [];
+  const groups = config?.enforcement?.bannedApis;
+  if (!Array.isArray(groups)) return errors;
+  groups.forEach((group, gi) => {
+    (group?.rules ?? []).forEach((rule, ri) => {
+      try {
+        new RegExp(rule.pattern);
+      } catch (e) {
+        errors.push(
+          `${path}.enforcement.bannedApis[${gi}].rules[${ri}].pattern: not a valid RegExp (${e.message})`,
+        );
+      }
+    });
+  });
+  return errors;
+}
+
 // Adapter is read and schema-validated up front — a bad adapter must fail the
 // install before any file is written (previously invalid JSON died mid-install).
 let adapterText = null;
 if (adapterArg && !checkMode) {
   adapterText = readFileSync(resolve(adapterArg), "utf8");
   const schema = JSON.parse(readFileSync(join(kitRoot, "adapters", "project.schema.json"), "utf8"));
-  const violations = validateAdapter(JSON.parse(adapterText), schema);
+  const parsedAdapter = JSON.parse(adapterText);
+  const violations = [
+    ...validateAdapter(parsedAdapter, schema),
+    ...validateBannedApiPatterns(parsedAdapter),
+  ];
   if (violations.length > 0) {
     console.error(`adapter ${adapterArg}: ${violations.length} schema violation(s):`);
     for (const v of violations) {
@@ -331,7 +359,11 @@ if (checkMode) {
       const schema = JSON.parse(
         readFileSync(join(kitRoot, "adapters", "project.schema.json"), "utf8"),
       );
-      issues = validateAdapter(JSON.parse(readFileSync(cfgPath, "utf8")), schema, "config");
+      const parsedConfig = JSON.parse(readFileSync(cfgPath, "utf8"));
+      issues = [
+        ...validateAdapter(parsedConfig, schema, "config"),
+        ...validateBannedApiPatterns(parsedConfig, "config"),
+      ];
     } catch (e) {
       issues = [`config: not parseable as JSON (${e.message})`];
     }

@@ -1,5 +1,24 @@
 # ai-dev-kit changelog
 
+## 0.23.3 — 2026-08-25
+
+B2-38: enforcement config hardening — two silent-degrade paths closed.
+
+- **`stop-gate.mjs` clamps a non-positive `timeoutSeconds`.** The old check
+  (`Number.isInteger`) accepted `0` and negative values, handing `execSync` a
+  non-positive timeout instead of the intended per-command cap; now also
+  requires `> 0`, falling back to the 150s default otherwise.
+- **`banned-api-guard.mjs` surfaces a non-compiling `pattern`** instead of
+  silently skipping the rule forever: a broken rule is named once on stderr
+  per matching invocation, siblings still enforce. `install.mjs` gained a
+  matching install-time check (`validateBannedApiPatterns`) — a non-compiling
+  pattern now dies pre-write via `--adapter` and draws a `--check` ADVISORY
+  against an already-installed config, same shape as the `required` gate
+  from B1-37.
+
+Verification: smoke-hooks grows 4 cases (139 asserts, up from 135);
+smoke-installer grows 4 cases (75 asserts, up from 71).
+
 ## 0.23.2 — 2026-08-25
 
 B1-37: the installer's adapter validator didn't implement JSON Schema

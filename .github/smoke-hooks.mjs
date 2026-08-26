@@ -282,6 +282,28 @@ function assertCase(label, res, wantStatus, wantOut = null) {
   }
 }
 
+// stop-gate: a non-positive timeoutSeconds (B2-38) must clamp to the 150s
+// default rather than handing execSync a zero/negative timeout — the raw
+// value used to pass Number.isInteger, so 0/-5 slipped through uncaught.
+{
+  const zero = enforcementFixture({
+    enforcement: {
+      stopGate: { commands: ['node -e "process.exit(0)"'], timeoutSeconds: 0 },
+    },
+  });
+  const negative = enforcementFixture({
+    enforcement: {
+      stopGate: { commands: ['node -e "process.exit(0)"'], timeoutSeconds: -5 },
+    },
+  });
+  try {
+    assertCase("hooks/stop-gate.mjs timeoutSeconds: 0 clamps to default → exit 0", runEnforcement("hooks/stop-gate.mjs", {}, zero), 0);
+    assertCase("hooks/stop-gate.mjs timeoutSeconds: -5 clamps to default → exit 0", runEnforcement("hooks/stop-gate.mjs", {}, negative), 0);
+  } finally {
+    for (const d of [zero, negative]) rmSync(d, { recursive: true, force: true });
+  }
+}
+
 // banned-api-guard: inert without config; blocks a banned pattern under a
 // guarded path (BOM'd event included — fails open otherwise); clean file,
 // excluded path, out-of-scope path, and commented occurrence all pass.
@@ -323,6 +345,47 @@ function assertCase(label, res, wantStatus, wantOut = null) {
     assertCase("hooks/banned-api-guard.mjs out-of-scope path → exit 0", runEnforcement("hooks/banned-api-guard.mjs", edit("src/ui/free.ts"), dir), 0);
   } finally {
     for (const d of [bare, dir]) rmSync(d, { recursive: true, force: true });
+  }
+}
+
+// banned-api-guard: a non-compiling pattern (B2-38) must not disable the
+// whole guard — the valid sibling rule still blocks, and the broken rule is
+// named once on stderr instead of failing open silently.
+{
+  const cfg = {
+    enforcement: {
+      bannedApis: [
+        {
+          name: "determinism",
+          paths: ["src/sim"],
+          rules: [
+            { pattern: "(unterminated", why: "broken on purpose" },
+            { pattern: "\\bMath\\.random\\b", why: "use the seeded rng" },
+          ],
+        },
+      ],
+    },
+  };
+  const dir = enforcementFixture(cfg);
+  try {
+    mkdirSync(join(dir, "src", "sim"), { recursive: true });
+    writeFileSync(join(dir, "src", "sim", "bad.ts"), "export const r = () => Math.random();\n");
+    const edit = (p) => ({ tool_name: "Edit", tool_input: { file_path: join(dir, p) } });
+    const res = runEnforcement("hooks/banned-api-guard.mjs", edit("src/sim/bad.ts"), dir);
+    assertCase(
+      "hooks/banned-api-guard.mjs broken sibling rule still blocks on the valid rule → exit 2",
+      res,
+      2,
+      "banned-api-guard",
+    );
+    assertCase(
+      "hooks/banned-api-guard.mjs non-compiling pattern named once on stderr",
+      res,
+      2,
+      "non-compiling pattern",
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 }
 
