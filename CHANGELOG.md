@@ -1,5 +1,29 @@
 # ai-dev-kit changelog
 
+## 0.23.10 — 2026-08-26
+
+B1-44: backfilled tags + GitHub Releases for v0.23.5–v0.23.9 (all shipped
+untagged; Latest had been stuck at v0.23.4). Every release sha's CI was
+re-verified green via `check-release-ready.mjs` before tagging. Added a
+tag-currency advisory (`check-tag-currency.mjs`, wired into CI) that warns
+when a CHANGELOG version older than the newest entry has no matching
+`v<version>` tag — exempts the still-unreleased newest entry and the
+pre-tagging-practice history before v0.8.0. CI's `actions/checkout` now
+passes `fetch-tags: true` so the check sees real tag state.
+
+Also B3-45: SECURITY.md's "auditable in under 140 lines" claim had drifted
+twice across prior audits with no smoke coverage; `smoke-hooks.mjs` now
+asserts every `hooks/*.mjs` file stays under that bound (+8 asserts, 143→151).
+
+- New: `.github/check-tag-currency.mjs`.
+- `.github/workflows/ci.yml`: checkout gains `fetch-tags: true`; new "Tag
+  currency (advisory)" step.
+- `.github/smoke-hooks.mjs`: new line-count tripwire per hook file.
+
+Verification: `check-tag-currency.mjs` reports all 37 prior tagged-era
+versions tagged; `smoke-hooks.mjs` 151/151; full 6-command gate green; six
+version stamps agree at 0.23.10.
+
 ## 0.23.9 — 2026-08-26
 
 B3-43: second-tier eval grading pass. Re-ran the existing 30-scenario /

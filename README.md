@@ -227,13 +227,13 @@ The canonical consumer block is four lines:
 - **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → 96.8 → 97.1 →
   **97.9/100** (2026-08-26, seventh audit — zero doc drift, all six gates
   green by execution, every 0.23.2–0.23.9 fix verified closed; one process
-  finding: v0.23.5–v0.23.9 shipped untagged with no GitHub Release) — rows in
+  finding: v0.23.5–v0.23.9 shipped untagged with no GitHub Release, backfilled
+  + tag-currency advisory added in 0.23.10) — rows in
   [docs/BACKLOG.md](docs/BACKLOG.md), latest report
   [docs/archive/PROJECT_AUDIT_2026-08-26.md](docs/archive/PROJECT_AUDIT_2026-08-26.md).
   Harness-currency 92.4 → **96.5/100**
   ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md));
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B1-44 (backfill tags/Releases v0.23.5–v0.23.9 + tag-currency
-  advisory), then B3-45 (SECURITY handler-size claim tripwire); B4-16/31
-  stay deferred/advised-against.
+  **Next:** nothing open — B1-44 and B3-45 shipped in 0.23.10; B4-16/31 stay
+  deferred/advised-against; next audit pass generates new rows.

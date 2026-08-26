@@ -5,7 +5,7 @@
  * block — and "fires" means the stdout JSON carries additionalContext.
  */
 import { spawnSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -623,6 +623,22 @@ for (const event of wiredEvents) {
   if (!(event in reviewed)) {
     failures++;
     console.error(`FAIL manifest hooks.handlers wires ${event} with no hooks.reviewed verdict`);
+  }
+}
+
+// SECURITY.md claims every hook handler is "auditable in under 140 lines" —
+// this tripwire caught that claim drifting twice across audits before it had
+// a smoke assert of its own (B3-45).
+const SECURITY_LINE_BOUND = 140;
+const hookFiles = readdirSync("hooks").filter((f) => f.endsWith(".mjs"));
+for (const file of hookFiles) {
+  asserts++;
+  const lineCount = readFileSync(join("hooks", file), "utf8").split("\n").length;
+  if (lineCount >= SECURITY_LINE_BOUND) {
+    failures++;
+    console.error(
+      `FAIL hooks/${file} → ${lineCount} lines, at/over SECURITY.md's documented ${SECURITY_LINE_BOUND}-line bound`,
+    );
   }
 }
 
