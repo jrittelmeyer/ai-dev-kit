@@ -111,8 +111,8 @@ const label = (p) => posix(p.startsWith(dest) ? relative(dest, p) : p);
 
 /**
  * Validate a parsed adapter against the subset of JSON Schema the kit's schema
- * actually uses: type · enum · properties + additionalProperties:false · array
- * items. Returns human-readable violations ("path: reason").
+ * actually uses: type · enum · properties + additionalProperties:false ·
+ * required · array items. Returns human-readable violations ("path: reason").
  */
 function validateAdapter(value, schema, path = "adapter") {
   const typeOf = (v) => (Array.isArray(v) ? "array" : v === null ? "null" : typeof v);
@@ -123,6 +123,11 @@ function validateAdapter(value, schema, path = "adapter") {
   const errors = [];
   if (schema.enum && !schema.enum.includes(value)) {
     errors.push(`${path}: "${value}" is not one of ${schema.enum.join(" | ")}`);
+  }
+  if (t === "object" && Array.isArray(schema.required)) {
+    for (const key of schema.required) {
+      if (!(key in value)) errors.push(`${path}: missing required "${key}"`);
+    }
   }
   if (t === "object" && schema.properties) {
     for (const [key, v] of Object.entries(value)) {

@@ -375,5 +375,50 @@ try {
   rmSync(badDir, { recursive: true, force: true });
 }
 
+// A bannedApis entry missing its required "paths"/"rules" must die loudly
+// pre-write too, like any other schema violation (B1-37: the validator didn't
+// enforce `required` at all, so this used to install clean and fail-open the
+// banned-api-guard at runtime).
+const reqDir = mkdtempSync(join(tmpdir(), "adk-required-"));
+try {
+  const badAdapter = join(reqDir, "bad.json");
+  writeFileSync(
+    badAdapter,
+    `${JSON.stringify({ enforcement: { bannedApis: [{ name: "no-eval" }] } })}\n`,
+  );
+  const bad = spawnSync(
+    process.execPath,
+    [installer, "--dest", join(reqDir, "dest"), "--adapter", badAdapter],
+    { encoding: "utf8" },
+  );
+  check("required: missing paths/rules exits 1", bad.status === 1, `exit ${bad.status}`);
+  check(
+    "required: violation names the missing keys",
+    (bad.stderr ?? "").includes('missing required "paths"') &&
+      (bad.stderr ?? "").includes('missing required "rules"'),
+    (bad.stderr ?? "").trim(),
+  );
+  check("required: violation writes nothing", !existsSync(join(reqDir, "dest", ".claude")));
+
+  // Same shape, but as an already-installed (user-owned) config re-checked by
+  // --check: advisory only, exit code unaffected.
+  const advDest = mkdtempSync(join(tmpdir(), "adk-required-check-"));
+  const cfgPath = join(advDest, ".claude", "ai-dev-kit.config.json");
+  mkdirSync(dirname(cfgPath), { recursive: true });
+  writeFileSync(cfgPath, `${JSON.stringify({ enforcement: { bannedApis: [{ name: "x" }] } })}\n`);
+  const adv = spawnSync(process.execPath, [installer, "--dest", advDest, "--check"], {
+    encoding: "utf8",
+  });
+  check(
+    "required: --check advisory names the missing keys",
+    (adv.stderr ?? "").includes('missing required "paths"') &&
+      (adv.stderr ?? "").includes('missing required "rules"'),
+    (adv.stderr ?? "").trim(),
+  );
+  rmSync(advDest, { recursive: true, force: true });
+} finally {
+  rmSync(reqDir, { recursive: true, force: true });
+}
+
 if (failures > 0) process.exit(1);
 console.log("installer smoke: all merge + stale + advisory + fixture cases passed.");

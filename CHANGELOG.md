@@ -1,5 +1,22 @@
 # ai-dev-kit changelog
 
+## 0.23.2 — 2026-08-25
+
+B1-37: the installer's adapter validator didn't implement JSON Schema
+`required` at all — a `bannedApis` entry missing `paths`/`rules` passed
+validation cleanly, then fail-opened `banned-api-guard.mjs` at runtime
+(a group with no `paths` is silently skipped, never blocking).
+
+- **`validateAdapter` now enforces `required`** on any object schema that
+  declares it, recursively — not just `bannedApis`. Fixed the docblock's
+  stale claim about which JSON Schema subset is covered.
+- Smoke: a `bannedApis` entry missing `paths`/`rules` now dies pre-write via
+  `--adapter` (exit 1, nothing written) and surfaces as an ADVISORY via
+  `--check` against an already-installed config, naming both missing keys.
+
+Verification: smoke-installer grows both cases — 71 asserts green locally
+alongside the other four gates.
+
 ## 0.23.1 — 2026-08-25
 
 One consumer-recorded condition discharged so next-web-boilerplate can adopt
