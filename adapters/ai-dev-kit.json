@@ -14,6 +14,14 @@
     ],
     "notes": "The kit's live loop is its own install: self-install, drift-check, then the smoke suites drive every handler and installer path."
   },
+  "enforcement": {
+    "stopGate": {
+      "commands": [
+        "node install.mjs --check",
+        "node .github/skill-lint.mjs"
+      ]
+    }
+  },
   "gate": [
     "node install.mjs --check",
     "node .github/skill-lint.mjs",

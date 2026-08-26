@@ -235,5 +235,5 @@ The canonical consumer block is four lines:
   model-graded eval evidence 92/96
   ([SKILL_EVALS_2026-08-24](docs/archive/SKILL_EVALS_2026-08-24.md)).
   **Next:** B1-37 (validator `required` enforcement), then B2-38/39
-  (enforcement config hardening · release green-gate), B3-40/41; B4-16/31 stay
-  deferred/advised-against.
+  (enforcement config hardening · release green-gate), B3-40/41 done —
+  B4-16/31 stay deferred/advised-against.

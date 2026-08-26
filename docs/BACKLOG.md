@@ -24,7 +24,6 @@ drove the 0.23.x consumer-pattern upstreams.
 |------|---|------|------|-------|--------|
 | B1 | 37 | installer | `validateAdapter` implements `required` (the schema uses it since 0.23.0 — a `bannedApis` entry missing `paths`/`rules` currently passes validation and fail-opens the guard at runtime); fix the docblock's coverage claim; smoke case for the rejection + `--check` advisory | Adapter +2, Installer +1 | S |
 | B2 | 38 | hooks | Enforcement config hardening: stop-gate clamps invalid `timeoutSeconds` (≤0 / non-integer → default 150); banned-api-guard surfaces a non-compiling `pattern` (install/`--check` advisory + one-shot stderr note) instead of silently skipping a blocking rule | Hooks +2 | S |
-| B3 | 41 | dogfood | Kit's own adapter opts into `enforcement.stopGate` (fast pair: root `--check` + `skill-lint`) — first-party live coverage of the Stop path; feeds the hook-visibility Watch log | evidence (Watch) | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
@@ -58,5 +57,8 @@ Watch (externally gated, re-check each audit):
   events carry `additionalContext` and all five advisory handlers target
   supported ones; the three 0.23.0 enforcement handlers use the separately
   documented blocking mechanisms (Stop decision-block / exit 2, PostToolUse
-  exit 2). The Stop-block path has never fired live kit-side (no adapter opts
-  in) — row 41 proposes the first-party instrument.
+  exit 2). The Stop-block path fired live kit-side for the first time in
+  0.23.6 (B3-41): the kit's own adapter opted into `enforcement.stopGate`,
+  a deliberate drift was introduced to fail the gate, the Stop hook blocked
+  and fed the failure back, and a clean end afterward passed through
+  silently. Gate closed.

@@ -1,5 +1,22 @@
 # ai-dev-kit changelog
 
+## 0.23.6 — 2026-08-25
+
+B3-41: dogfood — the kit's own adapter (`adapters/ai-dev-kit.json`) opts into
+`enforcement.stopGate` with the fast pair (`node install.mjs --check` +
+`node .github/skill-lint.mjs`, ~0.2s). First-party live coverage of the
+Stop-block path: `stop-gate.mjs` has shipped since 0.23.0 but had never fired
+in a real kit-side session before this row. Verified live, not just by
+config diff — deliberately drifted a copied skill file, ended the turn, and
+watched the Stop hook feed the failure back and re-invoke the session; reverted
+the drift and confirmed a clean end passes through silently.
+
+- Root `.claude/ai-dev-kit.config.json` (the kit's own live adapter output)
+  now carries `enforcement.stopGate.commands`, produced by re-running the
+  installer against the updated adapter.
+- Closes the `docs/BACKLOG.md` Watch-log line noting the Stop-block path had
+  never fired kit-side.
+
 ## 0.23.5 — 2026-08-25
 
 B3-40: enforcement secondary-guard smoke — closes the remaining coverage gaps
