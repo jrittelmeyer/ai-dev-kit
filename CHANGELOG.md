@@ -1,5 +1,30 @@
 # ai-dev-kit changelog
 
+## 0.23.7 — 2026-08-25
+
+Harness-audit run 2 (signed off): full pass at 0.23.6, aggregate **96.5/100**
+(baseline 92.4) — report in `docs/archive/HARNESS_AUDIT_2026-08-25.md`. The
+lift is the baseline's own proposed rows having shipped: evals +16, packaging
++10, disclosure +4, hook-decision-log +3. New backlog rows B3-42 (description
+headroom trim) and B3-43 (second-tier eval grading pass) recover the run's
+named deductions.
+
+- harness-audit 0.1.4: `references/sources.md` repaired — the MCP-landscape
+  row now points at registry.modelcontextprotocol.io (the
+  `modelcontextprotocol/servers` third-party list was retired 2026-04-14),
+  the changelog row carries the raw URL (the blob page doesn't render for
+  fetchers), and every row re-stamped 2026-08-25. `references/stack.md`
+  re-confirmed and re-stamped where re-verified.
+- Ecosystem re-verified with no kit change needed (recorded in the report's
+  decision log): changelog head still 2.1.246 (no new hook events; all 31
+  verdicts stand), no plugin payload-exclusion mechanism (B4-31 verdict
+  holds), plugin tag-channels / `dependencies` / `userConfig` not adopted.
+
+Verification: all nine `sources.md` rows re-fetched live during the run;
+`skill-lint` 0/0, `skill-evals` 10 skills · 30 scenarios · 94 anchors · 0
+errors; self-install re-run and `install.mjs --check` green; full adapter
+gate green pre-commit.
+
 ## 0.23.6 — 2026-08-25
 
 B3-41: dogfood — the kit's own adapter (`adapters/ai-dev-kit.json`) opts into
