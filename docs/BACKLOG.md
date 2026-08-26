@@ -7,9 +7,11 @@ report. Every row enters plan → sign-off → build.
 
 Source: [PROJECT_AUDIT_2026-08-25](archive/PROJECT_AUDIT_2026-08-25.md)
 (aggregate 97.1/100, sixth audit — the 0.20.0–0.23.1 surface verified strong;
-rows 37–41 recover the pass's named deductions: the adapter validator's
+rows 37–41 recovered the pass's named deductions: the adapter validator's
 `required` gap, enforcement config hardening, the release green-gate, and
-enforcement secondary-guard coverage). Chain:
+enforcement secondary-guard coverage — all five shipped 0.23.2–0.23.5; rows
+37–38 pruned from the table 2026-08-26, having lagged the others by one
+session). Chain:
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
@@ -27,8 +29,6 @@ drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 37 | installer | `validateAdapter` implements `required` (the schema uses it since 0.23.0 — a `bannedApis` entry missing `paths`/`rules` currently passes validation and fail-opens the guard at runtime); fix the docblock's coverage claim; smoke case for the rejection + `--check` advisory | Adapter +2, Installer +1 | S |
-| B2 | 38 | hooks | Enforcement config hardening: stop-gate clamps invalid `timeoutSeconds` (≤0 / non-integer → default 150); banned-api-guard surfaces a non-compiling `pattern` (install/`--check` advisory + one-shot stderr note) instead of silently skipping a blocking rule | Hooks +2 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
