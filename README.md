@@ -206,7 +206,10 @@ The canonical consumer block is four lines:
   `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
   behavior change (CI gates the six sites). Every release commit gets an annotated tag
   `v<version>` and a GitHub Release built from its CHANGELOG entry — pushed once CI is
-  green.
+  green. **Before tagging**, run `node .github/check-release-ready.mjs` against the
+  pushed sha (defaults to `HEAD`) — it exits non-zero unless every check run on that
+  sha is `completed`/`success`, so a red or still-running CI can't get tagged (v0.23.0
+  shipped on a red sha this gate exists to catch).
 - **Release titles:** Follow the pattern `v<version> — <subject>` where `<subject>`
   summarizes the shipped feature group or fix (see CHANGELOG entries for examples).
 

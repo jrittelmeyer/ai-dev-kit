@@ -1,5 +1,26 @@
 # ai-dev-kit changelog
 
+## 0.23.4 — 2026-08-25
+
+B2-39: release ritual gets a mechanized green-gate — v0.23.0 was tagged on a
+red-CI sha (fixture staleness + self-install split across follow-up commits),
+and nothing checked CI status before tagging.
+
+- **`.github/check-release-ready.mjs`** — pre-tag gate. Resolves the target
+  sha (defaults to `HEAD`), pulls its GitHub check runs via `gh api
+  repos/:owner/:repo/commits/:sha/check-runs`, and exits non-zero unless every
+  run is `completed`/`success`, naming the failing runs on stderr. README's
+  release ritual now requires it green before `git tag`.
+- **AGENTS.md pins release-commit atomicity:** the version bump, self-install,
+  and any fixture/doc updates a release needs land in one commit — never
+  split — since the gate above only checks the sha you point it at.
+
+Verification: dry-run against a known-green sha (this repo's current `HEAD`,
+6/6 check runs `success`) and the known-red v0.23.0 sha
+`6f2099e645064eba9e04ada2e9d1af54811e6b0a` (4/6 `failure`) — the script
+correctly exits 0 and 1 respectively, naming the four failing jobs on the red
+case.
+
 ## 0.23.3 — 2026-08-25
 
 B2-38: enforcement config hardening — two silent-degrade paths closed.

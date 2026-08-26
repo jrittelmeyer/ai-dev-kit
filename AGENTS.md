@@ -27,6 +27,14 @@ pointed at, not restated here.
 - **Gate before commit:** run the adapter `gate` array
   (`adapters/ai-dev-kit.json`) and keep skill bodies generic — project facts go
   in an adapter or project memory, never hardcoded in a skill.
+- **A release commit is self-contained:** the version bump, self-install
+  (`node install.mjs --adapter adapters/ai-dev-kit.json --hooks`), and any
+  fixture/doc updates it requires land in **one** commit — never split across
+  a sequence. v0.23.0 was tagged on a red sha because the self-install and a
+  fixture fix landed in separate follow-up commits; `README.md`'s pre-tag
+  `check-release-ready.mjs` gate only checks the sha you point it at, so a
+  split release can still tag green on an intermediate broken commit if you
+  point it at the wrong one.
 
 Pointers: `README.md` (status doc · install · release ritual) ·
 `CONTRIBUTING.md` (local suite · ground rules) · `docs/PLAYBOOK.md` (the
