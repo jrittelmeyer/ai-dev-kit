@@ -224,16 +224,16 @@ The canonical consumer block is four lines:
   git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
   subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
   other 0.7.2 deferral — shipped in 0.11.0.
-- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → 96.8 →
-  **97.1/100** (2026-08-25, sixth audit — the 0.20.0–0.23.1 surface incl. the
-  opt-in enforcement class verified strong; the pass found the adapter
-  validator's `required` gap and one release tagged on a red-CI sha) — rows in
+- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → 96.8 → 97.1 →
+  **97.9/100** (2026-08-26, seventh audit — zero doc drift, all six gates
+  green by execution, every 0.23.2–0.23.9 fix verified closed; one process
+  finding: v0.23.5–v0.23.9 shipped untagged with no GitHub Release) — rows in
   [docs/BACKLOG.md](docs/BACKLOG.md), latest report
-  [docs/archive/PROJECT_AUDIT_2026-08-25.md](docs/archive/PROJECT_AUDIT_2026-08-25.md).
+  [docs/archive/PROJECT_AUDIT_2026-08-26.md](docs/archive/PROJECT_AUDIT_2026-08-26.md).
   Harness-currency 92.4 → **96.5/100**
   ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md));
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** backlog clear as of 2026-08-26 — every named-audit row shipped
-  through 0.23.9; only B4-16/31 remain, deferred/advised-against. New rows
-  come from the next audit pass.
+  **Next:** B1-44 (backfill tags/Releases v0.23.5–v0.23.9 + tag-currency
+  advisory), then B3-45 (SECURITY handler-size claim tripwire); B4-16/31
+  stay deferred/advised-against.

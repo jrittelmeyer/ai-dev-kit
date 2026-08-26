@@ -5,18 +5,16 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-25](archive/PROJECT_AUDIT_2026-08-25.md)
-(aggregate 97.1/100, sixth audit — the 0.20.0–0.23.1 surface verified strong;
-rows 37–41 recovered the pass's named deductions: the adapter validator's
-`required` gap, enforcement config hardening, the release green-gate, and
-enforcement secondary-guard coverage — all five shipped 0.23.2–0.23.5; rows
-37–38 pruned from the table 2026-08-26, having lagged the others by one
-session). Chain:
+Source: [PROJECT_AUDIT_2026-08-26](archive/PROJECT_AUDIT_2026-08-26.md)
+(aggregate 97.9/100, seventh audit — zero doc drift, all six gates green by
+execution, every 0.23.2–0.23.9 fix verified; one process finding: versions
+0.23.5–0.23.9 shipped untagged, no GitHub Release — row 44). Chain:
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) →
-[96.8](archive/PROJECT_AUDIT_2026-08-24.md) → 97.1. Harness currency
+[96.8](archive/PROJECT_AUDIT_2026-08-24.md) →
+[97.1](archive/PROJECT_AUDIT_2026-08-25.md) → 97.9. Harness currency
 [92.4](archive/HARNESS_AUDIT_2026-08-23.md) →
 [96.5](archive/HARNESS_AUDIT_2026-08-25.md) (rows 42–43 recovered its named
 deductions — both shipped 2026-08-26); model-graded eval evidence in
@@ -29,6 +27,8 @@ drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B1 | 44 | release | Backfill tags + Releases for v0.23.5–v0.23.9 (each from its CHANGELOG entry, on its release sha — all green), and mechanize tag currency: an advisory when `VERSION` has no matching `v<version>` tag | Versioning +2 | S |
+| B3 | 45 | security-docs | SECURITY.md handler-size claim tripwire: smoke assert that max `hooks/*.mjs` line count stays under the documented bound (claim drifted twice in two audits) | Security +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
