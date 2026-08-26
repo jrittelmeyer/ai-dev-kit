@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.7",
+  "version": "0.23.8",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -261,7 +261,7 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.5.1",
+      "version": "0.5.2",
       "dualHome": false,
       "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-foundation disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation tier defaults the target's) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the target foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
       "triggers": [
@@ -291,7 +291,7 @@
     },
     {
       "name": "harness-audit",
-      "version": "0.1.4",
+      "version": "0.1.5",
       "dualHome": false,
       "summary": "Periodic currency audit of the agent harness itself: inventory the local surface (skills/hooks/context files/tool servers/permissions/packaging), re-fetch the pinned authoritative specs (self-repairing references/sources.md), sweep the ecosystem with current-dated category queries (maintaining references/stack.md), diff against the rubric, and emit a dated scored report + proposed backlog rows. Report-only; sign-off gates implementation.",
       "triggers": [

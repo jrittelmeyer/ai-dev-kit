@@ -1,5 +1,19 @@
 # ai-dev-kit changelog
 
+## 0.23.8 — 2026-08-26
+
+B3-42: description headroom trim. The always-loaded description budget sat at
+897/900 tokens; trimmed the two longest — `project-adopt` (101→78 tok) and
+`harness-audit` (96→77 tok) — restoring the budget to 855/900, exactly 5%
+headroom. Both descriptions keep third-person voice and a "Use when…" trigger
+clause; no behavior change.
+
+- project-adopt 0.5.2, harness-audit 0.1.5: description text only.
+
+Verification: `skill-lint` reports the always-loaded total at 855 tokens
+(was 897), 10 skills clean, 0 errors, 0 warnings; self-install re-run and
+`install.mjs --check` green; full adapter gate green pre-commit.
+
 ## 0.23.7 — 2026-08-25
 
 Harness-audit run 2 (signed off): full pass at 0.23.6, aggregate **96.5/100**
