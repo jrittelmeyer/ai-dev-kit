@@ -16,18 +16,19 @@ enforcement secondary-guard coverage). Chain:
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) →
 [96.8](archive/PROJECT_AUDIT_2026-08-24.md) → 97.1. Harness currency
 [92.4](archive/HARNESS_AUDIT_2026-08-23.md) →
-[96.5](archive/HARNESS_AUDIT_2026-08-25.md) (rows 42–43 recover its named
-deductions); model-graded eval evidence in
-[SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md); the 2026-08-25
-fleet audit ([FLEET_UPGRADE_PLAN_2026-08-25](archive/FLEET_UPGRADE_PLAN_2026-08-25.md))
+[96.5](archive/HARNESS_AUDIT_2026-08-25.md) (rows 42–43 recovered its named
+deductions — both shipped 2026-08-26); model-graded eval evidence in
+[SKILL_EVALS_2026-08-24](archive/SKILL_EVALS_2026-08-24.md) →
+[SKILL_EVALS_2026-08-26](archive/SKILL_EVALS_2026-08-26.md) (second-tier
+pass, 162/162 PASS — the 2026-08-24 findings were already fixed by the
+time this pass ran); the 2026-08-25 fleet audit
+([FLEET_UPGRADE_PLAN_2026-08-25](archive/FLEET_UPGRADE_PLAN_2026-08-25.md))
 drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
 | B1 | 37 | installer | `validateAdapter` implements `required` (the schema uses it since 0.23.0 — a `bannedApis` entry missing `paths`/`rules` currently passes validation and fail-opens the guard at runtime); fix the docblock's coverage claim; smoke case for the rejection + `--check` advisory | Adapter +2, Installer +1 | S |
 | B2 | 38 | hooks | Enforcement config hardening: stop-gate clamps invalid `timeoutSeconds` (≤0 / non-integer → default 150); banned-api-guard surfaces a non-compiling `pattern` (install/`--check` advisory + one-shot stderr note) instead of silently skipping a blocking rule | Hooks +2 | S |
-| B3 | 42 | skills | Description headroom trim: the always-loaded budget sits at 897/900 tokens — trim the two longest descriptions (`project-adopt` ≈101 tok, `harness-audit` ≈96 tok) to restore ≥5% headroom so the next skill or description edit doesn't force reactive cuts | Descriptions +3 | S |
-| B3 | 43 | evals | Second-tier eval grading pass: run the existing 30-scenario graded pass once on a smaller model tier (authoring rubric's "test with all models you plan to use"), record deltas in a dated archive report, fold any large-tier-only scenario back into its skill body | Evals +4 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 

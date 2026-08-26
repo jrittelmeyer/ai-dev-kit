@@ -1,5 +1,26 @@
 # ai-dev-kit changelog
 
+## 0.23.9 — 2026-08-26
+
+B3-43: second-tier eval grading pass. Re-ran the existing 30-scenario /
+94-anchor model-graded fixture on a smaller model tier (Haiku 4.5, one
+independent grading agent per skill) — `docs/archive/SKILL_EVALS_2026-08-26.md`.
+
+- **Result: 162/162 PASS, 0 grading errors** — every skill 100% at the
+  smaller tier. The four gaps the 2026-08-24 large-tier pass found
+  (harness-audit offline-scoring gate, project-adopt evidence-label check,
+  project-init re-run ordering, retro one-off/rule disambiguator) had
+  already been fixed in the skill bodies by the time this pass ran, so this
+  isn't a same-body large-vs-small A/B — see the report's "why 100%"
+  section. No new gap surfaced; no fold-back needed; no backlog rows
+  proposed.
+- `docs/BACKLOG.md`: rows 42–43 removed (both shipped — 42 in 0.23.8, 43
+  here); chain pointer updated to the new eval report.
+
+Verification: `skill-lint` and `skill-evals` unchanged (855 tok / 30
+scenarios, 0 errors); self-install and `install.mjs --check` green; full
+adapter gate green pre-commit; six version stamps agree at 0.23.9.
+
 ## 0.23.8 — 2026-08-26
 
 B3-42: description headroom trim. The always-loaded description budget sat at
