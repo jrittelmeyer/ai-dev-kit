@@ -230,10 +230,10 @@ The canonical consumer block is four lines:
   validator's `required` gap and one release tagged on a red-CI sha) — rows in
   [docs/BACKLOG.md](docs/BACKLOG.md), latest report
   [docs/archive/PROJECT_AUDIT_2026-08-25.md](docs/archive/PROJECT_AUDIT_2026-08-25.md).
-  Harness-currency baseline **92.4/100**
-  ([HARNESS_AUDIT_2026-08-23](docs/archive/HARNESS_AUDIT_2026-08-23.md));
-  model-graded eval evidence 92/96
-  ([SKILL_EVALS_2026-08-24](docs/archive/SKILL_EVALS_2026-08-24.md)).
-  **Next:** B1-37 (validator `required` enforcement), then B2-38/39
-  (enforcement config hardening · release green-gate), B3-40/41 done —
-  B4-16/31 stay deferred/advised-against.
+  Harness-currency 92.4 → **96.5/100**
+  ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md));
+  model-graded eval evidence **162/162 PASS**
+  ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
+  **Next:** backlog clear as of 2026-08-26 — every named-audit row shipped
+  through 0.23.9; only B4-16/31 remain, deferred/advised-against. New rows
+  come from the next audit pass.
