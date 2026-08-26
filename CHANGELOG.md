@@ -20,9 +20,9 @@ asserts every `hooks/*.mjs` file stays under that bound (+8 asserts, 143→151).
   currency (advisory)" step.
 - `.github/smoke-hooks.mjs`: new line-count tripwire per hook file.
 
-Verification: `check-tag-currency.mjs` reports all 37 prior tagged-era
-versions tagged; `smoke-hooks.mjs` 151/151; full 6-command gate green; six
-version stamps agree at 0.23.10.
+Verification: `check-tag-currency.mjs` reports zero untagged tagged-era
+versions (pre-v0.8.0 history exempt); `smoke-hooks.mjs` 151/151; full
+6-command gate green; six version stamps agree at 0.23.10.
 
 ## 0.23.9 — 2026-08-26
 

@@ -5,18 +5,19 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-26](archive/PROJECT_AUDIT_2026-08-26.md)
-(aggregate 97.9/100, seventh audit — zero doc drift, all six gates green by
-execution, every 0.23.2–0.23.9 fix verified; one process finding: versions
-0.23.5–0.23.9 shipped untagged, no GitHub Release — backfilled + a
-tag-currency advisory added in 0.23.10, row 44 shipped). Row 45 (SECURITY.md
-handler-size tripwire) also shipped in 0.23.10. Chain:
+Source:
+[PROJECT_AUDIT_2026-08-26-post-0.23.10](archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md)
+(aggregate 98.1/100, eighth audit — new peak; rows 44/45 verified closed by
+execution: tags/Releases backfilled with Latest current, tripwire live in
+the 151-assert green run; one CHANGELOG-note drift fixed in place, advisory
+polish rowed as B3-46). Chain:
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
 [97.9](archive/PROJECT_AUDIT_2026-08-19.md) →
 [96.8](archive/PROJECT_AUDIT_2026-08-24.md) →
-[97.1](archive/PROJECT_AUDIT_2026-08-25.md) → 97.9. Harness currency
+[97.1](archive/PROJECT_AUDIT_2026-08-25.md) →
+[97.9](archive/PROJECT_AUDIT_2026-08-26.md) → 98.1. Harness currency
 [92.4](archive/HARNESS_AUDIT_2026-08-23.md) →
 [96.5](archive/HARNESS_AUDIT_2026-08-25.md) (rows 42–43 recovered its named
 deductions — both shipped 2026-08-26); model-graded eval evidence in
@@ -29,15 +30,16 @@ drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B3 | 46 | release-tooling | `check-tag-currency.mjs` polish: success tally splits tagged vs pre-era-exempt; "pending its ritual tag" only when the newest is genuinely untagged; empty-tag-set guard (fork CI clones carry no tags — degrade advisory-style, don't throw). Plus smoke tripwire boundary: count actual lines so a 139-line handler (legal under "under 140") can't false-fail | Versioning +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
 Watch (externally gated, re-check each audit):
 
 - Harness-side git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
-  launch in a subdirectory (kit-side share closed by B1-1). Re-checked five
-  passes 2026-08-09 → **2026-08-25**: changelog swept through head **2.1.246**
-  with no entry on root resolution. The hooks doc defines the placeholder as
+  launch in a subdirectory (kit-side share closed by B1-1). Re-checked seven
+  passes 2026-08-09 → **2026-08-26** (×2 that date): changelog swept through
+  head **2.1.246** with no entry on root resolution. The hooks doc defines the placeholder as
   "the project root **where the session started**" with a worktree carve-out;
   subdirectory launches remain unspecified — gate not lifted. Adjacent but
   distinct: 2.1.245 fixed `if` conditions (`Bash(cat *)` class) false-firing
