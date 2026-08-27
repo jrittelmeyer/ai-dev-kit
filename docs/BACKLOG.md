@@ -10,7 +10,8 @@ Source:
 (aggregate 98.1/100, eighth audit — new peak; rows 44/45 verified closed by
 execution: tags/Releases backfilled with Latest current, tripwire live in
 the 151-assert green run; one CHANGELOG-note drift fixed in place, advisory
-polish rowed as B3-46). Chain:
+polish rowed as B3-46 — shipped 0.23.11, pruned from the table 2026-08-27).
+Chain:
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
@@ -30,7 +31,6 @@ drove the 0.23.x consumer-pattern upstreams.
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 46 | release-tooling | `check-tag-currency.mjs` polish: success tally splits tagged vs pre-era-exempt; "pending its ritual tag" only when the newest is genuinely untagged; empty-tag-set guard (fork CI clones carry no tags — degrade advisory-style, don't throw). Plus smoke tripwire boundary: count actual lines so a 139-line handler (legal under "under 140") can't false-fail | Versioning +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-25), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 

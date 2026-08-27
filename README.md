@@ -234,5 +234,6 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md));
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B3-46 (tag-currency advisory message/edge polish + tripwire
-  boundary), else audit-driven; B4-16/31 stay deferred/advised-against.
+  **Next:** none queued — B3-46 shipped in 0.23.11, closing the eighth
+  audit's last open row; a ninth audit is the natural next step. B4-16/31
+  stay deferred/advised-against.
