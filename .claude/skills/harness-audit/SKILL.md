@@ -15,7 +15,8 @@ currency pass — it audits the *agentic layer* the way `project-audit` audits
 the product and `doc-audit` audits the docs.
 
 Adapter: `.claude/ai-dev-kit.config.json` (`docs.archiveDir`, `docs.backlog`,
-`projectType`); missing fields → derive from the repo and say so. Take
+`projectType`, `harnessAudit.kitSourcePath`); missing fields → derive from the
+repo and say so. Take
 **today's date from the environment, never from memory**, and use extended
 thinking — this is a judgment pass. Report-only: implementation stays behind
 the sign-off gate.
@@ -44,7 +45,12 @@ governs, its URL, how it was last verified, and when. **Re-fetch every row.**
 A moved or dead source → find its successor and update the row *as part of
 this run* (the skill repairs its own inputs). No network access → run the
 mechanical steps only and stamp the report **PARTIAL** — never fabricate
-ecosystem findings.
+ecosystem findings. If the adapter's `harnessAudit.kitSourcePath` resolves to
+an existing local directory, apply the identical edit to
+`<kitSourcePath>/skills/harness-audit/references/sources.md` in the same run,
+so the installed copy and kit source never diverge. If the field is absent or
+the path doesn't resolve, repair the local copy only and flag it in step 5's
+report: "not mirrored upstream — will revert on the next install.mjs run."
 
 ## 3. Current-dated open sweep
 
@@ -55,7 +61,11 @@ standards · tool servers relevant to this `projectType` · distribution/
 packaging channels · named emerging workflow patterns. Findings verify and
 update [references/stack.md](references/stack.md) — the dated
 recommended-stack file this skill maintains; tool names live there and in
-reports, never in this body.
+reports, never in this body. As in step 2, if `harnessAudit.kitSourcePath`
+resolves to an existing local directory, apply the identical edit to
+`<kitSourcePath>/skills/harness-audit/references/stack.md` in the same run;
+otherwise repair the local copy only and flag it in step 5's report as not
+mirrored upstream.
 
 ## 4. Rubric diff
 

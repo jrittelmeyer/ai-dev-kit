@@ -330,6 +330,17 @@
         }
       }
     },
+    "harnessAudit": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Parameters read by the harness-audit skill.",
+      "properties": {
+        "kitSourcePath": {
+          "type": "string",
+          "description": "Local clone of ai-dev-kit to mirror harness-audit's sources.md/stack.md repairs into, if this machine has one."
+        }
+      }
+    },
     "init": {
       "type": "object",
       "additionalProperties": false,

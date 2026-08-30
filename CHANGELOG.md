@@ -1,5 +1,23 @@
 # ai-dev-kit changelog
 
+## 0.23.14 — 2026-08-30
+
+`harness-audit` closes a self-audit gap where two of its own fixes were
+landing only in a consumer project's installed copy and reverting on the
+next `install.mjs` run. Two changes, both scoped to `skills/harness-audit/`:
+`scripts/inventory.mjs`'s hook discovery is now settings.json-aware — it also
+reads `.claude/settings.json` and `.claude/settings.local.json` (not just
+`hooks/hooks.json` / `hooks/installer-hooks.json`), and the hook table gains
+`type`/`if`/`timeout` columns, merged in from a fix that had only ever been
+applied to a consumer's local copy. Second, `adapters/project.schema.json`
+gains an optional `harnessAudit.kitSourcePath` field (a local ai-dev-kit
+clone path); `SKILL.md` steps 2 and 3 now mirror their `sources.md`/`stack.md`
+repairs into that clone's copy of the same file when the field resolves, so
+the two dated ecosystem-knowledge references the skill repairs in place no
+longer silently revert on reinstall — and the step 5 report flags it
+explicitly when a repair isn't mirrored. `harness-audit`'s own `version`
+bumped to 0.1.7 in `manifest.json`.
+
 ## 0.23.13 — 2026-08-30
 
 Frontmatter modernization across seven bundled skills, per the current
