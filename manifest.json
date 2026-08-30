@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.11",
+  "version": "0.23.12",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -63,7 +63,7 @@
         "event": "Stop",
         "matcher": "",
         "skill": "(opt-in enforcement — adapter enforcement.stopGate)",
-        "fires": "session end with a configured gate command failing — exit 2 feeds the failure back; inert without adapter opt-in"
+        "fires": "session end — runs the gate in the background via asyncRewake (turn ends immediately); a configured gate command failing exits 2, which wakes the agent one turn later with the failure; inert without adapter opt-in"
       },
       {
         "file": "hooks/checkpoint-autorun.mjs",

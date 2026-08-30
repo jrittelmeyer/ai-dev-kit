@@ -1,5 +1,18 @@
 # ai-dev-kit changelog
 
+## 0.23.12 — 2026-08-30
+
+`stop-gate.mjs` now runs via `asyncRewake` instead of blocking the Stop event
+synchronously: the turn ends immediately and the gate's configured commands
+run in the background; a failing command still exits 2, which wakes the
+agent one turn later with that process's stderr (falling back to stdout) as
+a system reminder, so a fix lands one turn later than the old synchronous
+block did — never mid-turn. Wired identically in both `hooks/installer-hooks.json`
+and `hooks/hooks.json` (parity-checked by `smoke-installer.mjs`). Doc
+references in `README.md`, `SECURITY.md`, `docs/pitch-deck.html`, and
+`manifest.json`'s handler description updated to match; the header comment
+in `hooks/stop-gate.mjs` no longer claims synchronous blocking.
+
 ## 0.23.11 — 2026-08-26
 
 B3-46: `check-tag-currency.mjs` polish — the success tally now splits tagged

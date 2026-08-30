@@ -22,9 +22,12 @@ under 140 lines (kit source `hooks/`):
   beyond the event on stdin plus `.claude/ai-dev-kit.config.json`.
 - **Three enforcement handlers** (stop-gate, checkpoint-autorun,
   banned-api-guard): **inert — silent exit 0 — unless the user-owned adapter
-  config carries a matching `enforcement` key.** Opted in: `stop-gate` runs
-  the commands *you* listed in `enforcement.stopGate.commands` (the kit never
-  supplies commands) and exits 2 on failure; `banned-api-guard` reads the
+  config carries a matching `enforcement` key.** Opted in: `stop-gate` is
+  wired `asyncRewake: true`, so it runs the commands *you* listed in
+  `enforcement.stopGate.commands` (the kit never supplies commands) in the
+  background — the turn ends immediately, and a failing command's exit 2
+  wakes the agent one turn later with the failure instead of holding the
+  turn open; `banned-api-guard` reads the
   just-edited file and exits 2 on a configured banned pattern;
   `checkpoint-autorun` runs read-only `git status`/`git log` queries, writes
   a 10-minute lock file under `.claude/`, and emits a Stop-block asking the
