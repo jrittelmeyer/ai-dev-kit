@@ -1,6 +1,9 @@
 ---
 name: harness-audit
 description: Audit a project's agent harness — skills, hooks, context, MCP servers, permissions, packaging — against the current ecosystem: re-fetch pinned specs, run dated searches, diff, emit a scored report + backlog rows. Use for a quarterly pass, after major harness releases, or when asked if the setup is current.
+disable-model-invocation: true
+effort: high
+allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/*)
 ---
 
 # harness-audit
@@ -19,7 +22,7 @@ the sign-off gate.
 
 ## 1. Inventory the local surface
 
-Run `scripts/inventory.mjs` first (`node .claude/skills/harness-audit/scripts/inventory.mjs [projectRoot]`
+Run `scripts/inventory.mjs` first (`node ${CLAUDE_SKILL_DIR}/scripts/inventory.mjs [projectRoot]`
 from the consumer's project root) — it measures per-skill
 description chars/≈tokens, body ≈tokens, and references/scripts files, plus
 every wired hook event/matcher/handler, straight from the working tree

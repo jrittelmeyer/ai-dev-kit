@@ -1,5 +1,26 @@
 # ai-dev-kit changelog
 
+## 0.23.13 — 2026-08-30
+
+Frontmatter modernization across seven bundled skills, per the current
+skill-authoring spec (code.claude.com/docs/en/skills): `checkpoint`,
+`project-init`, `project-adopt`, `retro`, and `tidy` now carry
+`disable-model-invocation: true` — each is a workflow skill with side
+effects (commits/pushes, one-time inception passes, milestone harvests,
+cache pruning) that should never fire on a stray phrase match, only on an
+explicit `/skill-name` invocation. `harness-audit` and `project-audit`
+additionally gain `effort: high` (both are judgment-heavy audit passes).
+`harness-audit` also gains `allowed-tools: Bash(${CLAUDE_SKILL_DIR}/scripts/*)`
+to pre-approve its `scripts/inventory.mjs` invocation; the skill body's
+own instruction now calls it via `${CLAUDE_SKILL_DIR}/scripts/inventory.mjs`
+(was a hardcoded `.claude/skills/harness-audit/...` path) so the
+allowed-tools pattern actually covers the exact command the body tells the
+agent to run. `doc-audit`, `dep-check`, and `live-verify` are untouched —
+they auto-fire usefully on relevant prompts. Each touched skill's own
+`version` bumped a patch in `manifest.json` (`checkpoint` 0.4.2,
+`harness-audit` 0.1.6, `project-audit` 0.2.1, `project-init` 0.3.2,
+`project-adopt` 0.5.3, `retro` 0.1.2, `tidy` 0.2.1).
+
 ## 0.23.12 — 2026-08-30
 
 `stop-gate.mjs` now runs via `asyncRewake` instead of blocking the Stop event

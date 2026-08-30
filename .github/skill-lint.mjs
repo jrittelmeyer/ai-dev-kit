@@ -143,7 +143,13 @@ for (const dir of dirs) {
   }
   const { fields, body } = fm;
 
-  const allowedKeys = new Set(["name", "description", "allowed-tools"]);
+  const allowedKeys = new Set([
+    "name",
+    "description",
+    "allowed-tools",
+    "disable-model-invocation",
+    "effort",
+  ]);
   for (const k of Object.keys(fields)) {
     if (!allowedKeys.has(k)) err(`${id}: unknown frontmatter key "${k}"`);
   }

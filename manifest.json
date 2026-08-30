@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.12",
+  "version": "0.23.13",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -126,7 +126,7 @@
   "skills": [
     {
       "name": "checkpoint",
-      "version": "0.4.1",
+      "version": "0.4.2",
       "dualHome": false,
       "summary": "Commit + push pending work, judge context health (three strikes on a repeated obstacle = unhealthy), then continue or hand off via an on-disk resume prompt plus a relaunch model × effort recommendation.",
       "triggers": [
@@ -166,7 +166,7 @@
     },
     {
       "name": "project-audit",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dualHome": false,
       "summary": "Score every feature group /100 against a best-available bar; verify docs ↔ code; emit a prioritized backlog.",
       "triggers": [
@@ -185,7 +185,7 @@
     },
     {
       "name": "tidy",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dualHome": false,
       "summary": "Prune the unbounded local build/engine cache; surface (never auto-run) orphaned dev processes, stale test data, dangling container images — per-stack recipes in references/.",
       "triggers": ["tidy", "clean up the machine", "disk is low", "build cache is huge"],
@@ -235,7 +235,7 @@
     },
     {
       "name": "project-init",
-      "version": "0.3.1",
+      "version": "0.3.2",
       "dualHome": false,
       "summary": "One-time inception: plan docs or a raw idea → discovery (gaps, value-adds, competitive scan, foundation fit-map) → one batched question round → product brief + regenerated status/backlog to a 100 bar → sign-off → the pipeline begins.",
       "triggers": [
@@ -261,7 +261,7 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.5.2",
+      "version": "0.5.3",
       "dualHome": false,
       "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-foundation disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation tier defaults the target's) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the target foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
       "triggers": [
@@ -291,7 +291,7 @@
     },
     {
       "name": "harness-audit",
-      "version": "0.1.5",
+      "version": "0.1.6",
       "dualHome": false,
       "summary": "Periodic currency audit of the agent harness itself: inventory the local surface (skills/hooks/context files/tool servers/permissions/packaging), re-fetch the pinned authoritative specs (self-repairing references/sources.md), sweep the ecosystem with current-dated category queries (maintaining references/stack.md), diff against the rubric, and emit a dated scored report + proposed backlog rows. Report-only; sign-off gates implementation.",
       "triggers": [
@@ -311,7 +311,7 @@
     },
     {
       "name": "retro",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "dualHome": false,
       "summary": "Post-milestone compounding harvest: corrections, surprises, re-derivations, and repeated manual steps routed to the cheapest durable home (memory · instruction line · adapter field · skill edit · hook candidate · test), each behind the normal sign-off gate; rejections recorded so lessons aren't re-litigated.",
       "triggers": [
