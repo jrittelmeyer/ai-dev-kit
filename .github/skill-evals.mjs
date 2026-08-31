@@ -9,7 +9,9 @@
  * sailing through every other gate, which only ever checked shape and size. The
  * **model tier** (`--report`) prints the same scenarios as a prompt + rubric run
  * sheet for a graded pass (harness-audit step 4), keeping API keys, cost, and
- * nondeterminism out of CI.
+ * nondeterminism out of CI. `--report --delta` adds a baseline run of each prompt
+ * (no skill installed) so a grader can score a true with/without delta instead of
+ * just "does the skill's own text produce compliant behavior."
  *
  * ERR ⇒ exit 1: coverage, fixture schema, and unresolved anchors — defects that
  * mean the eval is not actually testing anything. Routing and rubric checks warn
@@ -207,6 +209,11 @@ for (const name of skills.keys()) {
 }
 
 if (process.argv.includes("--report")) {
+  // --delta adds a second, unlabeled-skill run of the same prompt per scenario, so a
+  // grader can score expect[]/reject[] against both runs and see which behaviors the
+  // skill actually earns (vs. ones the model does anyway, unprompted). Still a pure
+  // run-sheet generator: no API calls here, the grading happens outside this script.
+  const delta = process.argv.includes("--delta");
   const lines = [
     "# Skill eval run sheet",
     "",
@@ -216,10 +223,25 @@ if (process.argv.includes("--report")) {
     "can see which body text each behavior rests on.",
     "",
   ];
+  if (delta) {
+    lines.push(
+      "**Delta mode:** each scenario carries two runs of the *same prompt* — grade both.",
+      "Run A has the skill installed and available for routing, as usual. Run B is the",
+      "baseline: no skill files present, no skill named, same model, same prompt, fresh",
+      "context. Score expect[]/reject[] against each run independently; a behavior that",
+      "shows up in both isn't evidence the skill did anything.",
+      "",
+    );
+  }
   for (const [name, scenarios] of [...loaded].sort()) {
     lines.push(`## ${name}`, "");
     for (const s of scenarios) {
-      lines.push(`### ${s.id}`, "", `**Prompt:** ${s.prompt}`, "");
+      lines.push(`### ${s.id}`, "");
+      if (delta) {
+        lines.push(`**Run A — with skill available:** ${s.prompt}`, "");
+      } else {
+        lines.push(`**Prompt:** ${s.prompt}`, "");
+      }
       lines.push("**Expect:**");
       for (const e of s.expect ?? []) {
         lines.push(`- ${e.behavior}  \`${e.anchor}\`${e.in ? ` (${e.in})` : ""}`);
@@ -228,8 +250,32 @@ if (process.argv.includes("--report")) {
         lines.push("", "**Reject:**");
         for (const r of s.reject) lines.push(`- ${r}`);
       }
+      if (delta) {
+        lines.push(
+          "",
+          `**Run B — baseline, WITHOUT the skill installed/available:** ${s.prompt}`,
+          "",
+          "Run this in a session with no skill files present and no skill named — same",
+          "model, same prompt, fresh context. Grade the same expect[]/reject[] lines above",
+          "against this run's output; note per-behavior whether it appeared, and where the",
+          "two runs diverge.",
+        );
+      }
       lines.push("");
     }
+  }
+  if (delta) {
+    lines.push(
+      "## Computing the delta",
+      "",
+      "For each scenario, count expect[] behaviors present in Run A but absent in Run B —",
+      "those are the behaviors the skill actually earns. Record as `N/M expect behaviors",
+      'present only with the skill loaded" per skill (M = total expect[] count across its',
+      "scenarios). A behavior present in both runs is not evidence the skill helped; a",
+      "reject[] line that fires in Run B but not Run A is a skill actively preventing a",
+      "regression, and worth calling out the same way.",
+      "",
+    );
   }
   console.log(lines.join("\n"));
 }

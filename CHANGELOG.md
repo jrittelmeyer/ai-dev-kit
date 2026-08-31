@@ -1,5 +1,18 @@
 # ai-dev-kit changelog
 
+## 0.23.15 — 2026-08-31
+
+`skill-evals.mjs --report` gains a `--delta` flag: each scenario's run sheet
+now also prints a baseline block — the same prompt, explicitly run with no
+skill installed or named — so a grader can score `expect[]`/`reject[]`
+against both runs and see which behaviors the skill actually earns, instead
+of only ever checking "does the skill's own text produce compliant
+behavior." Closes the gap in the two prior model-graded passes
+(`docs/archive/SKILL_EVALS_2026-08-24.md`,
+`docs/archive/SKILL_EVALS_2026-08-26.md`), which never ran a true
+with/without comparison. Mechanical (CI-gating) tier is unchanged — the flag
+only affects `--report` output.
+
 ## 0.23.14 — 2026-08-30
 
 `harness-audit` closes a self-audit gap where two of its own fixes were
