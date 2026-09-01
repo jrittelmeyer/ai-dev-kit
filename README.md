@@ -224,12 +224,13 @@ The canonical consumer block is four lines:
   (B4-16), and git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
   launch in a subdirectory — harness-side, watched in
   [docs/BACKLOG.md](docs/BACKLOG.md).
-- **Quality bar:** project audit **98.1/100** (eighth pass, 2026-08-26 —
-  [report](docs/archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md); the full
-  scored chain is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) ·
-  harness-currency **96.5/100**
-  ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md)) ·
+- **Quality bar:** project audit **97.1/100** (ninth pass, 2026-08-31 —
+  [report](docs/archive/PROJECT_AUDIT_2026-08-31.md); the full scored chain
+  is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) · harness-currency
+  **96.1/100**
+  ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B1-47 (tag + Release v0.23.11–v0.23.15) and B1-48 (verdicts for
-  the two hook events harness 2.1.251 added); a ninth audit after those.
+  **Next:** B1-47 (tag + Release v0.23.11–v0.23.15; 0.23.12's sha never ran
+  CI), B1-48 (verdicts for the two hook events harness 2.1.251 added), then
+  B2-49 (release automation — the tag advisory has fired four times unheeded).
