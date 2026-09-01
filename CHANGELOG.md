@@ -1,5 +1,24 @@
 # ai-dev-kit changelog
 
+## 0.23.16 — 2026-08-31
+
+`harness-audit`'s run-3 (2026-08-31) refresh of `references/sources.md` and
+`references/stack.md` — the self-repairing ecosystem-knowledge references
+the skill maintains — lands in kit source (both `skills/harness-audit/` and
+its `.claude/` self-install mirror). `sources.md` re-verifies all ten rows
+and adds two new ones (Claude Code skill frontmatter, skill eval format);
+`stack.md` records the 33-event hook surface re-confirmation, a Playwright
+CLI-vs-MCP token-efficiency finding (~4x, prefer the CLI when the agent has
+filesystem access), a note on Vite-hosted web/game MCP servers, and an
+evaluation of harness-evolution tooling (not adopted at single-repo scale).
+`harness-audit` 0.1.7 → 0.1.8 in `manifest.json`; six-site kit version bump
+per `AGENTS.md`'s "behavior change ⇒ version bump" rule, since these
+references are the skill's own maintained content, not incidental docs.
+
+**Verification:** `node install.mjs --adapter adapters/ai-dev-kit.json
+--hooks --check` green (self-install mirrors match source); full local gate
+green.
+
 ## 0.23.15 — 2026-08-31
 
 `skill-evals.mjs --report` gains a `--delta` flag: each scenario's run sheet
