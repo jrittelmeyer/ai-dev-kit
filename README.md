@@ -159,8 +159,8 @@ so no shell sits between the harness and the handler (the PowerShell/bash quotin
 class is gone by construction). Verified-where: handler fire/silent contracts are
 smoke-proven in CI on ubuntu + windows; live sessions on recent harness versions
 surface the injections consistently (both hook classes, first probe) — the
-residual onset-variance question from one older harness version is tracked as a
-Watch row in [docs/BACKLOG.md](docs/BACKLOG.md).
+Windows hook-visibility question is closed (history in
+[docs/archive/BACKLOG_WATCH_HISTORY.md](docs/archive/BACKLOG_WATCH_HISTORY.md)).
 Reviewed and deliberately **not** automated: a tidy/cache hook and any
 calendar/session-counter doc-audit nudge — existing cadence (standing
 agreement, husky pre-push, audits on real need) covers them, and a nag would
@@ -168,13 +168,16 @@ be noise. The Stop-hook checkpoint rejection was **reversed in 0.23.0** on
 consumer evidence (next-web-boilerplate ran it in production sessions) — as
 the opt-in `checkpoint-autorun` above, never by default. The full decision log lives in `manifest.json` →
 `hooks.reviewed`, which carries an accept/reject verdict for **every one of the
-harness's 31 hook events** (re-reviewed 2026-08-24) — the organizing fact being
-that only 11 of them can return `additionalContext` at all, and the other 20 can
-only block, act, or notify the human. `smoke-hooks` asserts the log stays
-complete, so a newly added event surfaces as a failing test rather than silent
-drift. Hooks changed in `settings.json` load at session start;
-an already-running session may need `/hooks` opened once (or a restart) to pick
-them up.
+31 hook events the harness documented at the 2026-08-24 review** — the
+organizing fact being that only 11 of them can return `additionalContext` at
+all, and the other 20 can only block, act, or notify the human. `smoke-hooks`
+asserts the log covers the kit-pinned event list, so the pin and the log can't
+drift apart; a harness-side addition is caught by `harness-audit`'s changelog
+re-fetch, which then moves the pin (harness 2.1.251 added
+`PreModelSwitch`/`PostModelSwitch` — verdicts owed, row B1-48 in
+[docs/BACKLOG.md](docs/BACKLOG.md)). Hooks changed in `settings.json` load at
+session start; an already-running session may need `/hooks` opened once (or a
+restart) to pick them up.
 
 ## Keep the consumer thin
 
@@ -201,7 +204,9 @@ The canonical consumer block is four lines:
   `.github/skill-evals/<skill>.json`; every expected behavior anchors to a literal
   the body must still contain, so editing a rule away fails CI instead of passing
   the shape-and-size gates. `node .github/skill-evals.mjs --report` prints the same
-  fixtures as a model-graded run sheet for a `harness-audit` pass.
+  fixtures as a model-graded run sheet for a `harness-audit` pass; add `--delta`
+  for a with/without-skill baseline block per scenario, so the grade shows what
+  the skill actually earns.
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
   `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
   behavior change (CI gates the six sites). Every release commit gets an annotated tag
@@ -215,25 +220,16 @@ The canonical consumer block is four lines:
 
 ## Roadmap
 
-- ~~Step 2 — automation~~ **shipped in 0.2.0** (see Automation above).
-- ~~Step 3 — playbook + deck~~ **shipped in 0.3.0**
-  ([PLAYBOOK.md](docs/PLAYBOOK.md) · [pitch-deck.html](docs/pitch-deck.html)).
-- ~~Extract to a standalone repo~~ **shipped in 0.5.0** — this repository;
-  consumers (next-web-boilerplate first) install from a clone.
-- **Later:** npm packaging (`npx` install) if consumer demand shows up, and
-  git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
-  subdirectory (deferred in [0.7.2](CHANGELOG.md)). Exec-form hook entries — the
-  other 0.7.2 deferral — shipped in 0.11.0.
-- **Quality bar:** audit chain 90.4 → 96.9 → 97.4 → 97.9 → 96.8 → 97.1 →
-  97.9 → **98.1/100** (2026-08-26, eighth audit — new peak; B1-44 backfill
-  and B3-45 tripwire both verified closed by execution, one CHANGELOG-note
-  drift hair fixed in place) — rows in
-  [docs/BACKLOG.md](docs/BACKLOG.md), latest report
-  [docs/archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md](docs/archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md).
-  Harness-currency 92.4 → **96.5/100**
-  ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md));
+- **Later:** npm packaging (`npx` install) if consumer demand shows up
+  (B4-16), and git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
+  launch in a subdirectory — harness-side, watched in
+  [docs/BACKLOG.md](docs/BACKLOG.md).
+- **Quality bar:** project audit **98.1/100** (eighth pass, 2026-08-26 —
+  [report](docs/archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md); the full
+  scored chain is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) ·
+  harness-currency **96.5/100**
+  ([HARNESS_AUDIT_2026-08-25](docs/archive/HARNESS_AUDIT_2026-08-25.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** none queued — B3-46 shipped in 0.23.11, closing the eighth
-  audit's last open row; a ninth audit is the natural next step. B4-16/31
-  stay deferred/advised-against.
+  **Next:** B1-47 (tag + Release v0.23.11–v0.23.15) and B1-48 (verdicts for
+  the two hook events harness 2.1.251 added); a ninth audit after those.
