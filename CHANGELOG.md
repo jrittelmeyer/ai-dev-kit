@@ -32,6 +32,9 @@ behavior." Closes the gap in the two prior model-graded passes
 with/without comparison. Mechanical (CI-gating) tier is unchanged — the flag
 only affects `--report` output.
 
+**Verification (backfilled 2026-09-01):** full local gate green; CI green on
+`5a6fa5a` (6/6 check runs).
+
 ## 0.23.14 — 2026-08-30
 
 `harness-audit` closes a self-audit gap where two of its own fixes were
@@ -49,6 +52,10 @@ the two dated ecosystem-knowledge references the skill repairs in place no
 longer silently revert on reinstall — and the step 5 report flags it
 explicitly when a repair isn't mirrored. `harness-audit`'s own `version`
 bumped to 0.1.7 in `manifest.json`.
+
+**Verification (backfilled 2026-09-01):** `install.mjs --check` green
+(mirrors match source); full local gate green; CI green on `34186ee`
+(6/6 check runs).
 
 ## 0.23.13 — 2026-08-30
 
@@ -71,6 +78,10 @@ they auto-fire usefully on relevant prompts. Each touched skill's own
 `harness-audit` 0.1.6, `project-audit` 0.2.1, `project-init` 0.3.2,
 `project-adopt` 0.5.3, `retro` 0.1.2, `tidy` 0.2.1).
 
+**Verification (backfilled 2026-09-01):** `skill-lint.mjs` green on all seven
+touched skills' frontmatter; full local gate green; CI green on `6e7a0b0`
+(6/6 check runs).
+
 ## 0.23.12 — 2026-08-30
 
 `stop-gate.mjs` now runs via `asyncRewake` instead of blocking the Stop event
@@ -83,6 +94,11 @@ and `hooks/hooks.json` (parity-checked by `smoke-installer.mjs`). Doc
 references in `README.md`, `SECURITY.md`, `docs/pitch-deck.html`, and
 `manifest.json`'s handler description updated to match; the header comment
 in `hooks/stop-gate.mjs` no longer claims synchronous blocking.
+
+**Verification (backfilled 2026-09-01):** `smoke-installer.mjs` parity check
+green (both hook JSON files agree); full local gate green. This sha
+(`33661c7`) was pushed in the same batch as 0.23.13 and never ran CI on its
+own — see the `v0.23.12` Release note.
 
 ## 0.23.11 — 2026-08-26
 
@@ -97,6 +113,10 @@ Also fixed `smoke-hooks.mjs`'s SECURITY.md line-bound tripwire (B3-45):
 `split("\n").length` counted the trailing-newline element, so a 139-actual-line
 handler — legal under the documented "under 140" — would false-fail at the
 boundary. Now strips the trailing newline before counting.
+
+**Verification (backfilled 2026-09-01):** both tripwires shown failing first,
+then green after the fix; full local gate green; CI green on `0082a38`
+(8/8 check runs).
 
 ## 0.23.10 — 2026-08-26
 
