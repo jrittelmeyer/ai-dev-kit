@@ -231,6 +231,6 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B1-47 (tag + Release v0.23.11–v0.23.15; 0.23.12's sha never ran
-  CI), B1-48 (verdicts for the two hook events harness 2.1.251 added), then
-  B2-49 (release automation — the tag advisory has fired four times unheeded).
+  **Next:** B2-49 (release automation — the tag advisory has fired four times
+  unheeded); B1-47/48 shipped 2026-09-01 (v0.23.11–v0.23.16 tagged + released,
+  hook-surface verdicts for PreModelSwitch/PostModelSwitch recorded).
