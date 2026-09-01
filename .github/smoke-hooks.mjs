@@ -583,7 +583,7 @@ const EVENT_SURFACE = [
   "TaskCreated", "TaskCompleted", "Stop", "StopFailure", "TeammateIdle",
   "ConfigChange", "CwdChanged", "DirectoryAdded", "FileChanged", "WorktreeCreate",
   "WorktreeRemove", "PreCompact", "PostCompact", "SessionEnd", "Elicitation",
-  "ElicitationResult",
+  "ElicitationResult", "PreModelSwitch", "PostModelSwitch",
 ];
 const manifest = JSON.parse(readFileSync("manifest.json", "utf8"));
 const reviewed = manifest.hooks?.reviewed ?? {};

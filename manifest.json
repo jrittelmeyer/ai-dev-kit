@@ -80,7 +80,7 @@
         "fires": "a file-tool edit landing a banned pattern under a guarded path (comment-stripped, line-based) — exit 2 blocks; inert without adapter opt-in"
       }
     ],
-    "reviewedAgainst": "https://code.claude.com/docs/en/hooks — 31 documented events, full-surface pass 2026-08-24 (0.20.0). Only 11 events can return hookSpecificOutput.additionalContext (SessionStart, Setup, SubagentStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, Stop, SubagentStop); the other 20 can only block, act, or talk to the human, and the kit's default is advise-only (blocking exists solely behind the adapter enforcement opt-in). .github/smoke-hooks.mjs asserts this log covers the full surface.",
+    "reviewedAgainst": "https://code.claude.com/docs/en/hooks — 33 documented events, full-surface pass 2026-08-24 (0.20.0), extended 2026-08-31 (2.1.251 added PreModelSwitch/PostModelSwitch, both rejected). Only 11 events can return hookSpecificOutput.additionalContext (SessionStart, Setup, SubagentStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, Stop, SubagentStop); the other 22 can only block, act, or talk to the human, and the kit's default is advise-only (blocking exists solely behind the adapter enforcement opt-in). .github/smoke-hooks.mjs asserts this log covers the full surface.",
     "reviewed": {
       "SessionStart": "accepted 0.16.0 for the `compact` matcher only (compact-reorient) — compaction is the one entry point where disorientation is the default. `startup|resume|clear` rejected 0.16.0: a per-session nudge is latency and noise, and orientation on a normal start is the resume prompt's job. `fork` rejected 0.20.0: a forked session inherits its parent's context, so orientation is intact",
       "Setup": "rejected 0.20.0 — fires only under `--init-only`, `-p --init`, or `-p --maintenance`, never on normal startup, so an orientation or drift nudge here would essentially never reach an interactive session; SessionStart already covers per-session entry",
@@ -112,7 +112,9 @@
       "PostCompact": "rejected 0.20.0 — the newer twin of PreCompact, with no decision control and no additionalContext at all; SessionStart(compact) remains the only mechanism for compact reorientation",
       "SessionEnd": "rejected 0.20.0 — the session is over: no context channel and no turn left in which the agent could act",
       "Elicitation": "rejected 0.20.0 — answers MCP form prompts on the agent's behalf (accept/decline/cancel), automating a human decision that SECURITY.md's trust contract puts out of scope",
-      "ElicitationResult": "rejected 0.20.0 — the same MCP elicitation surface after the response; overriding submitted form content is out of scope for the same reason"
+      "ElicitationResult": "rejected 0.20.0 — the same MCP elicitation surface after the response; overriding submitted form content is out of scope for the same reason",
+      "PreModelSwitch": "rejected 2.1.251 — decision-only (allow/deny a model switch), no additionalContext channel; blocking a model switch is out of scope for an advisory kit",
+      "PostModelSwitch": "rejected 2.1.251 — display-only notification that a switch occurred, no context channel back to the agent"
     }
   },
   "optional": {

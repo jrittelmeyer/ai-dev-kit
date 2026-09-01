@@ -168,14 +168,14 @@ be noise. The Stop-hook checkpoint rejection was **reversed in 0.23.0** on
 consumer evidence (next-web-boilerplate ran it in production sessions) — as
 the opt-in `checkpoint-autorun` above, never by default. The full decision log lives in `manifest.json` →
 `hooks.reviewed`, which carries an accept/reject verdict for **every one of the
-31 hook events the harness documented at the 2026-08-24 review** — the
+33 hook events the harness documented at the 2026-08-31 review** — the
 organizing fact being that only 11 of them can return `additionalContext` at
-all, and the other 20 can only block, act, or notify the human. `smoke-hooks`
+all, and the other 22 can only block, act, or notify the human. `smoke-hooks`
 asserts the log covers the kit-pinned event list, so the pin and the log can't
 drift apart; a harness-side addition is caught by `harness-audit`'s changelog
 re-fetch, which then moves the pin (harness 2.1.251 added
-`PreModelSwitch`/`PostModelSwitch` — verdicts owed, row B1-48 in
-[docs/BACKLOG.md](docs/BACKLOG.md)). Hooks changed in `settings.json` load at
+`PreModelSwitch`/`PostModelSwitch`, both rejected — no `additionalContext`
+channel). Hooks changed in `settings.json` load at
 session start; an already-running session may need `/hooks` opened once (or a
 restart) to pick them up.
 
