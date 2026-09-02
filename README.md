@@ -210,11 +210,14 @@ The canonical consumer block is four lines:
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
   `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
   behavior change (CI gates the six sites). Every release commit gets an annotated tag
-  `v<version>` and a GitHub Release built from its CHANGELOG entry — pushed once CI is
-  green. **Before tagging**, run `node .github/check-release-ready.mjs` against the
-  pushed sha (defaults to `HEAD`) — it exits non-zero unless every check run on that
-  sha is `completed`/`success`, so a red or still-running CI can't get tagged (v0.23.0
-  shipped on a red sha this gate exists to catch).
+  `v<version>` and a GitHub Release built from its CHANGELOG entry. **This is now
+  automatic:** `.github/workflows/release.yml` fires on a green CI run against `main`,
+  runs `check-release-ready.mjs` against that run's sha, and — on pass — cuts the tag
+  and Release via `.github/cut-release.mjs` (no-op if `v<version>` already exists). A
+  red or still-running CI can't get tagged (v0.23.0 shipped on a red sha this gate
+  exists to catch). `.github/check-release-ready.mjs <sha>` can still be run by hand
+  against any sha, and `ci.yml`'s `workflow_dispatch:` lets an orphaned sha be
+  green-gated after the fact.
 - **Release titles:** Follow the pattern `v<version> — <subject>` where `<subject>`
   summarizes the shipped feature group or fix (see CHANGELOG entries for examples).
 
@@ -231,6 +234,8 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B2-49 (release automation — the tag advisory has fired four times
-  unheeded); B1-47/48 shipped 2026-09-01 (v0.23.11–v0.23.16 tagged + released,
-  hook-surface verdicts for PreModelSwitch/PostModelSwitch recorded).
+  **Next:** B3-50 (mechanize the CHANGELOG Verification-paragraph rule);
+  B2-49 shipped 2026-09-02 (release automation — `workflow_dispatch` +
+  `release.yml` auto-tag/Release on green CI); B1-47/48 shipped 2026-09-01
+  (v0.23.11–v0.23.16 tagged + released, hook-surface verdicts for
+  PreModelSwitch/PostModelSwitch recorded).

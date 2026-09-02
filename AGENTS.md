@@ -32,6 +32,12 @@ pointed at, not restated here.
   pre-tag `check-release-ready.mjs` gate only checks the sha you point it at,
   so a split release can tag green on an intermediate broken commit (how
   v0.23.0 shipped red).
+- **One release commit per push:** never batch two version bumps into the
+  same push. `release.yml` auto-tags on every green CI run against `VERSION`
+  as of that sha — a push carrying commit A (bumps to 0.23.x) then commit B
+  (bumps to 0.23.x+1) only ever sees B's `VERSION`, so A's release is skipped
+  silently. Push each release commit on its own, and let CI go green on it,
+  before starting the next.
 
 Pointers: `README.md` (status doc · install · release ritual) ·
 `CONTRIBUTING.md` (local suite · ground rules) · `docs/PLAYBOOK.md` (the

@@ -6,7 +6,7 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 report. Every row enters plan → sign-off → build.
 
 Source: [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md)
-(97.1/100, ninth audit — rows 47–54, 47/48 shipped; 51–53 are the 2026-08-31 harness
+(97.1/100, ninth audit — rows 47–54, 47/48/49 shipped; 51–53 are the 2026-08-31 harness
 audit's proposals, adopted there). Scored chain — project audits
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
@@ -26,7 +26,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B2 | 49 | release-tooling | Release automation (the advisory-only design met its revisit trigger — fired on four consecutive CI runs, no effect): (a) `workflow_dispatch` on `ci.yml` so any sha can be green-gated; (b) `release.yml` on `workflow_run` CI-success on `main` — when `VERSION` has no `v<version>` tag, run `check-release-ready` on that sha, cut the annotated tag, create the Release `v<version> — <subject>` from the CHANGELOG entry; (c) AGENTS.md: one release commit per push. Risk: auto-tag on a green-but-wrong sha — same gate the hand ritual uses | Versioning +3 | M |
 | B3 | 50 | release-tooling | Mechanize `AGENTS.md:17`: `check-version.mjs` (or a sibling) fails when any CHANGELOG entry ≥ v0.23.11 lacks a `Verification:` paragraph — drifted five releases running with no tripwire | Versioning +1 | S |
 | B3 | 51 | evals | Two-figure always-loaded budget: `skill-lint` and `harness-audit`'s `inventory.mjs` print *portable* (all descriptions; keeps the 900 lint budget) and *Claude Code charged* (auto-invocable only, ≈257 today); README/deck quote both | Docs +1 | S |
 | B3 | 52 | evals | Full delta-mode eval pass: all 30 scenarios `--report --delta` on one tier, archived as `SKILL_EVALS_<date>.md` with pass-rate lift + token cost; replace every assertion that passes in both configurations (dep-check "reads release notes" first) | Testing +1 | M |
