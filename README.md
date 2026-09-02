@@ -216,8 +216,10 @@ The canonical consumer block is four lines:
   and Release via `.github/cut-release.mjs` (no-op if `v<version>` already exists). A
   red or still-running CI can't get tagged (v0.23.0 shipped on a red sha this gate
   exists to catch). `.github/check-release-ready.mjs <sha>` can still be run by hand
-  against any sha, and `ci.yml`'s `workflow_dispatch:` lets an orphaned sha be
-  green-gated after the fact.
+  against any sha, and `ci.yml`'s `workflow_dispatch:` lets CI be re-run manually
+  against `main` or a tag (GitHub's dispatch API takes a branch/tag ref, not an
+  arbitrary sha — for one that never got its own CI run, push a throwaway branch at
+  it and dispatch against that).
 - **Release titles:** Follow the pattern `v<version> — <subject>` where `<subject>`
   summarizes the shipped feature group or fix (see CHANGELOG entries for examples).
 

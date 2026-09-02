@@ -4,9 +4,11 @@
 
 Release automation (B2-49): the tag/Release ritual had fired its advisory
 revisit trigger four times unheeded before B1-47 cleared the backlog, so
-it's no longer purely manual. `ci.yml` gains `workflow_dispatch:` so any sha
-can be green-gated after the fact (would've solved 0.23.12's CI-less sha
-instead of relying on a batched push). New `.github/workflows/release.yml`
+it's no longer purely manual. `ci.yml` gains `workflow_dispatch:` so CI can
+be re-run manually against `main` or a tag without a new push (GitHub's
+dispatch API takes a branch/tag ref, not an arbitrary sha — confirmed live;
+a truly orphaned sha needs a throwaway branch pushed at it first). New
+`.github/workflows/release.yml`
 triggers on `workflow_run` of CI completing successfully on `main`; it reads
 `VERSION`, no-ops if `v<version>` is already tagged, otherwise runs
 `check-release-ready.mjs` against the CI run's sha (pinned, not `main` HEAD)
