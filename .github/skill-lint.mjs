@@ -169,7 +169,8 @@ for (const dir of dirs) {
   if (/(^|\s)I(’|')?(ll|m)?\s/.test(desc)) {
     warn(`${id}: description reads first-person — write third person`);
   }
-  descRows.push([dir, desc.length, tokens(desc)]);
+  const charged = fields["disable-model-invocation"] !== "true";
+  descRows.push([dir, desc.length, tokens(desc), charged]);
 
   const bodyLines = body.split(/\r?\n/).length;
   if (bodyLines > 500) err(`${id}: body ${bodyLines} lines (max 500)`);
@@ -250,11 +251,14 @@ for (const wiring of ["hooks/installer-hooks.json", "hooks/hooks.json"]) {
 
 console.log("always-loaded description budget (chars → ≈tokens):");
 let totalTok = 0;
-for (const [name, chars, tok] of descRows) {
+let chargedTok = 0;
+for (const [name, chars, tok, charged] of descRows) {
   totalTok += tok;
-  console.log(`  ${name.padEnd(16)} ${String(chars).padStart(4)} → ${tok}`);
+  if (charged) chargedTok += tok;
+  console.log(`  ${name.padEnd(16)} ${String(chars).padStart(4)} → ${tok}${charged ? "" : "  (not auto-invocable)"}`);
 }
-console.log(`  ${"total".padEnd(16)}      → ${totalTok}`);
+console.log(`  ${"total (portable)".padEnd(16)}      → ${totalTok}`);
+console.log(`  ${"total (Claude Code charged)".padEnd(16)} → ${chargedTok}`);
 if (totalTok > 900) {
   warn(`always-loaded description total ≈${totalTok} tokens (>900 — trim descriptions)`);
 }

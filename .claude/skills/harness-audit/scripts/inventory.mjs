@@ -64,6 +64,7 @@ function skillRows(skillsDir) {
       descChars: desc.length,
       descTok: tokens(desc),
       bodyTok: tokens(body),
+      charged: fields["disable-model-invocation"] !== "true",
       refs,
     });
   }
@@ -124,11 +125,17 @@ function printSkillTable(rows) {
   console.log("| skill | desc chars | desc ≈tok | body ≈tok | references/scripts |");
   console.log("|---|---:|---:|---:|---|");
   let totalDescTok = 0;
+  let chargedDescTok = 0;
   for (const r of rows) {
     totalDescTok += r.descTok;
+    if (r.charged) chargedDescTok += r.descTok;
     console.log(`| ${r.name} | ${r.descChars} | ${r.descTok} | ${r.bodyTok} | ${r.refs.join(", ") || "—"} |`);
   }
-  console.log(`\nAlways-loaded description budget: ≈${totalDescTok} tokens across ${rows.length} skills.`);
+  const chargedCount = rows.filter((r) => r.charged).length;
+  console.log(
+    `\nAlways-loaded description budget: ≈${totalDescTok} tokens across ${rows.length} skills (portable) — ` +
+      `≈${chargedDescTok} tokens across ${chargedCount} skills (Claude Code charged, auto-invocable only).`,
+  );
 }
 
 function printHookTable(hookFiles) {

@@ -207,6 +207,13 @@ The canonical consumer block is four lines:
   fixtures as a model-graded run sheet for a `harness-audit` pass; add `--delta`
   for a with/without-skill baseline block per scenario, so the grade shows what
   the skill actually earns.
+- **Always-loaded description budget is two figures, not one.** `skill-lint` and
+  `harness-audit`'s `inventory.mjs` both report a *portable* total (every skill's
+  description, ≈855 tokens today, warns past 900) and a narrower *Claude Code
+  charged* total (only skills without `disable-model-invocation: true` — the
+  ones Claude Code actually keeps in its always-loaded context — ≈257 tokens
+  today). Trust the tools' live output over these numbers; they drift as skills
+  are added.
 - **Versioning:** semver per skill plus a kit version; bump `manifest.json`, `VERSION`,
   `CHANGELOG.md`, the deck stamps, and `.claude-plugin/plugin.json` together with any
   behavior change (CI gates the six sites). Every release commit gets an annotated tag
@@ -236,7 +243,7 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B3-51 (two-figure always-loaded budget); B3-50 shipped
+  **Next:** B3-52 (full delta eval pass); B3-51 shipped
   2026-09-02 (mechanized the CHANGELOG Verification-paragraph rule —
   `check-version.mjs` now fails when an entry ≥ v0.23.11 lacks one); B2-49
   shipped 2026-09-02 (release automation — `workflow_dispatch` +

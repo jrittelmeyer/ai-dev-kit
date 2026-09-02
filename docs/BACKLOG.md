@@ -26,7 +26,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 51 | evals | Two-figure always-loaded budget: `skill-lint` and `harness-audit`'s `inventory.mjs` print *portable* (all descriptions; keeps the 900 lint budget) and *Claude Code charged* (auto-invocable only, ≈257 today); README/deck quote both | Docs +1 | S |
 | B3 | 52 | evals | Full delta-mode eval pass: all 30 scenarios `--report --delta` on one tier, archived as `SKILL_EVALS_<date>.md` with pass-rate lift + token cost; replace every assertion that passes in both configurations (dep-check "reads release notes" first) | Testing +1 | M |
 | B3 | 53 | hooks | `skill-drift-guard` PreToolUse twin: `PreToolUse` `Edit\|Write` advisory on the same `.claude/(skills\|hooks)/` match so the redirect precedes the wasted edit; keep the PostToolUse handler for Bash-path edits; record the verdict in `hooks.reviewed` either way | Hooks +1 | S |
 | B3 | 54 | skills | `project-audit` step 5 ends "Then run `/checkpoint`" (`SKILL.md:132`), but 0.23.13 made `checkpoint` `disable-model-invocation` — the Skill tool now refuses it, so the instruction is unexecutable (found live 2026-08-31). Reword to "ask the user to run `/checkpoint`" (or hand back a ready commit summary); sweep the other bodies for the same pattern | Lifecycle +1 | S |
