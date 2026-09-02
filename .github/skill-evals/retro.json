@@ -15,8 +15,8 @@
           "anchor": "One lesson, one home"
         },
         {
-          "behavior": "proposes the routed list rather than applying it",
-          "anchor": "Propose, don't apply"
+          "behavior": "presents each routed lesson tagged with an effort mark rather than a bare list",
+          "anchor": "with effort marks"
         }
       ],
       "reject": [
@@ -62,8 +62,8 @@
           "anchor": "one-off noise"
         },
         {
-          "behavior": "reserves the instruction file for rules every future session must hold",
-          "anchor": "only rules every future"
+          "behavior": "defers instruction-file budget enforcement to the context-economy skill rather than adding rules freely",
+          "anchor": "the context-economy skill polices"
         }
       ],
       "reject": [

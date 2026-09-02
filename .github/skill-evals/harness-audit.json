@@ -35,8 +35,8 @@
           "anchor": "stamp the report **PARTIAL**"
         },
         {
-          "behavior": "refuses to invent ecosystem findings it could not fetch",
-          "anchor": "never fabricate"
+          "behavior": "skips the packaging-currency axis rather than scoring it from memory when the run is offline",
+          "anchor": "not scored from memory"
         },
         {
           "behavior": "flags its own staleness first when every source row is more than two quarters old",

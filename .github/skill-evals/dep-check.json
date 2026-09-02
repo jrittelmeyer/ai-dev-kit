@@ -7,8 +7,8 @@
       "decoys": ["live-verify", "project-audit"],
       "expect": [
         {
-          "behavior": "resolves the version from the registry instead of searching the web or recalling it",
-          "anchor": "One registry query beats any number of web searches"
+          "behavior": "gets the current stable version together with the full tag/channel landscape before picking one, not just whatever a plain install grabs",
+          "anchor": "current stable version"
         },
         {
           "behavior": "prefers the newest release older than the release-age window",
@@ -35,8 +35,8 @@
           "anchor": "at merge time"
         },
         {
-          "behavior": "reads the release notes for breaking changes before accepting a major",
-          "anchor": "breaking changes"
+          "behavior": "if taking a release still inside the age window because it contains a needed fix, states that exception explicitly in the commit/PR body instead of merging it silently",
+          "anchor": "say so explicitly in the commit/PR body"
         },
         {
           "behavior": "checks the project's memory and docs for standing holds gated on an upstream event",
@@ -54,12 +54,12 @@
       "decoys": ["live-verify", "project-init"],
       "expect": [
         {
-          "behavior": "collects the publish date alongside the version and tag landscape",
-          "anchor": "publish date"
+          "behavior": "checks the package's declared peer or host-framework ranges against what the project has installed before adding it",
+          "anchor": "Peers/host range"
         },
         {
-          "behavior": "treats last-publish date and repo activity as an abandonment signal",
-          "anchor": "abandonment proxy"
+          "behavior": "checks the registry's deprecation/yank flag and treats a deprecated package as needing a replacement rather than installing it",
+          "anchor": "deprecation/yank flag"
         },
         {
           "behavior": "verifies the project still builds and runs with the integration's env unset",

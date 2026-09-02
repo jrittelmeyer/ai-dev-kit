@@ -7,8 +7,8 @@
       "decoys": ["tidy", "live-verify"],
       "expect": [
         {
-          "behavior": "stages only the files belonging to the finished work rather than blind-adding a dirty tree",
-          "anchor": "git add -A"
+          "behavior": "writes the commit message to a scratchpad file and commits with `git commit -F <file>` when the adapter's commit block sets useFileFlag: true, since inline -m quoting breaks on PowerShell 5.1",
+          "anchor": "useFileFlag: true"
         },
         {
           "behavior": "continues only when the whole next step fits the remaining window with margin to spare",
@@ -31,8 +31,8 @@
       "decoys": ["retro", "live-verify"],
       "expect": [
         {
-          "behavior": "declares the session unhealthy on a three-times-repeated obstacle regardless of remaining window",
-          "anchor": "Three strikes"
+          "behavior": "grounds the unhealthy verdict in the window being full of failure and poisoning further attempts, not just a bare count of retries",
+          "anchor": "poisons further attempts"
         },
         {
           "behavior": "hands off with a diagnosis of the wrong assumption instead of coaching out another retry",

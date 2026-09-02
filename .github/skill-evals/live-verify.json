@@ -62,8 +62,8 @@
           "anchor": "verbatim evidence"
         },
         {
-          "behavior": "states explicitly what could not be driven and remains unverified",
-          "anchor": "list what remains unverified"
+          "behavior": "never reports an undriven flow as \"should work\" — states the blocker and marks it unverified instead",
+          "anchor": "never \"should work\""
         }
       ],
       "reject": [

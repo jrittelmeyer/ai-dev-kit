@@ -34,8 +34,8 @@
           "anchor": "Preserve, don't destroy"
         },
         {
-          "behavior": "leaves a compact one-line-per-item record on the hot-path file",
-          "anchor": "one-line-per-item record"
+          "behavior": "records in the archive's index what was preserved and where, so the hot-path file links back to it instead of leaving a bare cut",
+          "anchor": "archive's index"
         },
         {
           "behavior": "makes the hot-path file defer to the authoritative file rather than restating it",

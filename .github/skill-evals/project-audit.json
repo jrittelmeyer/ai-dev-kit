@@ -15,8 +15,8 @@
           "anchor": "every deduction MUST map to a backlog item"
         },
         {
-          "behavior": "emits docs only and never edits product code",
-          "anchor": "no product-code edits"
+          "behavior": "writes a durable report file (score table, deductions, drift, prioritized backlog) as the audit's record of truth, not just a chat reply",
+          "anchor": "This is the durable record."
         }
       ],
       "reject": [
@@ -62,8 +62,8 @@
           "anchor": "dormant, not done"
         },
         {
-          "behavior": "scores untriaged issues/PRs and visibly stale dependencies as adoption-killers",
-          "anchor": "adoption-killers"
+          "behavior": "checks community health files by name -- CONTRIBUTING, SECURITY, CoC, issue/PR templates, FUNDING -- are present and current, not generic OSS hygiene",
+          "anchor": "CONTRIBUTING, SECURITY, CoC"
         }
       ],
       "reject": [

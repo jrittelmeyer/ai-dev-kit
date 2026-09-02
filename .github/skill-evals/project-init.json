@@ -7,16 +7,16 @@
       "decoys": ["project-adopt", "project-audit"],
       "expect": [
         {
-          "behavior": "restates the problem and users before designing, because a wrong restatement is cheapest to catch early",
-          "anchor": "A wrong restatement is cheapest to catch here"
+          "behavior": "restates target users in terms of their jobs-to-be-done, not just who they are",
+          "anchor": "jobs-to-be-done"
         },
         {
           "behavior": "web-searches the competitive landscape as of today and date-stamps the claims",
           "anchor": "Competitive landscape"
         },
         {
-          "behavior": "batches every open question into a single round instead of drip-feeding them",
-          "anchor": "One batched question round"
+          "behavior": "makes sure the single question round covers every fit-map removal, not just the open-ended items",
+          "anchor": "every fit-map removal"
         }
       ],
       "reject": [
@@ -31,8 +31,8 @@
       "decoys": ["project-adopt", "doc-audit"],
       "expect": [
         {
-          "behavior": "reads every provided plan document in full rather than skimming",
-          "anchor": "Read every provided plan document fully"
+          "behavior": "splits value-add candidates into what's already free in the foundation versus genuinely new build, not a single undifferentiated list",
+          "anchor": "already free in the foundation"
         },
         {
           "behavior": "names the decisions the input never made instead of silently inventing them",
@@ -63,8 +63,8 @@
           "anchor": "ready-to-file issue/PR against the foundation"
         },
         {
-          "behavior": "waits for explicit sign-off before committing the inception output",
-          "anchor": "wait for explicit sign-off"
+          "behavior": "treats a bare re-run with no new input as an automatic resume from the existing brief, distinct from a re-run carrying new input",
+          "anchor": "a bare re-run with no new input"
         }
       ],
       "reject": [

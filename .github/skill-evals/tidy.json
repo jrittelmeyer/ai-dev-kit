@@ -7,16 +7,16 @@
       "decoys": ["checkpoint", "doc-audit"],
       "expect": [
         {
-          "behavior": "reports cache size before pruning anything",
-          "anchor": "Report first"
+          "behavior": "runs the adapter's configured `cache.size` command specifically, not a generic disk-usage check",
+          "anchor": "cache.size` command"
         },
         {
           "behavior": "targets the stack's cache that has no native TTL or size cap",
           "anchor": "unbounded grower"
         },
         {
-          "behavior": "reports reclaimed space and current disk free afterwards",
-          "anchor": "Report reclaimed space"
+          "behavior": "prunes by deleting oldest cache entries only, keeping recent builds so cache hits still work",
+          "anchor": "keeping recent builds for cache hits"
         }
       ],
       "reject": [
@@ -30,12 +30,12 @@
       "decoys": ["project-audit", "live-verify"],
       "expect": [
         {
-          "behavior": "surfaces the mass delete for the user to approve instead of running it",
-          "anchor": "explicit user OK"
+          "behavior": "scopes the mass delete using the adapter's configured `hygiene.e2eUserPattern` key rather than an ad hoc filter",
+          "anchor": "hygiene.e2eUserPattern"
         },
         {
-          "behavior": "scopes the cleanup to the seeded-data pattern and keeps everything else",
-          "anchor": "keep everything that doesn"
+          "behavior": "frames the risk of leftover rows as breaking pagination- and count-dependent tests, not just generic clutter",
+          "anchor": "pagination- and count-dependent tests"
         },
         {
           "behavior": "presents each surfaced item with its reclaim potential and the exact command",
@@ -57,12 +57,12 @@
           "anchor": "Tree-kill by PID"
         },
         {
-          "behavior": "spares containers and the browser when clearing dev processes",
-          "anchor": "keep containers and the browser"
+          "behavior": "looks up the offending process via the adapter's configured `hygiene.devPorts` list rather than guessing",
+          "anchor": "hygiene.devPorts"
         },
         {
-          "behavior": "does not silently perform the surfaced step-2 actions",
-          "anchor": "Don't silently perform"
+          "behavior": "identifies the risk as the process holding a port or lock, not merely 'still running'",
+          "anchor": "holding a port or lock"
         }
       ],
       "reject": [

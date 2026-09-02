@@ -243,8 +243,11 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B3-52 (full delta eval pass); B3-51 shipped
-  2026-09-02 (mechanized the CHANGELOG Verification-paragraph rule —
+  **Next:** B3-53 (skill-drift-guard PreToolUse twin); B3-52 shipped
+  2026-09-02 (full delta-mode eval pass — 70/94 expect behaviors confirmed
+  skill-earned vs. a no-skill baseline, 23 free-passing assertions replaced;
+  [SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)); B3-51
+  shipped 2026-09-02 (mechanized the CHANGELOG Verification-paragraph rule —
   `check-version.mjs` now fails when an entry ≥ v0.23.11 lacks one); B2-49
   shipped 2026-09-02 (release automation — `workflow_dispatch` +
   `release.yml` auto-tag/Release on green CI); B1-47/48 shipped 2026-09-01
