@@ -27,6 +27,18 @@
             "statusMessage": "ai-dev-kit: live-verify reminder"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/skill-drift-guard-preedit.mjs"],
+            "timeout": 10,
+            "statusMessage": "ai-dev-kit: skill-drift guard (pre-edit)"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -43,7 +55,7 @@
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -51,7 +63,12 @@
             "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/skill-drift-guard.mjs"],
             "timeout": 10,
             "statusMessage": "ai-dev-kit: skill-drift guard"
-          },
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
           {
             "type": "command",
             "command": "node",

@@ -18,8 +18,12 @@ const cases = [
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git -c core.autocrlf=false commit -m x" } }, true],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git log | grep commit" } }, false],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git log\ngh run list --commit abc123" } }, false],
-  ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/checkpoint/SKILL.md" } }, true],
-  ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "src/app.ts" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "sed -i 's/x/y/' .claude/skills/checkpoint/SKILL.md" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "echo hi > .claude/hooks/ai-dev-kit/dep-check-nudge.mjs" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cat .claude/skills/checkpoint/SKILL.md" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "sed -i 's/x/y/' src/app.ts" } }, false],
+  ["hooks/skill-drift-guard-preedit.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/checkpoint/SKILL.md" } }, true],
+  ["hooks/skill-drift-guard-preedit.mjs", { tool_name: "Edit", tool_input: { file_path: "src/app.ts" } }, false],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "AGENTS.md" } }, true],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "packages/db/AGENTS.md" } }, true],
   ["hooks/context-guard.mjs", { tool_name: "Write", tool_input: { file_path: "docs/context/DATABASE.md" } }, true],
@@ -79,6 +83,7 @@ const handlers = [
   "hooks/dep-check-nudge.mjs",
   "hooks/live-verify-reminder.mjs",
   "hooks/skill-drift-guard.mjs",
+  "hooks/skill-drift-guard-preedit.mjs",
   // Enforcement handlers: with no adapter config (this repo's cwd, no
   // CLAUDE_PROJECT_DIR), garbage stdin must still leave them silent exit 0.
   "hooks/stop-gate.mjs",
@@ -111,7 +116,8 @@ for (const handler of handlers) {
 const bomEvents = [
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }],
   ["hooks/live-verify-reminder.mjs", { tool_name: "Bash", tool_input: { command: "git commit -m x" } }],
-  ["hooks/skill-drift-guard.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/tidy/SKILL.md" } }],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "sed -i 's/x/y/' .claude/skills/tidy/SKILL.md" } }],
+  ["hooks/skill-drift-guard-preedit.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/tidy/SKILL.md" } }],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "CLAUDE.md" } }],
   ["hooks/compact-reorient.mjs", { hook_event_name: "SessionStart", session_id: "s1", source: "compact" }],
   ["optional/contrarian/contrarian-nudge.mjs", { tool_name: "ExitPlanMode", tool_input: {} }],

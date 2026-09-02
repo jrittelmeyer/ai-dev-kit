@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.18",
+  "version": "0.23.19",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -38,11 +38,18 @@
         "fires": "any command segment containing `git … commit`"
       },
       {
-        "file": "hooks/skill-drift-guard.mjs",
-        "event": "PostToolUse",
+        "file": "hooks/skill-drift-guard-preedit.mjs",
+        "event": "PreToolUse",
         "matcher": "Edit|Write",
         "skill": "(kit invariant)",
-        "fires": "direct file-tool edits under .claude/skills/ or .claude/hooks/"
+        "fires": "a file tool is about to edit .claude/skills/ or .claude/hooks/ directly — fires before the wasted edit lands"
+      },
+      {
+        "file": "hooks/skill-drift-guard.mjs",
+        "event": "PostToolUse",
+        "matcher": "Bash",
+        "skill": "(kit invariant)",
+        "fires": "a Bash command writes to .claude/skills/ or .claude/hooks/ (sed -i, cp, mv, tee, a redirect) — the indirect edits the PreToolUse twin's Edit|Write matcher can't see"
       },
       {
         "file": "hooks/context-guard.mjs",
@@ -88,14 +95,14 @@
       "UserPromptSubmit": "rejected 0.20.0 — accepts additionalContext but fires on every prompt; a standing nudge at that frequency is the same noise trade already rejected for SessionStart(startup). Facts that apply to every prompt belong in CLAUDE.md, which loads without running a script",
       "UserPromptExpansion": "rejected 0.20.0 — matches skill/command names, but a kit skill's own SKILL.md already carries its rules; re-injecting them at expansion pays for the same content twice. PLAYBOOK #9: the skill trigger already covers it",
       "MessageDisplay": "rejected 0.20.0 — display-only. `displayContent` rewrites what the human sees while the transcript and the model keep the original text, so it cannot advise the agent",
-      "PreToolUse": "accepted 0.2.0 — live-verify-reminder (matcher Bash, if: \"Bash(git *)\"): fires before a commit, the last moment the agent can still run the verify recipe",
+      "PreToolUse": "accepted 0.2.0 — live-verify-reminder (matcher Bash, if: \"Bash(git *)\"): fires before a commit, the last moment the agent can still run the verify recipe. 0.23.19 adds skill-drift-guard-preedit (matcher Edit|Write): fires before a direct edit to .claude/skills/ or .claude/hooks/ lands, so the redirect-to-kit-source precedes the wasted edit instead of following it",
       "PermissionRequest": "rejected 0.20.0 — decision-only (`decision.behavior` allow/deny) with no context channel; auto-answering a permission prompt is a block-class action the kit's trust contract excludes",
-      "PostToolUse": "accepted 0.2.0 — dep-check-nudge, skill-drift-guard, context-guard: the tool result is the moment the agent can still act on what it just did. 0.23.0 adds banned-api-guard on the same event — opt-in blocking (adapter enforcement.bannedApis), inert without config",
+      "PostToolUse": "accepted 0.2.0 — dep-check-nudge, skill-drift-guard, context-guard: the tool result is the moment the agent can still act on what it just did. 0.23.0 adds banned-api-guard on the same event — opt-in blocking (adapter enforcement.bannedApis), inert without config. 0.23.19 narrows skill-drift-guard's matcher to Bash only — its Edit|Write coverage moved to the PreToolUse twin (skill-drift-guard-preedit), so this handler now catches only the indirect Bash-command edits the pre-edit matcher can't see",
       "PostToolUseFailure": "rejected 0.20.0 — accepts additionalContext and checkpoint's three-strikes rule is the natural payload, but strike counting needs cross-call state a stateless handler cannot hold, and firing on every tool error (a typo'd grep, a missing file) is an intolerable false-positive rate. Revisit only with a session state file",
       "PostToolBatch": "rejected 0.20.0 — fires once per batch with the full tool set, but supports no matcher; the kit's three PostToolUse nudges are per-file and per-command decisions that need exactly the matcher scoping this event cannot express, and there is no batch-level fact worth injecting on its own",
       "PermissionDenied": "rejected 0.20.0 — `retry` only, no context channel; re-driving a denied tool call is the user's decision, not a hook's",
       "Notification": "rejected 0.20.0 — a user-facing surface (permission prompts, idle, auth, elicitation dialogs) with no context channel to the agent",
-      "SubagentStart": "rejected 0.20.0 — can inject context into a spawning subagent, but no kit invariant is subagent-specific: the one real risk, a subagent editing `.claude/skills/` directly, is already caught by skill-drift-guard, whose PostToolUse hook fires for subagent tool calls too. A generic per-spawn nudge is the SessionStart(startup) noise trade again",
+      "SubagentStart": "rejected 0.20.0 — can inject context into a spawning subagent, but no kit invariant is subagent-specific: the one real risk, a subagent editing `.claude/skills/` directly, is already caught by skill-drift-guard's PreToolUse/PostToolUse twins, which fire for subagent tool calls too. A generic per-spawn nudge is the SessionStart(startup) noise trade again",
       "SubagentStop": "rejected 0.20.0 — feedback loops back into a subagent that has finished; the parent-side equivalent is a PostToolUse hook on the Agent tool, which is already the kit's wired event",
       "TaskCreated": "rejected 0.20.0 — cancel/block only; no context channel, and cancelling a task is a block",
       "TaskCompleted": "rejected 0.20.0 — exit-2 or `continue: false` blocking only; the kit's hooks advise, never block",

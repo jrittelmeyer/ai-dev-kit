@@ -1,5 +1,32 @@
 # ai-dev-kit changelog
 
+## 0.23.19 — 2026-09-02
+
+`skill-drift-guard` PreToolUse twin (B3-53): the guard that redirects a
+direct edit under `.claude/skills/` or `.claude/hooks/` to the kit source
+used to fire only on `PostToolUse` — after the wasted edit already landed.
+New `hooks/skill-drift-guard-preedit.mjs` wires the same matcher
+(`Edit|Write`) onto `PreToolUse`, so the redirect precedes the edit for the
+common case. The original `skill-drift-guard.mjs` narrows to `PostToolUse`
+`Bash` only and gains write-intent detection (a `.claude/(skills|hooks)/`
+path plus `sed -i`/`cp`/`mv`/`tee`/a redirect/etc.), so it now covers the
+indirect edits — a Bash command writing to those paths — that the
+PreToolUse matcher can't see, instead of duplicating the Edit/Write
+coverage. Both wired in `hooks/hooks.json` and `hooks/installer-hooks.json`;
+`manifest.json`'s `hooks.handlers` and `hooks.reviewed` (PreToolUse,
+PostToolUse, SubagentStart entries) updated to match.
+
+**Verification:** full local gate green — `install.mjs --check` (37 files
+match after re-running the installer), `skill-lint.mjs` (10 skills clean),
+`skill-evals.mjs` (94 anchors resolved, unaffected — no skill bodies
+touched), `smoke-hooks.mjs` (164 asserts, including new fire/silent/BOM
+cases for both hooks plus the wiring-parity and manifest-handler
+cross-checks), `smoke-installer.mjs`, `check-version.mjs`. Also hand-ran
+both new/changed hooks directly with live sample stdin (an Edit tool_input
+for the PreToolUse twin, a Bash `sed -i` tool_input for the narrowed
+PostToolUse handler) and confirmed each prints the expected
+`additionalContext` — not just the smoke harness's synthetic cases.
+
 ## 0.23.18 — 2026-09-02
 
 Mechanized AGENTS.md's Verification-paragraph rule (B3-50): the rule drifted

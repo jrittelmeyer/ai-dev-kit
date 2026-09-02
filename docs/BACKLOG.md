@@ -26,7 +26,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 53 | hooks | `skill-drift-guard` PreToolUse twin: `PreToolUse` `Edit\|Write` advisory on the same `.claude/(skills\|hooks)/` match so the redirect precedes the wasted edit; keep the PostToolUse handler for Bash-path edits; record the verdict in `hooks.reviewed` either way | Hooks +1 | S |
 | B3 | 54 | skills | `project-audit` step 5 ends "Then run `/checkpoint`" (`SKILL.md:132`), but 0.23.13 made `checkpoint` `disable-model-invocation` — the Skill tool now refuses it, so the instruction is unexecutable (found live 2026-08-31). Reword to "ask the user to run `/checkpoint`" (or hand back a ready commit summary); sweep the other bodies for the same pattern | Lifecycle +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
