@@ -30,15 +30,13 @@ if (!entryMatch) {
 }
 const body = entryMatch[1].trim();
 
-const commitSubject = execFileSync("git", ["log", "-1", "--format=%s", resolvedSha], {
-  encoding: "utf8",
-}).trim();
-const subjectMatch = commitSubject.match(/^chore:\s*[\d.]+\s*(?:--|—)\s*(.+)$/);
-if (!subjectMatch) {
-  console.error(`Release commit ${resolvedSha} subject doesn't match "chore: <version> -- <subject>": ${commitSubject}`);
-  process.exit(1);
-}
-const title = `${tag} — ${subjectMatch[1]}`;
+// Subject line: everything up to the first sentence-ending period in the
+// entry's first paragraph, so the title tracks the CHANGELOG (which stays
+// with VERSION) rather than any one commit — a fix landing on top of the
+// release commit, still on the same un-tagged VERSION, must not break this.
+const firstParagraph = body.split(/\n\n/)[0].replace(/\s+/g, " ").trim();
+const subject = firstParagraph.split(/(?<=[.!?])\s/)[0].replace(/[.!?]+$/, "");
+const title = `${tag} — ${subject}`;
 
 execFileSync("git", ["tag", "-a", tag, resolvedSha, "-m", title], { stdio: "inherit" });
 execFileSync("git", ["push", "origin", tag], { stdio: "inherit" });
