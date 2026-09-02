@@ -25,5 +25,9 @@ jobs:
           node-version: 22
       - name: Release-ready gate
         run: node .github/check-release-ready.mjs ${{ github.event.workflow_run.head_sha }}
+      - name: Git identity for the annotated tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Cut tag + Release
         run: node .github/cut-release.mjs ${{ github.event.workflow_run.head_sha }}
