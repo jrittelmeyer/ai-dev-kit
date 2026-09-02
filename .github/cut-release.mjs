@@ -21,14 +21,13 @@ if (existingTags === tag) {
 }
 
 const changelog = readFileSync("CHANGELOG.md", "utf8");
-const entryMatch = changelog.match(
-  new RegExp(`^## ${version.replace(/\./g, "\\.")}.*\\n([\\s\\S]*?)(?=\\n## |$)`, "m"),
-);
-if (!entryMatch) {
+const entries = changelog.split(/\n(?=## )/);
+const entry = entries.find((e) => e.startsWith(`## ${version} `) || e.startsWith(`## ${version}\n`));
+if (!entry) {
   console.error(`No CHANGELOG.md entry found for ${version} — refusing to release.`);
   process.exit(1);
 }
-const body = entryMatch[1].trim();
+const body = entry.replace(/^## .*\n/, "").trim();
 
 // Subject line: everything up to the first sentence-ending period in the
 // entry's first paragraph, so the title tracks the CHANGELOG (which stays
