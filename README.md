@@ -243,16 +243,16 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B3-54 (project-audit's unexecutable `/checkpoint` instruction);
-  B3-53 shipped 2026-09-02 (skill-drift-guard PreToolUse twin — the
-  .claude/skills or .claude/hooks redirect now fires before a direct
-  Edit/Write edit lands, not just after; the PostToolUse handler narrows to
-  the Bash-command edits its matcher can't see); B3-52 shipped 2026-09-02
-  (full delta-mode eval pass — 70/94 expect behaviors confirmed skill-earned
-  vs. a no-skill baseline, 23 free-passing assertions replaced;
-  [SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)); B3-51
-  shipped 2026-09-02 (mechanized the CHANGELOG Verification-paragraph rule);
-  B2-49 shipped 2026-09-02 (release automation — `workflow_dispatch` +
-  `release.yml` auto-tag/Release on green CI); B1-47/48 shipped 2026-09-01
-  (v0.23.11–v0.23.16 tagged + released, hook-surface verdicts for
-  PreModelSwitch/PostModelSwitch recorded).
+  **Next:** no active row — the B3 band is fully shipped; only B4-16
+  (npm packaging, opens on consumer demand) and B4-31 (plugin payload
+  hygiene, advised against at current scale) remain, both deferred. B3-54
+  shipped 2026-09-02 (project-audit's `/checkpoint` instruction, dead since
+  0.23.13 made checkpoint `disable-model-invocation`, reworded to ask the
+  user instead; swept all 10 skills for the same pattern — no other
+  offenders); B3-53 shipped 2026-09-02 (skill-drift-guard PreToolUse twin);
+  B3-52 shipped 2026-09-02 (full delta-mode eval pass — 70/94 expect
+  behaviors confirmed skill-earned vs. a no-skill baseline;
+  [SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)); B1-47
+  through B3-51 shipped 2026-08-31–2026-09-02 (v0.23.11–v0.23.19 tagged +
+  released, release automation, hook-surface currency, CHANGELOG
+  Verification rule).

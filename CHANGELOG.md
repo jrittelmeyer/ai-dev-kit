@@ -1,5 +1,25 @@
 # ai-dev-kit changelog
 
+## 0.23.20 — 2026-09-02
+
+`project-audit`'s step 5 unexecutable `/checkpoint` instruction (B3-54):
+`skills/project-audit/SKILL.md` told itself to "Then run `/checkpoint`",
+but 0.23.13 made `checkpoint` `disable-model-invocation` — the Skill tool
+refuses that invocation, so the instruction has been dead since then
+(found live 2026-08-31). Reworded to ask the user to run `/checkpoint`
+instead, with the reason stated inline. Swept the other 6 skills carrying
+`disable-model-invocation` (harness-audit, project-adopt, project-init,
+retro, tidy, checkpoint itself) plus all 10 skill bodies for the same
+pattern — no other skill tries to invoke a `disable-model-invocation`
+skill directly by name/slash; `project-audit` was the only offender.
+
+**Verification:** full local gate green — `install.mjs` (1 file written,
+36 unchanged) → `install.mjs --check` (37 files match), `skill-lint.mjs`
+(10 skills clean), `skill-evals.mjs` (94 anchors resolved — the reworded
+line carries no eval anchor, confirmed before editing), `smoke-hooks.mjs`,
+`smoke-installer.mjs`, `check-version.mjs` (6 stamps agree at 0.23.20, all
+CHANGELOG Verification paragraphs present).
+
 ## 0.23.19 — 2026-09-02
 
 `skill-drift-guard` PreToolUse twin (B3-53): the guard that redirects a

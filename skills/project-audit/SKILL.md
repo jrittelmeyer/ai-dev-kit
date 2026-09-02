@@ -129,7 +129,9 @@ scheme; state the mapping.
 4. **Update the status doc** — one compact pointer to the report + refreshed
    "what's next" if the priority order changed.
 5. Summarize for the user: the score table, the top findings, and the
-   recommended next 3–5 items. Then run `/checkpoint` (standing agreement).
+   recommended next 3–5 items. Then ask the user to run `/checkpoint`
+   (standing agreement) — `checkpoint` is `disable-model-invocation`, so
+   this skill cannot invoke it directly via the Skill tool.
 
 Every backlog item still goes plan → sign-off → build later — this skill never
 starts implementing them.
