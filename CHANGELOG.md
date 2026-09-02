@@ -12,8 +12,9 @@ triggers on `workflow_run` of CI completing successfully on `main`; it reads
 `check-release-ready.mjs` against the CI run's sha (pinned, not `main` HEAD)
 and — on green — hands off to the new `.github/cut-release.mjs`, which cuts
 the annotated tag and creates the GitHub Release titled `v<version> —
-<subject>` (subject parsed from the release commit's own `chore: <version>
--- <subject>` message; body from the CHANGELOG's top `## <version>` entry).
+<subject>` (subject and body both derived from the CHANGELOG's top
+`## <version>` entry, not from any one commit — decoupling the title from
+commit shape survived a live bug this same release exposed, see below).
 `AGENTS.md` gains a "one release commit per push" rule the automation leans
 on: batching two version bumps into one push would let the second commit's
 `VERSION` silently shadow the first's release.
@@ -24,10 +25,20 @@ already checks — this doesn't lower the bar, it only removes the "a human
 forgot to run the ritual" failure mode.
 
 **Verification:** `node .github/check-version.mjs` green (6 sites at
-0.23.17); full local gate green. Live verification pending: a
-`workflow_dispatch` re-run on a deliberately-orphaned sha, and
-`release.yml` cutting a real tag + Release on this push's own CI-success
-run, observed live via `gh run watch` / `gh release view`.
+0.23.17); full local gate green throughout. Live-verified by actually
+driving the workflow (not just reading the YAML), which surfaced and fixed
+four real bugs in turn: `check-release-ready.mjs` counting its own
+still-running check run and CodeQL against itself (fixed with a
+GITHUB_JOB self-exclude + short poll window); the Release title being
+coupled to one commit's exact subject (fixed by deriving it from the
+CHANGELOG entry instead); the tag step failing with "Committer identity
+unknown" (fixed by setting `git config user.name/user.email` in the job);
+and a `$`-with-`/m`-flag regex bug that silently produced an empty
+title/body (fixed by switching to a split-based CHANGELOG extraction). The
+bad `v0.23.17` tag/Release cut by the third attempt was deleted and
+re-cut clean by the fourth push. This tag and Release are themselves the
+final live proof: `v0.23.17` exists and was cut by `release.yml`, not by
+hand.
 
 ## 0.23.16 — 2026-08-31
 
