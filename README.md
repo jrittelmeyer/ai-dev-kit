@@ -236,8 +236,10 @@ The canonical consumer block is four lines:
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** B3-50 (mechanize the CHANGELOG Verification-paragraph rule);
-  B2-49 shipped 2026-09-02 (release automation — `workflow_dispatch` +
+  **Next:** B3-51 (two-figure always-loaded budget); B3-50 shipped
+  2026-09-02 (mechanized the CHANGELOG Verification-paragraph rule —
+  `check-version.mjs` now fails when an entry ≥ v0.23.11 lacks one); B2-49
+  shipped 2026-09-02 (release automation — `workflow_dispatch` +
   `release.yml` auto-tag/Release on green CI); B1-47/48 shipped 2026-09-01
   (v0.23.11–v0.23.16 tagged + released, hook-surface verdicts for
   PreModelSwitch/PostModelSwitch recorded).

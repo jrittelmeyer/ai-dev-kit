@@ -1,5 +1,24 @@
 # ai-dev-kit changelog
 
+## 0.23.18 — 2026-09-02
+
+Mechanized AGENTS.md's Verification-paragraph rule (B3-50): the rule drifted
+five releases running (v0.23.11–v0.23.15) with no tripwire, caught only by
+a manual backfill (`7d7ce6c`). `.github/check-version.mjs` now also parses
+`CHANGELOG.md` into per-version entries and fails when any entry `>=
+v0.23.11` lacks a line matching `**Verification` followed by `:**` (the
+existing entries phrase it `**Verification (backfilled ...):**`, so the
+pattern allows trailing text before the colon rather than requiring the
+literal string `**Verification:**`). The 0.23.11 floor is hardcoded,
+matching where the backfill started. Reports every missing entry in one
+pass, mirroring the existing version-stamp check's style.
+
+**Verification:** shown failing first — a synthetic single-character
+mutation of one `**Verification` line in the live CHANGELOG reproduced the
+exact failure mode (missing paragraph on v0.23.17), then reverted and
+confirmed green; `node .github/check-version.mjs` green (6 stamps at
+0.23.18, all entries `>= v0.23.11` present); full local gate green.
+
 ## 0.23.17 — 2026-09-02
 
 Release automation (B2-49): the tag/Release ritual had fired its advisory
