@@ -1,5 +1,39 @@
 # ai-dev-kit changelog
 
+## 0.23.21 — 2026-09-03
+
+`harness-audit`'s `inventory.mjs` double-counted wired hooks: a consuming
+project's 13 hooks loaded from `.claude/settings.json` were followed by the
+8 kit hooks among them repeated again from `.claude/hooks/ai-dev-kit/hooks.json`
+(an installer/plugin-manifest reference copy, not a file Claude Code reads),
+one flat 21-row table with no way to tell which rows were which — found live
+via wyrd's 2026-08-31 harness-audit (Audit instrumentation −10). `hooksFromFile`
+and `findHookFiles` now tag each row's `source` as `loaded`
+(`.claude/settings*.json`) or `reference` (`hooks/hooks.json`,
+`.claude/hooks/*/hooks.json`); `printHookTable` renders only the deduped
+loaded rows as the main table, then reports the reference rows as a one-line
+parity check — unique count, and whether every reference hook matches a
+loaded one (a mismatch prints as a **Drift** line, generalizing the parity
+check wyrd's own `hook-wiring-parity.test.ts` already runs for its one repo).
+Also adds a `## Standing-instruction file` section: the root `CLAUDE.md` or
+`AGENTS.md`'s line count against the adapter's `contextBudget.agentsMdMaxLines`
+(default 150, hunts.md's documented convention) plus its ≈token count.
+Memory-file-budget and per-skill eval-presence reporting (also named in the
+same audit finding) are deferred — the former needs a portable way to locate
+a project's `~/.claude/projects/<slug>/memory/` directory from a project-root
+argument, which no kit tool currently does; the latter depends on consuming
+projects actually having local skill-eval fixtures, which wyrd's own A122 has
+not yet built. `harness-audit`'s own `version` bumped to 0.1.9 in
+`manifest.json`.
+
+**Verification:** `node --check` on the edited script; hand-run against
+wyrd (`node skills/harness-audit/scripts/inventory.mjs <wyrd-root>`) —
+confirmed exactly 13 loaded hooks (was 21 rows before the fix), 8 reference
+rows all matching with no drift, and `CLAUDE.md: 137 lines (budget 150) —
+≈2183 tokens`; full local gate — `install.mjs`/`install.mjs --check`,
+`skill-lint.mjs`, `skill-evals.mjs`, `smoke-hooks.mjs`, `smoke-installer.mjs`,
+`check-version.mjs` — all green.
+
 ## 0.23.20 — 2026-09-02
 
 `project-audit`'s step 5 unexecutable `/checkpoint` instruction (B3-54):

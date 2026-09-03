@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.20",
+  "version": "0.23.21",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -300,7 +300,7 @@
     },
     {
       "name": "harness-audit",
-      "version": "0.1.8",
+      "version": "0.1.9",
       "dualHome": false,
       "summary": "Periodic currency audit of the agent harness itself: inventory the local surface (skills/hooks/context files/tool servers/permissions/packaging), re-fetch the pinned authoritative specs (self-repairing references/sources.md), sweep the ecosystem with current-dated category queries (maintaining references/stack.md), diff against the rubric, and emit a dated scored report + proposed backlog rows. Report-only; sign-off gates implementation.",
       "triggers": [

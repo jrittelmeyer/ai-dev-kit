@@ -72,8 +72,12 @@ function skillRows(skillsDir) {
 }
 
 /** Wired hook events from a single hooks.json- or settings.json-shaped file
- * (both nest `{ hooks: { EventName: [{ matcher, hooks: [...] }] } }`). */
-function hooksFromFile(path) {
+ * (both nest { hooks: { EventName: [{ matcher, hooks: [...] }] } }).
+ * 'source' is "loaded" for a file Claude Code reads directly
+ * (.claude/settings*.json) or "reference" for an installer/plugin-manifest
+ * copy (hooks/hooks.json, or an installed hook dir's own hooks.json) that
+ * describes the same hooks but is not itself read by Claude Code. */
+function hooksFromFile(path, source) {
   const rows = [];
   const parsed = JSON.parse(readFileSync(path, "utf8"));
   const wired = parsed.hooks ?? {};
@@ -92,6 +96,7 @@ function hooksFromFile(path) {
           if: h.if ?? "",
           timeout: h.timeout ?? "",
           file: posix(relative(root, path)),
+          source,
         });
       }
     }
@@ -101,20 +106,20 @@ function hooksFromFile(path) {
 
 function findHookFiles() {
   const found = [];
-  for (const candidate of [
-    "hooks/hooks.json",
-    "hooks/installer-hooks.json",
-    ".claude/settings.json",
-    ".claude/settings.local.json",
-  ]) {
-    if (existsSync(join(root, candidate))) found.push(join(root, candidate));
+  for (const candidate of ["hooks/hooks.json", "hooks/installer-hooks.json"]) {
+    const p = join(root, candidate);
+    if (existsSync(p)) found.push({ path: p, source: "reference" });
+  }
+  for (const candidate of [".claude/settings.json", ".claude/settings.local.json"]) {
+    const p = join(root, candidate);
+    if (existsSync(p)) found.push({ path: p, source: "loaded" });
   }
   const installedDir = join(root, ".claude/hooks");
   if (existsSync(installedDir)) {
     for (const entry of readdirSync(installedDir, { withFileTypes: true })) {
       if (!entry.isDirectory()) continue;
       const p = join(installedDir, entry.name, "hooks.json");
-      if (existsSync(p)) found.push(p);
+      if (existsSync(p)) found.push({ path: p, source: "reference" });
     }
   }
   return found;
@@ -144,19 +149,77 @@ function printHookTable(hookFiles) {
     console.log("No hooks.json / installer-hooks.json / settings.json found under the given root.");
     return;
   }
+  const allRows = hookFiles.flatMap(({ path, source }) => hooksFromFile(path, source));
+  const hookKey = (r) => `${r.event}|${r.matcher}|${r.handler}`;
+
+  const loadedRows = [];
+  const loadedKeys = new Set();
+  for (const row of allRows.filter((r) => r.source === "loaded")) {
+    const key = hookKey(row);
+    if (loadedKeys.has(key)) continue;
+    loadedKeys.add(key);
+    loadedRows.push(row);
+  }
+  console.log("**Loaded** — read directly by Claude Code (`.claude/settings*.json`):\n");
   console.log("| event | matcher | handler | type | if | timeout | wiring file |");
   console.log("|---|---|---|---|---|---:|---|");
-  const seen = new Set();
-  for (const file of hookFiles) {
-    for (const row of hooksFromFile(file)) {
-      const key = `${row.event}|${row.matcher}|${row.handler}|${row.file}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      console.log(
-        `| ${row.event} | ${row.matcher} | ${row.handler} | ${row.type} | ${row.if || "—"} | ${row.timeout || "—"} | ${row.file} |`,
-      );
+  for (const row of loadedRows) {
+    console.log(
+      `| ${row.event} | ${row.matcher} | ${row.handler} | ${row.type} | ${row.if || "—"} | ${row.timeout || "—"} | ${row.file} |`,
+    );
+  }
+
+  const referenceRows = allRows.filter((r) => r.source === "reference");
+  const referenceKeys = new Set(referenceRows.map(hookKey));
+  const orphanKeys = [...referenceKeys].filter((k) => !loadedKeys.has(k));
+  const parityNote =
+    orphanKeys.length === 0
+      ? `${referenceKeys.size} unique, all matching a loaded row above.`
+      : `${referenceKeys.size} unique.`;
+  console.log(
+    `\n${loadedRows.length} hook(s) loaded. ${referenceRows.length} additional row(s) found in ` +
+      "reference files (installer/plugin manifests such as `hooks/hooks.json` or " +
+      "`.claude/hooks/*/hooks.json`, which Claude Code does not read directly) — " +
+      parityNote,
+  );
+  if (orphanKeys.length > 0) {
+    console.log(
+      `\n**Drift** — ${orphanKeys.length} reference-only hook(s) declared but not found in any ` +
+        `loaded settings file (event|matcher|handler): ${orphanKeys.join(", ")}.`,
+    );
+  }
+}
+
+/** The standing-instruction file (`CLAUDE.md` takes precedence over
+ * `AGENTS.md` when both exist, matching context-guard's own precedent) plus
+ * its line count and the adapter's line budget, defaulting to hunts.md's
+ * documented 150-line convention when no adapter config is present. */
+function printInstructionFileReport() {
+  console.log("\n## Standing-instruction file\n");
+  let found = null;
+  for (const name of ["CLAUDE.md", "AGENTS.md"]) {
+    const p = join(root, name);
+    if (existsSync(p)) {
+      found = { name, path: p };
+      break;
     }
   }
+  if (!found) {
+    console.log("No CLAUDE.md / AGENTS.md found at the project root.");
+    return;
+  }
+  let maxLines = 150;
+  try {
+    const cfg = JSON.parse(readFileSync(join(root, ".claude/ai-dev-kit.config.json"), "utf8"));
+    if (typeof cfg?.contextBudget?.agentsMdMaxLines === "number") {
+      maxLines = cfg.contextBudget.agentsMdMaxLines;
+    }
+  } catch {
+    /* no adapter config — keep the default */
+  }
+  const text = readFileSync(found.path, "utf8");
+  const lines = text.replace(/\r?\n$/, "").split(/\r?\n/).length;
+  console.log(`${found.name}: ${lines} lines (budget ${maxLines}) — ≈${tokens(text)} tokens.`);
 }
 
 const skillsDir = findSkillsDir();
@@ -166,3 +229,4 @@ if (!skillsDir) {
 }
 printSkillTable(skillRows(skillsDir));
 printHookTable(findHookFiles());
+printInstructionFileReport();
