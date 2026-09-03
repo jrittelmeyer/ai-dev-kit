@@ -1,0 +1,49 @@
+{
+  "project": "nobody-promotes-the-plumber",
+  "projectType": "game",
+  "ecosystem": {
+    "runtime": "node",
+    "manifestFiles": ["tools/pell/package.json"],
+    "registryQuery": "npm view {pkg} versions --json",
+    "addCommand": "npm install {pkg}@{version}"
+  },
+  "gate": ["node --test .claude/hooks/*.test.mjs"],
+  "test": {
+    "unit": "node --test .claude/hooks/*.test.mjs"
+  },
+  "verify": {
+    "notes": "Planning phase — no game build exists yet (design/STATE.md § Phase). Tooling direction is ink + inkjs, web-first, and is NOT decided: fill build/run/ready/observe only when Jonathon declares the planning phase over. Until then the only runnable code is the Pell relay (tools/pell): `npm run check` there exercises transcription + one Claude turn without Discord."
+  },
+  "docs": {
+    "dir": "docs",
+    "status": "design/STATE.md",
+    "backlog": "BACKLOG.md",
+    "contextDir": "docs",
+    "archiveDir": "docs/archive"
+  },
+  "commit": {
+    "style": "conventional",
+    "trailers": false,
+    "useFileFlag": true
+  },
+  "depPolicy": {
+    "releaseAgeDays": 7,
+    "exactPin": ["@anthropic-ai/claude-agent-sdk"]
+  },
+  "contextBudget": {
+    "agentsMdMaxLines": 150,
+    "contextDocSplitTokens": 3000,
+    "memoryIndexMaxTokens": 700,
+    "memoryFileMaxTokens": 1500
+  },
+  "enforcement": {
+    "checkpointAutorun": true,
+    "stopGate": {
+      "commands": ["node --test .claude/hooks/*.test.mjs"],
+      "timeoutSeconds": 60
+    }
+  },
+  "harnessAudit": {
+    "kitSourcePath": "../../ai-dev-kit"
+  }
+}
