@@ -1,5 +1,28 @@
 # ai-dev-kit changelog
 
+## 0.23.22 — 2026-09-08
+
+`harness-audit`'s `inventory.mjs` was blind to a skills-dir plugin's own
+hooks: a consuming project that packages the kit as `.claude/skills/
+ai-dev-kit/{.claude-plugin/plugin.json, hooks/hooks.json}` (auto-loaded by
+Claude Code directly, no `settings.json` merge) reported those hooks as
+missing entirely, undercounting the real loaded-hook total — found live via
+wyrd's A95 (2026-09-08), which packaged its own kit install this way and hit
+the gap immediately. `findHookFiles` now also walks `.claude/skills/*` for a
+`.claude-plugin/plugin.json` + `hooks/hooks.json` pair and reports its hooks
+as `source: "loaded"` (a plugin's own hooks file is read by Claude Code
+directly, unlike the flat-install `hooks/hooks.json` reference copy). No
+new test — mirrors wyrd's own `tests/tools/harness-audit-inventory.test.ts`
+coverage of the same branch, ported alongside the fix.
+
+**Verification:** full local gate green — `install.mjs`/`--check` against
+both a scratch dest and this repo's own dogfood install (0 file(s)
+written, idempotent), `skill-lint.mjs` (10 skills clean), `skill-evals.mjs`
+(10 skills · 30 scenarios), `smoke-hooks.mjs`, `smoke-installer.mjs`,
+`check-version.mjs` (6 sites agree at 0.23.22). Confirmed byte-identical
+against wyrd's own already-patched copy of `inventory.mjs` (`diff` clean)
+before committing.
+
 ## 0.23.21 — 2026-09-03
 
 `harness-audit`'s `inventory.mjs` double-counted wired hooks: a consuming

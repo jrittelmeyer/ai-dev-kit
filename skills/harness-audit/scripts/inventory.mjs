@@ -46,21 +46,51 @@ function findSkillsDir() {
   return null;
 }
 
-function skillRows(skillsDir) {
-  const rows = [];
-  const dirs = readdirSync(join(root, skillsDir), { withFileTypes: true })
+/** Every skill directory under `skillsDir`, one level deep as a plain skill
+ * (`<skillsDir>/<name>/SKILL.md`), or one level deeper still when `<name>`
+ * is itself a skills-dir plugin (`<skillsDir>/<name>/.claude-plugin/
+ * plugin.json` + `<skillsDir>/<name>/skills/<nested>/SKILL.md`) — the route
+ * A95/D072 packages ai-dev-kit's own kit-managed skills through, so a
+ * consumer who takes that route doesn't go invisible to this inventory.
+ * `label` disambiguates nested skills as `<plugin>/<skill>` in the report. */
+function collectSkillDirs(skillsDir) {
+  const out = [];
+  const entries = readdirSync(join(root, skillsDir), { withFileTypes: true })
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
     .sort();
-  for (const name of dirs) {
-    const skillPath = join(root, skillsDir, name, "SKILL.md");
-    if (!existsSync(skillPath)) continue;
+  for (const name of entries) {
+    const base = join(root, skillsDir, name);
+    if (existsSync(join(base, "SKILL.md"))) {
+      out.push({ label: name, dirPath: base });
+      continue;
+    }
+    const pluginManifest = join(base, ".claude-plugin", "plugin.json");
+    const pluginSkillsDir = join(base, "skills");
+    if (existsSync(pluginManifest) && existsSync(pluginSkillsDir)) {
+      const nested = readdirSync(pluginSkillsDir, { withFileTypes: true })
+        .filter((e) => e.isDirectory())
+        .map((e) => e.name)
+        .sort();
+      for (const n of nested) {
+        const p = join(pluginSkillsDir, n);
+        if (existsSync(join(p, "SKILL.md"))) out.push({ label: `${name}/${n}`, dirPath: p });
+      }
+    }
+  }
+  return out;
+}
+
+function skillRows(skillsDir) {
+  const rows = [];
+  for (const { label, dirPath } of collectSkillDirs(skillsDir)) {
+    const skillPath = join(dirPath, "SKILL.md");
     const { fields, body } = parseFrontmatter(readFileSync(skillPath, "utf8"));
     const desc = fields.description ?? "";
-    const files = walk(join(root, skillsDir, name)).filter((f) => !f.endsWith("SKILL.md"));
-    const refs = files.map((f) => posix(relative(join(root, skillsDir, name), f)));
+    const files = walk(dirPath).filter((f) => !f.endsWith("SKILL.md"));
+    const refs = files.map((f) => posix(relative(dirPath, f)));
     rows.push({
-      name,
+      name: label,
       descChars: desc.length,
       descTok: tokens(desc),
       bodyTok: tokens(body),
@@ -120,6 +150,20 @@ function findHookFiles() {
       if (!entry.isDirectory()) continue;
       const p = join(installedDir, entry.name, "hooks.json");
       if (existsSync(p)) found.push({ path: p, source: "reference" });
+    }
+  }
+  // Skills-dir plugins (`.claude/skills/<name>/.claude-plugin/plugin.json`)
+  // auto-load their own `hooks/hooks.json` directly — no settings.json merge,
+  // no separate reference copy to drift against (A95/D072).
+  const skillsDirPath = join(root, ".claude/skills");
+  if (existsSync(skillsDirPath)) {
+    for (const entry of readdirSync(skillsDirPath, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      const pluginManifest = join(skillsDirPath, entry.name, ".claude-plugin", "plugin.json");
+      const pluginHooks = join(skillsDirPath, entry.name, "hooks", "hooks.json");
+      if (existsSync(pluginManifest) && existsSync(pluginHooks)) {
+        found.push({ path: pluginHooks, source: "loaded" });
+      }
     }
   }
   return found;
