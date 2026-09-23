@@ -4,10 +4,17 @@
   "packageManager": "pnpm",
   "ecosystem": {
     "runtime": "node",
-    "manifestFiles": ["package.json", "apps/web/package.json"],
+    "manifestFiles": [
+      "package.json",
+      "apps/web/package.json"
+    ],
     "registryQuery": "npm view {pkg} versions --json"
   },
-  "gate": ["pnpm lint", "pnpm type-check", "pnpm build"],
+  "gate": [
+    "pnpm lint",
+    "pnpm type-check",
+    "pnpm build"
+  ],
   "test": {
     "unit": "pnpm test",
     "e2e": "pnpm test:e2e"
@@ -15,7 +22,11 @@
   "verify": {
     "build": "pnpm build",
     "run": "pnpm --filter web start --port 3100",
-    "ready": { "kind": "http", "port": 3100, "url": "http://localhost:3100/api/health" },
+    "ready": {
+      "kind": "http",
+      "port": 3100,
+      "url": "http://localhost:3100/api/health"
+    },
     "observe": [
       "GET /api/health -> database:up AND a LOW uptime; a high uptime means an orphaned sibling-project server answered on :3100 (false green) - kill it and restart",
       "GET / -> 200; body carries the site name and the primary CTA",
@@ -23,7 +34,7 @@
       "submit the contact form (Playwright or the Server Action directly) -> a leads row in ai_consulting on aic-postgres -> the notification send is logged (keyless Resend = logged no-op)",
       "GET /sitemap.xml and /robots.txt -> every public URL present; no auth/admin routes listed"
     ],
-    "notes": "Root .env is loaded by the start script's dotenv wrapper. DATABASE_URL must point at aic-postgres (host :5434, db ai_consulting) - never the template's :5432 appdb. Use the no-`--` form of `run`: `pnpm --filter web start -- --port 3100` forwards `--` literally and `next start` then reads `--port` as the project directory (verified in the template 2026-09-02). FREE :3100 BEFORE STARTING (see observe[0]). Marketing routes carry no auth; auth origin checks are exact - send an Origin header matching the served URL when driving /login or /admin."
+    "notes": "Root .env is loaded by the start script's dotenv wrapper. DATABASE_URL must point at aic-postgres (host :5434, db ai_consulting) - never the template's :5432 appdb. Start it with `pnpm db:up` (compose project ai-consulting); a bare `docker compose up` runs under project \"docker\" and replaces the template's nwb-postgres. Use the no-`--` form of `run`: `pnpm --filter web start -- --port 3100` forwards `--` literally and `next start` then reads `--port` as the project directory (verified in the template 2026-09-02). FREE :3100 BEFORE STARTING (see observe[0]). Marketing routes carry no auth; auth origin checks are exact - send an Origin header matching the served URL when driving /login or /admin."
   },
   "cache": {
     "size": "pnpm cache:size",
@@ -46,9 +57,18 @@
     "workflow": "CI"
   },
   "hygiene": {
-    "devPorts": [3000, 3100],
+    "devPorts": [
+      3000,
+      3100
+    ],
     "e2eUserPattern": "@example.com",
-    "keepContainers": ["aic-postgres", "nwb-postgres", "nwb-meilisearch", "civicmatch-postgres", "civicmatch-meilisearch"]
+    "keepContainers": [
+      "aic-postgres",
+      "nwb-postgres",
+      "nwb-meilisearch",
+      "civicmatch-postgres",
+      "civicmatch-meilisearch"
+    ]
   },
   "depPolicy": {
     "releaseAgeDays": 7,
