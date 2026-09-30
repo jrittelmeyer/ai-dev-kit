@@ -11,7 +11,7 @@
     {
       "name": "ai-dev-kit",
       "source": "./",
-      "description": "Lifecycle + inception + currency skills for agentic development on any project type, eight advisory hooks (advise, never block by default), and a per-project adapter contract.",
+      "description": "Lifecycle + inception + currency skills for agentic development on any project type, six advisory hooks plus three opt-in enforcement hooks behind the adapter enforcement block (advise by default), and a per-project adapter contract.",
       "category": "workflow",
       "tags": ["lifecycle", "verification", "audits", "portability"]
     }

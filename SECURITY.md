@@ -10,13 +10,14 @@ explicitly opts in.
 
 ## What `--hooks` executes in your sessions
 
-`install.mjs --hooks` wires eight hook entries into `.claude/settings.json`;
+`install.mjs --hooks` wires nine hook entries into `.claude/settings.json`;
 matching events then run the kit's handlers out of
 `.claude/hooks/ai-dev-kit/`. Two contract classes, each handler auditable in
 under 140 lines (kit source `hooks/`):
 
-- **Five advisory handlers** (dep-check-nudge, live-verify-reminder,
-  skill-drift-guard, context-guard, compact-reorient): emit an
+- **Six advisory handlers** (dep-check-nudge, live-verify-reminder,
+  skill-drift-guard-preedit, skill-drift-guard, context-guard,
+  compact-reorient): emit an
   `additionalContext` reminder or exit 0 silently, never block (exit 2 is
   never used), spawn no processes, make no network calls, and read nothing
   beyond the event on stdin plus `.claude/ai-dev-kit.config.json`.

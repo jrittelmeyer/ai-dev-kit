@@ -133,7 +133,7 @@ freely — `--check` never fails on it (schema issues print an advisory only).
 
 ## Automation (hooks)
 
-Eight Claude Code hooks make the lifecycle self-reinforcing. The five advisory
+Nine Claude Code hooks make the lifecycle self-reinforcing. The six advisory
 handlers **advise, never block** — they inject a reminder into the agent's
 context; the agent decides. The three enforcement handlers (0.23.0) ship wired
 but **inert**: each blocks only where the project's user-owned adapter config
@@ -144,7 +144,8 @@ unchanged.
 | --- | --- | --- |
 | `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash` | package.json edits; pm `add`/`update`/install-with-args |
 | `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
-| `skill-drift-guard.mjs` | PostToolUse · `Edit\|Write` | direct file-tool edits under `.claude/skills\|hooks/` |
+| `skill-drift-guard-preedit.mjs` | PreToolUse · `Edit\|Write` | a file tool about to edit under `.claude/skills\|hooks/` — redirects to kit source before the wasted edit lands |
+| `skill-drift-guard.mjs` | PostToolUse · `Bash` | a Bash command writing under `.claude/skills\|hooks/` (`sed -i`, `cp`, `mv`, `tee`, a redirect) — the indirect edits the PreToolUse twin can't see |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 | `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear/fork; the handler also guards on the payload's `source`, so a mis-wired matcher can't widen it) |
 | `stop-gate.mjs` · opt-in | Stop | `enforcement.stopGate.commands` at session end — runs in the background via `asyncRewake` (turn ends immediately); a failing command exits 2, waking the agent one turn later with the failure so it isn't missed (generalized from the danger-noodles/smash-gods/wyrd consumer originals) |
@@ -233,26 +234,20 @@ The canonical consumer block is four lines:
 ## Roadmap
 
 - **Later:** npm packaging (`npx` install) if consumer demand shows up
-  (B4-16), and git-root resolution for `CLAUDE_PROJECT_DIR` when sessions
-  launch in a subdirectory — harness-side, watched in
-  [docs/BACKLOG.md](docs/BACKLOG.md).
+  (B4-16), plugin payload hygiene (B4-31, advised against at current scale),
+  and git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
+  subdirectory — harness-side, watched in [docs/BACKLOG.md](docs/BACKLOG.md).
 - **Quality bar:** project audit **97.1/100** (ninth pass, 2026-08-31 —
   [report](docs/archive/PROJECT_AUDIT_2026-08-31.md); the full scored chain
   is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) · harness-currency
   **96.1/100**
   ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
   model-graded eval evidence **162/162 PASS**
-  ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)).
-  **Next:** no active row — the B3 band is fully shipped; only B4-16
-  (npm packaging, opens on consumer demand) and B4-31 (plugin payload
-  hygiene, advised against at current scale) remain, both deferred. B3-54
-  shipped 2026-09-02 (project-audit's `/checkpoint` instruction, dead since
-  0.23.13 made checkpoint `disable-model-invocation`, reworded to ask the
-  user instead; swept all 10 skills for the same pattern — no other
-  offenders); B3-53 shipped 2026-09-02 (skill-drift-guard PreToolUse twin);
-  B3-52 shipped 2026-09-02 (full delta-mode eval pass — 70/94 expect
-  behaviors confirmed skill-earned vs. a no-skill baseline;
-  [SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)); B1-47
-  through B3-51 shipped 2026-08-31–2026-09-02 (v0.23.11–v0.23.19 tagged +
-  released, release automation, hook-surface currency, CHANGELOG
-  Verification rule).
+  ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
+  **70/94** expect behaviors confirmed skill-earned against a no-skill
+  baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
+  **Next:** B1-56 (`script-exec-guard`, 0.24.0), then B1-57 (client-bundle
+  secret sweep + fan-out cite-and-spot-check, 0.24.1) — both signed off from
+  the [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md).
+  B3-55 (inventory.mjs memory-budget + eval-presence reporting) is filed but
+  unplanned; B4-16/B4-31 stay deferred by design.

@@ -6,8 +6,8 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 report. Every row enters plan → sign-off → build.
 
 Source: [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md)
-(97.1/100, ninth audit — rows 47–54, 47/48/49 shipped; 51–53 are the 2026-08-31 harness
-audit's proposals, adopted there). Scored chain — project audits
+(97.1/100, ninth audit — rows 47–54, all shipped by 0.23.20; 51–53 were the
+2026-08-31 harness audit's proposals, adopted there). Scored chain — project audits
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
@@ -20,12 +20,17 @@ audit's proposals, adopted there). Scored chain — project audits
 [96.5](archive/HARNESS_AUDIT_2026-08-25.md) →
 [96.1](archive/HARNESS_AUDIT_2026-08-31.md); model-graded evals
 [2026-08-24](archive/SKILL_EVALS_2026-08-24.md) →
-[2026-08-26](archive/SKILL_EVALS_2026-08-26.md) (162/162 PASS); fleet audit
+[2026-08-26](archive/SKILL_EVALS_2026-08-26.md) (162/162 PASS) →
+[2026-09-02](archive/SKILL_EVALS_2026-09-02.md) (delta mode, 70/94 skill-earned); fleet audit
 [FLEET_UPGRADE_PLAN_2026-08-25](archive/FLEET_UPGRADE_PLAN_2026-08-25.md).
+Rows 56–57: the [rootstock-os review](archive/ROOTSTOCK_REVIEW_2026-09-30.md) (2026-09-30).
 Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B1 | 56 | hooks | `script-exec-guard` — opt-in (`enforcement.scriptExecGuard`) PreToolUse on `Bash\|PowerShell` that answers `ask` when a command executes a session-fresh script (untracked, outside the repo, or uncommitted lines) holding a recursive delete of a non-literal or critical target; the harness critical-path check and auto-mode classifier see only the command line ([ROOTSTOCK_REVIEW_2026-09-30](archive/ROOTSTOCK_REVIEW_2026-09-30.md), anthropics/claude-code#88462). Signed off 2026-09-30 | Safety +1 | M |
+| B1 | 57 | live-verify · inception | Client-bundle secret sweep in live-verify's web mechanics (rotate at the provider first); cite-and-spot-check for project-adopt/project-init `--deep` fan-out + PLAYBOOK #6 ([ROOTSTOCK_REVIEW_2026-09-30](archive/ROOTSTOCK_REVIEW_2026-09-30.md)). Signed off 2026-09-30 | Verification +1 | S |
+| B3 | 55 | harness-audit | `inventory.mjs` memory-file budget + per-skill eval-presence reporting — deferred in 0.23.21: needs a portable way to resolve a project's `~/.claude/projects/<slug>/memory/` from a root argument, and consumers with local eval fixtures to report on | Audit instrumentation +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
