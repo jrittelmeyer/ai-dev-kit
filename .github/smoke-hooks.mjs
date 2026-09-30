@@ -717,6 +717,15 @@ for (const event of wiredEvents) {
     const ps1 = put(segOut, "cleanup.ps1", ["param([string]$target = $env:BUILD_ROOT)", "Remove-Item -Recurse -Force $target"]);
     expectAsk("PowerShell tool & script.ps1", segRun(pwsh(`& "${ps1}"`)), "cleanup.ps1:2");
     expectAsk("pwsh -File script.ps1 from Bash", segRun(bash(`pwsh -NoProfile -File "${ps1}"`)), "cleanup.ps1:2");
+    // $env:VAR in the invoked path itself (not just inside the script body):
+    // the first alternative of expand()'s env-ref regex used to swallow "env"
+    // as the variable name before "$env:VAR" could match, so the script's own
+    // path never resolved and the guard fell through to scanning the command
+    // line — which mentions no delete — instead of the script.
+    const envPath = put(segOut, "env-path.ps1", ["Remove-Item -Recurse -Force $env:LEFTOVER"]);
+    process.env.ADK_SEG_OUT = segOut;
+    expectAsk("PowerShell $env: var in the script's own path", segRun(pwsh(`& "$env:ADK_SEG_OUT\\env-path.ps1"`)), "env-path.ps1:1");
+    delete process.env.ADK_SEG_OUT;
     const mjs = put(segOut, "clean.mjs", [
       'import { rmSync } from "node:fs";',
       "const dir = process.env.OUT_DIR;",

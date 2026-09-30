@@ -35,7 +35,7 @@ const isFile = (p) => {
 function expand(t, base) {
   let p = unq(t)
     .replace(/^~(?=[\\/]|$)/, homedir())
-    .replace(/\$\{?(\w+)\}?|\$env:(\w+)|%(\w+)%/gi, (m, a, b, c) => process.env[a ?? b ?? c] ?? m);
+    .replace(/\$env:(\w+)|\$\{?(\w+)\}?|%(\w+)%/gi, (m, b, a, c) => process.env[a ?? b ?? c] ?? m);
   if (process.platform === "win32") p = p.replace(/^\/tmp(?=\/|$)/i, tmpdir()).replace(/^\/([a-z])(?=\/)/i, "$1:");
   return resolve(base, p);
 }

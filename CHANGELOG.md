@@ -1,5 +1,36 @@
 # ai-dev-kit changelog
 
+## 0.24.2 — 2026-09-30
+
+Bug fix found while running the 0.24.0 release's own owed live-prompt check
+(resume prompt: confirm `script-exec-guard` actually surfaces a permission
+prompt, not just that its unit tests pass).
+
+- **script-exec-guard — fix dead `$env:VAR` resolution in the script-path
+  resolver** (`hooks/script-exec-parse.mjs`). `expand()`'s env-ref regex tried
+  `\$\{?(\w+)\}?` before `\$env:(\w+)`; on a PowerShell path like
+  `$env:TEMP\adk-live\cleanup.ps1`, the first alternative always matched
+  `$env` first (reading "env" itself as the variable name, which resolves to
+  nothing), leaving `:TEMP` as literal text and the path never resolving to a
+  real file. When the *command itself* invoked a script via a `$env:`-prefixed
+  path (`& "$env:TEMP\...\x.ps1"`, not just a `$env:` reference inside the
+  script body), `parse()` fell through to scanning the command line as opaque
+  text — which names no delete — instead of reading the script, so the guard
+  went silent on exactly the class of script it exists to catch. Reordered the
+  alternation so `\$env:(\w+)` is tried first.
+
+**Verification:** ran `bash /tmp/adk-live/harmless-trap.sh` and
+`& "$env:TEMP\adk-live\harmless-cleanup.ps1"` live — the bash fixture asked
+correctly (harmless-trap.sh:5) but the PowerShell fixture, invoked via a
+`$env:`-prefixed path, ran silently with no prompt. Isolated to `expand()`
+via direct calls to `parse()`/`scan()`; the bug reproduced standalone. Added
+a `.github/smoke-hooks.mjs` regression case ("PowerShell $env: var in the
+script's own path") that fails against the pre-fix code (confirmed: `asked=
+false`) and passes after the fix. Full gate green: `install.mjs --check`,
+`skill-lint` (10 clean), `skill-evals`, `smoke-hooks` (205 asserts),
+`smoke-installer`, `check-version` (six sites at 0.24.2). Dogfood install
+idempotent.
+
 ## 0.24.1 — 2026-09-30
 
 B1-57, the second and last row from the
