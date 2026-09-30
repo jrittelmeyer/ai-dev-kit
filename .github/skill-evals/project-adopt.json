@@ -74,6 +74,20 @@
         "silently drops the incoming skills, hooks, and instruction files",
         "presents the disposition map without saying in plain language what stays theirs"
       ]
+    },
+    {
+      "id": "deep-survey-evidence",
+      "prompt": "adopt this codebase with --deep",
+      "decoys": ["project-init", "project-audit"],
+      "expect": [
+        {
+          "behavior": "has survey subagents return file:line evidence and opens one cited location per subagent before its conclusions enter the parity contract",
+          "anchor": "one cited location per subagent"
+        }
+      ],
+      "reject": [
+        "copies subagent conclusions into the parity contract without opening any cited location"
+      ]
     }
   ]
 }

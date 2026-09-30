@@ -17,6 +17,14 @@ repurpose or disturb a standing dev server.
   DB row, the rendered page, the delivered webhook prove behavior. A
   client-side "refresh after fetch" can race and never commit — assert on
   observable state, not on a refresh having happened.
+- **Client-bundle secret sweep:** the fresh prod build is the one moment the
+  client output sits on disk — check it for server secrets inlined by a public
+  env prefix (`NEXT_PUBLIC_`, `VITE_`, …). Run the project's own secret scanner
+  over that output if it has one; otherwise grep it (e.g. `.next/static`,
+  `dist/assets`) for the names of server-only env vars and for key shapes
+  (`service_role`, `sk_live_`, `AKIA`, `-----BEGIN`). A hit is a leak, not a
+  lint: rotate the key at the provider first, then fix the code — git history
+  and CDN caches keep the old value.
 - **E2E flakes** usually trace to env leaking from the shell, a stale build
   being served, or keyed-vs-keyless mode differences — rebuild clean with
   CI-shaped env before debugging the test.

@@ -59,8 +59,10 @@ the product brief only after the question round):
   competitors plus the adjacent products users actually compare against,
   their table-stakes features (absence = instant credibility loss), the gaps
   worth differentiating on, pricing norms. With `--deep`, fan out research
-  subagents (per-competitor + market overview) and keep only conclusions.
-  Date-stamp and source every claim — this section rots fastest.
+  subagents (per-competitor + market overview) and keep only conclusions,
+  each claim with its source URL — open one source per subagent before its
+  figures enter the brief, and re-run any subagent that returns unsourced
+  claims. Date-stamp and source every claim — this section rots fastest.
 - **Foundation fit-map** — for each integration the foundation ships: needed
   as-is / not needed (a removal candidate — point at the foundation's removal
   checklists where it has them) / needed beyond what's shipped (an extension

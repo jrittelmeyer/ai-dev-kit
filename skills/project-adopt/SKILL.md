@@ -74,7 +74,11 @@ capable model. Never bucket from a skim.
 Think hard and produce the **product inventory** — it doubles as the **parity
 contract**: the enumerated list of every human-observable surface the port
 must preserve. With `--deep`, fan out survey subagents per area and keep only
-conclusions. Enumerate the surfaces the product actually has — for a web app:
+conclusions, each returned with file:line evidence — open
+one cited location per subagent before its conclusions enter the parity
+contract, and re-run any subagent that returns uncited claims (the parent sees
+only the report, never its reads).
+Enumerate the surfaces the product actually has — for a web app:
 routes/pages with empty/error/loading states and end-to-end user flows; for a
 game: scenes/levels, the core loop, progression and save surface; for a
 CLI/library: the command/API surface and documented examples — plus, in every

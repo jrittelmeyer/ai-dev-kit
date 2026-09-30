@@ -142,7 +142,10 @@ keeps the main window for the build.
 **Practice.** Use it when the answer is a conclusion (a location, a list, a
 yes/no), not when you'll need the file contents next anyway (then read them
 directly — delegating and re-reading pays twice). Specify the breadth explicitly.
-Never fan out what a single grep answers.
+Ask for the conclusion *with its evidence* (file:line, URL) and open one pointer
+before relying on it: the parent sees only the report, never the subagent's
+reads, so an uncited conclusion may come from the model's priors rather than
+the repo. Never fan out what a single grep answers.
 
 **Automation.** None — a judgment call per question.
 

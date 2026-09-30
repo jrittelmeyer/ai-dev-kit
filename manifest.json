@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -233,7 +233,7 @@
     },
     {
       "name": "live-verify",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "dualHome": false,
       "summary": "Full gate, then a fresh production-shaped run (served build · game export · CLI binary · packed library · sample pipeline slice), then drive the affected flow and observe real output — per-domain mechanics in references/.",
       "triggers": [
@@ -251,7 +251,7 @@
     },
     {
       "name": "project-init",
-      "version": "0.3.2",
+      "version": "0.3.3",
       "dualHome": false,
       "summary": "One-time inception: plan docs or a raw idea → discovery (gaps, value-adds, competitive scan, foundation fit-map) → one batched question round → product brief + regenerated status/backlog to a 100 bar → sign-off → the pipeline begins.",
       "triggers": [
@@ -277,7 +277,7 @@
     },
     {
       "name": "project-adopt",
-      "version": "0.5.3",
+      "version": "0.5.4",
       "dualHome": false,
       "summary": "One-time brownfield inception: an existing codebase → product survey doubling as the parity contract (incoming agentic layer included) → theirs-vs-foundation disposition map under a two-tiered meaningful-improvement bar (product surface defaults keep-theirs; foundation tier defaults the target's) → data/user reality check → one batched question round → product brief + migration map with recorded comparisons + regenerated status/backlog whose completion is a surface-identical app on the target foundation, parity proven by test suites at the adopting repo's thresholds → sign-off → the pipeline begins.",
       "triggers": [

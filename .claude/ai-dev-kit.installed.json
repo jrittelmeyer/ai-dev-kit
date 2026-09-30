@@ -1,14 +1,14 @@
 {
-  "kit": "0.24.0",
+  "kit": "0.24.1",
   "skills": {
     "checkpoint": "0.4.2",
     "doc-audit": "0.3.0",
     "project-audit": "0.2.1",
     "tidy": "0.2.1",
     "dep-check": "0.2.2",
-    "live-verify": "0.2.0",
-    "project-init": "0.3.2",
-    "project-adopt": "0.5.3",
+    "live-verify": "0.2.1",
+    "project-init": "0.3.3",
+    "project-adopt": "0.5.4",
     "harness-audit": "0.1.10",
     "retro": "0.1.2"
   }

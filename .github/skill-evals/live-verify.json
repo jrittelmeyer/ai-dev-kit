@@ -70,6 +70,26 @@
         "reports \"should work\" for the flow it could not drive",
         "lets an undriven flow pass silently into the verified column"
       ]
+    },
+    {
+      "id": "web-prod-bundle-secrets",
+      "prompt": "verify the Next.js signup page against a prod build before I ship it",
+      "decoys": ["dep-check", "project-audit"],
+      "expect": [
+        {
+          "behavior": "sweeps the fresh client build output for server-only secrets inlined into it",
+          "anchor": "names of server-only env vars",
+          "in": "references/web.md"
+        },
+        {
+          "behavior": "treats a hit as a leak: rotates the key at the provider before fixing the code",
+          "anchor": "rotate the key at the provider first",
+          "in": "references/web.md"
+        }
+      ],
+      "reject": [
+        "fixes a secret found in the client bundle in code only, without rotating the key"
+      ]
     }
   ]
 }

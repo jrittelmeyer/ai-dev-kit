@@ -248,9 +248,9 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** B1-57 (client-bundle secret sweep + fan-out
-  cite-and-spot-check, 0.24.1), signed off from the
-  [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md); its
-  B1-56 (`script-exec-guard`) shipped in 0.24.0.
+  **Next:** no active row — the
+  [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
+  rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
+  secret sweep + fan-out cite-and-spot-check in 0.24.1).
   B3-55 (inventory.mjs memory-budget + eval-presence reporting) is filed but
   unplanned; B4-16/B4-31 stay deferred by design.

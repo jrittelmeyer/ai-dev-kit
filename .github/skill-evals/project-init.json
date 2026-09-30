@@ -72,6 +72,20 @@
         "blocks the derived project on an upstream fix",
         "commits the inception output before sign-off"
       ]
+    },
+    {
+      "id": "deep-research-evidence",
+      "prompt": "init this app idea with --deep competitor research",
+      "decoys": ["project-adopt", "project-audit"],
+      "expect": [
+        {
+          "behavior": "has research subagents source every claim and opens one source per subagent before a figure enters the brief",
+          "anchor": "open one source per subagent"
+        }
+      ],
+      "reject": [
+        "puts subagent-reported competitor figures into the brief without opening any source"
+      ]
     }
   ]
 }

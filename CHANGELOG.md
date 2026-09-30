@@ -1,5 +1,45 @@
 # ai-dev-kit changelog
 
+## 0.24.1 — 2026-09-30
+
+B1-57, the second and last row from the
+[rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md) — two
+prose adoptions, each the consensus form of a rootstock practice rather than
+its machinery.
+
+- **live-verify 0.2.1 — client-bundle secret sweep** (`references/web.md`).
+  The fresh prod build is the one moment the client output sits on disk, and
+  a server secret inlined by a public env prefix (`NEXT_PUBLIC_`, `VITE_`) is
+  a documented, frequent leak class (Supabase `service_role`, Stripe/AWS keys
+  in shipped bundles). The step runs the project's own secret scanner over
+  that output if it has one, else greps it for the names of server-only env
+  vars and key shapes (`service_role`, `sk_live_`, `AKIA`, `-----BEGIN`); a
+  hit is a leak: rotate the key at the provider first, then fix the code
+  (git history and CDN caches keep the old value). Taken from rootstock's
+  SECURITY_METHOD bundle scan; its headers/CORS/exposed-file classes stay
+  with project-audit's Security axis and the built-in `/security-review`.
+- **project-adopt 0.5.4 / project-init 0.3.3 — cite-and-spot-check for
+  `--deep` fan-out.** Survey subagents return file:line evidence and research
+  subagents a source URL per claim; the parent opens one per subagent before
+  its conclusions enter the parity contract or the brief, and re-runs any that
+  come back uncited. PLAYBOOK #6 records the why: the parent sees only the
+  report, never the subagent's reads, so an uncited conclusion may come from
+  the model's priors. This is the transferable core of rootstock's
+  delegation-truth hooks (brief_guard / delegation_auditor / verify_advisor),
+  without their ledgers — the parent doesn't reliably receive a subagent's
+  tool-use counts to audit mechanically.
+
+BACKLOG row 57 is retired; README "Next" returns to no active row.
+
+**Verification:** anchors first — the three new eval scenarios
+(`web-prod-bundle-secrets`, `deep-survey-evidence`, `deep-research-evidence`)
+were added before the prose and `skill-evals.mjs` failed on exactly their 4
+anchors; after the prose, 10 skills · 33 scenarios · 98 anchors resolve, each
+anchor on one line. Full gate green: `install.mjs --check`, `skill-lint`
+(10 clean), `skill-evals`, `smoke-hooks` (204 asserts), `smoke-installer`,
+`check-version` (six sites at 0.24.1). Dogfood install idempotent (second run:
+0 files written).
+
 ## 0.24.0 — 2026-09-30
 
 `script-exec-guard`, a new opt-in PreToolUse hook (B1-56, from the
