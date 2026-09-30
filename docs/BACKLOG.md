@@ -23,12 +23,11 @@ Source: [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md)
 [2026-08-26](archive/SKILL_EVALS_2026-08-26.md) (162/162 PASS) →
 [2026-09-02](archive/SKILL_EVALS_2026-09-02.md) (delta mode, 70/94 skill-earned); fleet audit
 [FLEET_UPGRADE_PLAN_2026-08-25](archive/FLEET_UPGRADE_PLAN_2026-08-25.md).
-Rows 56–57: the [rootstock-os review](archive/ROOTSTOCK_REVIEW_2026-09-30.md) (2026-09-30).
+Row 57: the [rootstock-os review](archive/ROOTSTOCK_REVIEW_2026-09-30.md) (2026-09-30; its B1-56 shipped in 0.24.0).
 Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 56 | hooks | `script-exec-guard` — opt-in (`enforcement.scriptExecGuard`) PreToolUse on `Bash\|PowerShell` that answers `ask` when a command executes a session-fresh script (untracked, outside the repo, or uncommitted lines) holding a recursive delete of a non-literal or critical target; the harness critical-path check and auto-mode classifier see only the command line ([ROOTSTOCK_REVIEW_2026-09-30](archive/ROOTSTOCK_REVIEW_2026-09-30.md), anthropics/claude-code#88462). Signed off 2026-09-30 | Safety +1 | M |
 | B1 | 57 | live-verify · inception | Client-bundle secret sweep in live-verify's web mechanics (rotate at the provider first); cite-and-spot-check for project-adopt/project-init `--deep` fan-out + PLAYBOOK #6 ([ROOTSTOCK_REVIEW_2026-09-30](archive/ROOTSTOCK_REVIEW_2026-09-30.md)). Signed off 2026-09-30 | Verification +1 | S |
 | B3 | 55 | harness-audit | `inventory.mjs` memory-file budget + per-skill eval-presence reporting — deferred in 0.23.21: needs a portable way to resolve a project's `~/.claude/projects/<slug>/memory/` from a root argument, and consumers with local eval fixtures to report on | Audit instrumentation +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |

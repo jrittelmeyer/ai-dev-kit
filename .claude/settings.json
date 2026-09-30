@@ -29,6 +29,20 @@
             "statusMessage": "ai-dev-kit: skill-drift guard (pre-edit)"
           }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/script-exec-guard.mjs"
+            ],
+            "timeout": 10,
+            "statusMessage": "ai-dev-kit: script-exec guard"
+          }
+        ]
       }
     ],
     "PostToolUse": [

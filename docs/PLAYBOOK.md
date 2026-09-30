@@ -211,9 +211,10 @@ standing agreement or skill trigger cover it without machinery? Ship it as
 context-injection (never a deny), keep handlers dumb and fast (the *reading agent*
 is the smart part), and record active + rejected automations in the manifest.
 
-**Automation.** The nine shipped hooks passed this review — six advisory,
-three opt-in enforcement (the 0.23.0 reversal); the manifest's `automation`
-fields carry the active/reviewed record.
+**Automation.** The ten shipped hooks passed this review — six advisory,
+four opt-in enforcement (the 0.23.0 reversal; 0.24.0's script-exec-guard is the
+first to escalate to the human's permission prompt rather than advise or
+block); the manifest's `automation` fields carry the active/reviewed record.
 
 **Composes with.** the hooks, the manifest, dep-check + live-verify (the two
 skills with active triggers).

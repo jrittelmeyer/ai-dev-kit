@@ -1,7 +1,7 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.23.22",
-  "description": "Lifecycle + inception + currency skills for agentic development on any project type (web - game - CLI - library - data), six advisory hooks plus three opt-in enforcement hooks behind the adapter enforcement block, and a per-project adapter contract. Skills load per-domain mechanics on demand; hooks advise by default.",
+  "version": "0.24.0",
+  "description": "Lifecycle + inception + currency skills for agentic development on any project type (web - game - CLI - library - data), six advisory hooks plus four opt-in enforcement hooks behind the adapter enforcement block, and a per-project adapter contract. Skills load per-domain mechanics on demand; hooks advise by default.",
   "author": {
     "name": "John Rittelmeyer",
     "url": "https://github.com/jrittelmeyer"

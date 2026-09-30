@@ -195,7 +195,7 @@
     "enforcement": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Opt-in blocking hooks. The handlers ship (and may be wired) with every install but each no-ops unless its key is set here — absent key = advise-only kit behavior, unchanged.",
+      "description": "Opt-in blocking or asking hooks. The handlers ship (and may be wired) with every install but each no-ops unless its key is set here — absent key = advise-only kit behavior, unchanged.",
       "properties": {
         "stopGate": {
           "type": "object",
@@ -256,6 +256,10 @@
         "checkpointAutorun": {
           "type": "boolean",
           "description": "true = the Stop hook nudges one autonomous checkpoint turn when the tree is dirty or unpushed at session end (skips mid-rebase/merge and pending-question stops)."
+        },
+        "scriptExecGuard": {
+          "type": "boolean",
+          "description": "true = before a Bash/PowerShell command executes a session-fresh script (untracked, outside any repo, or uncommitted lines) or inline code (node -e, python -c, pwsh -Command), the PreToolUse hook scans it for a recursive delete of a non-literal or critical target and answers permissionDecision \"ask\" — the human decides. Never denies, never exits 2; tracked-clean scripts are skipped. Safe to pre-set in a template: it can only add a permission prompt."
         }
       }
     },

@@ -89,6 +89,7 @@ const handlers = [
   "hooks/stop-gate.mjs",
   "hooks/banned-api-guard.mjs",
   "hooks/checkpoint-autorun.mjs",
+  "hooks/script-exec-guard.mjs",
   "optional/contrarian/contrarian-nudge.mjs",
 ];
 const garbage = ["", "not json", "null"];
@@ -629,6 +630,167 @@ for (const event of wiredEvents) {
   if (!(event in reviewed)) {
     failures++;
     console.error(`FAIL manifest hooks.handlers wires ${event} with no hooks.reviewed verdict`);
+  }
+}
+
+// script-exec-guard (B1-56): an opted-in project gets a PreToolUse "ask" when a
+// command executes a session-fresh script (untracked, outside any repo, or
+// uncommitted lines) or inline code holding a recursive delete of a
+// non-literal or critical target — the anthropics/claude-code#88462 shape,
+// where the harness's own check saw only "bash /tmp/.../test-lib-demo.sh".
+// The fixture dirs are direct mkdtempSync constants so the guard, dogfooded
+// here, never asks about this block's own cleanup.
+{
+  const SEG = "hooks/script-exec-guard.mjs";
+  const segOn = mkdtempSync(join(tmpdir(), "adk-seg-on-"));
+  const segBare = mkdtempSync(join(tmpdir(), "adk-seg-bare-"));
+  const segOut = mkdtempSync(join(tmpdir(), "adk-seg-out-"));
+  const gitIn = (...args) => spawnSync("git", args, { cwd: segOn, encoding: "utf8" });
+  const put = (dir, name, lines) => {
+    writeFileSync(join(dir, name), lines.join("\n") + "\n");
+    return join(dir, name).replace(/\\/g, "/");
+  };
+  const bash = (command, extra = {}) => ({ hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command }, ...extra });
+  const pwsh = (command) => ({ hook_event_name: "PreToolUse", tool_name: "PowerShell", tool_input: { command } });
+  const segRun = (event, projectDir = segOn) => runEnforcement(SEG, event, projectDir);
+  const expectAsk = (label, res, want = null) => {
+    asserts++;
+    const out = res.stdout ?? "";
+    const asked = out.includes('"permissionDecision":"ask"');
+    if (res.status !== 0 || !asked || (want && !out.includes(want))) {
+      failures++;
+      console.error(
+        `FAIL ${SEG} ${label} → exit ${res.status}, asked=${asked}` +
+          (want ? `, want ${JSON.stringify(want)}` : "") +
+          `, stdout ${JSON.stringify(out.slice(0, 200))}`,
+      );
+    } else {
+      console.log(`ok   ${SEG} ${label} → asks`);
+    }
+  };
+  const expectQuiet = (label, res) => {
+    asserts++;
+    const out = res.stdout ?? "";
+    if (res.status !== 0 || out.includes("permissionDecision")) {
+      failures++;
+      console.error(`FAIL ${SEG} ${label} → exit ${res.status}, stdout ${JSON.stringify(out.slice(0, 200))}, expected silent`);
+    } else {
+      console.log(`ok   ${SEG} ${label} → silent`);
+    }
+  };
+  try {
+    mkdirSync(join(segOn, ".claude"), { recursive: true });
+    writeFileSync(join(segOn, ".claude", "ai-dev-kit.config.json"), JSON.stringify({ enforcement: { scriptExecGuard: true } }));
+    mkdirSync(join(segBare, ".claude"), { recursive: true });
+    for (const args of [
+      ["init", "-q"],
+      ["config", "user.email", "smoke@example.invalid"],
+      ["config", "user.name", "smoke"],
+      ["config", "commit.gpgsign", "false"],
+      ["config", "core.autocrlf", "false"],
+    ]) gitIn(...args);
+
+    // The #88462 shape: the EXIT trap is armed on a temp dir, then the
+    // variable is reassigned to $HOME — the trap deletes the home directory.
+    const demo = put(segOut, "test-lib-demo.sh", [
+      "#!/usr/bin/env bash",
+      "# shape of anthropics/claude-code#88462",
+      '_HT_HOME="$(mktemp -d)"',
+      "trap 'rm -rf \"$_HT_HOME\"' EXIT",
+      '_HT_HOME="$HOME"',
+      'echo "demo ran in $_HT_HOME"',
+    ]);
+    expectAsk("#88462 trap script via bash <abs>", segRun(bash(`bash "${demo}"`)), "test-lib-demo.sh:4");
+    expectAsk("#88462 reason names the reassignment", segRun(bash(`bash "${demo}"`)), "_HT_HOME=\\\"$HOME\\\"");
+    expectAsk("#88462 via cd + ./script", segRun(bash(`cd "${segOut}" && ./test-lib-demo.sh`)), "test-lib-demo.sh:4");
+    expectAsk(
+      "#88462 BOM-prefixed event",
+      runEnforcement(SEG, "﻿" + JSON.stringify(bash(`bash "${demo}"`)), segOn),
+      "test-lib-demo.sh:4",
+    );
+    if (process.platform === "win32" || tmpdir() === "/tmp") {
+      const viaTmp = `bash /tmp/${segOut.split(/[\\/]/).pop()}/test-lib-demo.sh`;
+      expectAsk("#88462 via a Git-Bash /tmp path", segRun(bash(viaTmp)), "test-lib-demo.sh:4");
+    }
+    const envDemo = put(segOut, "env-demo.sh", ['W="${W:-$(mktemp -d)}"', "trap 'rm -rf \"$W\"' EXIT"]);
+    expectAsk("env-inherited temp var (not mktemp-only)", segRun(bash(`sh ${envDemo}`)), "env-demo.sh:2");
+    const ps1 = put(segOut, "cleanup.ps1", ["param([string]$target = $env:BUILD_ROOT)", "Remove-Item -Recurse -Force $target"]);
+    expectAsk("PowerShell tool & script.ps1", segRun(pwsh(`& "${ps1}"`)), "cleanup.ps1:2");
+    expectAsk("pwsh -File script.ps1 from Bash", segRun(bash(`pwsh -NoProfile -File "${ps1}"`)), "cleanup.ps1:2");
+    const mjs = put(segOut, "clean.mjs", [
+      'import { rmSync } from "node:fs";',
+      "const dir = process.env.OUT_DIR;",
+      "rmSync(dir, {",
+      "  recursive: true,",
+      "  force: true,",
+      "});",
+    ]);
+    expectAsk("node clean.mjs, multi-line recursive rmSync", segRun(bash(`node "${mjs}"`)), "clean.mjs:3");
+    expectAsk(
+      "node -e inline recursive rmSync",
+      segRun(bash(`node -e "require('fs').rmSync(process.env.TARGET, { recursive: true, force: true })"`)),
+    );
+    expectAsk("python3 -c inline rmtree", segRun(bash(`python3 -c "import shutil, os; shutil.rmtree(os.environ['T'])"`)));
+    const bat = put(segOut, "wipe.bat", ["@echo off", "rd /s /q %TARGET%"]);
+    expectAsk("cmd /c script.bat", segRun(bash(`cmd /c "${bat}"`)), "wipe.bat:2");
+    const gen = join(segOut, "gen.sh").replace(/\\/g, "/");
+    expectAsk("heredoc writes then runs a script", segRun(bash(`cat > "${gen}" <<'EOF'\nrm -rf "$X"\nEOF\nbash "${gen}"`)));
+
+    // In-repo fixtures: tracked-clean scripts are reviewed code (skipped);
+    // uncommitted lines are the session's own (scanned).
+    put(segOn, "tracked-clean.sh", ['rm -rf "$DIR"']);
+    put(segOn, "lib.sh", ['W="$(mktemp -d)"', "trap 'rm -rf \"$W\"' EXIT", "echo ok"]);
+    put(segOn, "lib2.sh", ["trap 'rm -rf \"$DIR\"' EXIT"]);
+    gitIn("add", "-A");
+    gitIn("commit", "-q", "-m", "fixture");
+    put(segOn, "lib.sh", ['W="$(mktemp -d)"', "trap 'rm -rf \"$W\"' EXIT", 'W="$HOME"', "echo ok"]);
+    put(segOn, "lib2.sh", ["trap 'rm -rf \"$DIR\"' EXIT", "echo bye"]);
+    put(segOn, "new.sh", ['rm -rf "$1"']);
+    put(segOn, "build.sh", ["rm -rf dist"]);
+    expectAsk("untracked script, positional target", segRun(bash("bash new.sh", { cwd: segOn })), "new.sh:1");
+    expectAsk("tracked script, uncommitted reassignment of a trapped var", segRun(bash("bash lib.sh", { cwd: segOn })), "lib.sh:2");
+    expectQuiet("tracked-clean script", segRun(bash("bash tracked-clean.sh", { cwd: segOn })));
+    expectQuiet("tracked script, only an echo added", segRun(bash("bash lib2.sh", { cwd: segOn })));
+    expectQuiet("untracked script, literal target", segRun(bash("bash build.sh", { cwd: segOn })));
+
+    expectQuiet("no opt-in", segRun(bash(`bash "${demo}"`), segBare));
+    expectQuiet("node -e literal rmSync target", segRun(bash(`node -e "require('fs').rmSync('dist', {recursive: true, force: true})"`)));
+    expectQuiet("cat of the script (reading, not executing)", segRun(bash(`cat "${demo}"`)));
+    expectQuiet("grep rm <script>", segRun(bash(`grep rm "${demo}"`)));
+    expectQuiet("grep bash <script>", segRun(bash(`grep bash "${demo}"`)));
+    const idiom = put(segOut, "tmp-idiom.sh", ['tmp="$(mktemp -d)"', "trap 'rm -rf \"$tmp\"' EXIT", "echo work"]);
+    expectQuiet("mktemp + trap cleanup idiom", segRun(bash(`bash "${idiom}"`)));
+    const mk = put(segOut, "mk.mjs", ['import { mkdirSync } from "node:fs";', "mkdirSync(process.env.X, { recursive: true });"]);
+    expectQuiet("recursive mkdirSync is not a delete", segRun(bash(`node "${mk}"`)));
+    const tmpJs = put(segOut, "tmp-clean.mjs", [
+      'import { mkdtempSync, rmSync } from "node:fs";',
+      'const d = mkdtempSync("x-");',
+      "rmSync(d, { recursive: true, force: true });",
+    ]);
+    expectQuiet("mkdtempSync-assigned rmSync target", segRun(bash(`node "${tmpJs}"`)));
+    const psSafe = put(segOut, "ps-safe.ps1", ["Remove-Item -Force $env:TEMP\\x.txt"]);
+    expectQuiet("non-recursive Remove-Item -Force", segRun(pwsh(`& "${psSafe}"`)));
+
+    // Fail-safe: with its helper modules missing, the handler must still ask
+    // on a crude recursive-delete match in the script it runs, never fail open.
+    const lone = mkdtempSync(join(tmpdir(), "adk-seg-lone-"));
+    try {
+      writeFileSync(join(lone, "script-exec-guard.mjs"), readFileSync(SEG));
+      const res = spawnSync(process.execPath, [join(lone, "script-exec-guard.mjs")], {
+        input: JSON.stringify(bash(`bash "${demo}"`)),
+        encoding: "utf8",
+        env: { ...process.env, CLAUDE_PROJECT_DIR: segOn },
+      });
+      expectAsk("helpers missing → crude fallback still asks", res, "crude match");
+    } finally {
+      rmSync(lone, { recursive: true, force: true });
+    }
+    for (const command of ["ls -la", "git status", "node --version"]) expectQuiet(command, segRun(bash(command)));
+    expectQuiet("PowerShell Get-ChildItem", segRun(pwsh("Get-ChildItem")));
+  } finally {
+    rmSync(segOn, { recursive: true, force: true });
+    rmSync(segBare, { recursive: true, force: true });
+    rmSync(segOut, { recursive: true, force: true });
   }
 }
 

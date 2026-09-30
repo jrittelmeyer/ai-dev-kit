@@ -1,5 +1,81 @@
 # ai-dev-kit changelog
 
+## 0.24.0 — 2026-09-30
+
+`script-exec-guard`, a new opt-in PreToolUse hook (B1-56, from the
+[rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)). Claude
+Code's permission layer judges the command *line*: auto mode's classifier and
+the critical-path `rm` check never read the body of a script a command runs,
+so `bash /tmp/x.sh` reads as harmless even when x.sh — written by the agent
+moments earlier — ends in `rm -rf "$VAR"` with VAR reassigned to `$HOME`
+(anthropics/claude-code#88462, Aug 2026, auto mode — the fifth home-directory
+loss of that class; #29082, #32938, #49129 and #70687 were closed
+`not_planned`). dcg and cc-safety-net inspect command text and inline `-c`
+only, so no existing layer covered it.
+
+With `enforcement.scriptExecGuard: true`, the handler (PreToolUse ·
+`Bash|PowerShell`, the kit's first PowerShell matcher) reads each script a
+command is about to execute — the whole body if untracked or outside any repo,
+only uncommitted lines if tracked (`git ls-files` / `git diff -U0 HEAD`,
+read-only, `GIT_OPTIONAL_LOCKS=0`), nothing if tracked-clean — plus inline
+`node -e` / `python -c` / `pwsh -Command` code and a heredoc-written script's
+command text. On a *recursive* delete of a non-literal or critical target (a
+variable or env ref, `~`/HOME, `/` or a drive root, a bare glob, a
+substitution, a `..` climb, a runtime-built string — across shell, PowerShell,
+cmd, Node `fs.rm*`/rimraf and Python `rmtree`) it answers
+`permissionDecision: "ask"`: the human decides, even in auto mode. Never a
+deny, never exit 2 — the kit's first escalation-class handler, and still inert
+without its adapter key, so AGENTS.md's contract is unchanged. Literal targets
+(`rm -rf dist`) pass, and so do names assigned only from mktemp/mkdtemp (the
+cleanup idiom) — which is why #88462's trap asks exactly once its variable is
+reassigned. On Windows, Git-Bash paths are mapped (`/tmp` → `os.tmpdir()`),
+else the incident's `/tmp` script is silently missed. Fail-safe: if a helper
+can't load or anything throws, a crude recursive-delete match over the command
+and every file it names still asks. Three files hold SECURITY.md's 140-line
+bound: the handler (133 lines), `script-exec-parse.mjs` (what runs, 86) and
+`script-exec-scan.mjs` (what counts, 137, pure); JS/Python string literals are
+blanked before call matching, so a test file that only *mentions* a delete in
+a string never matches. The kit dogfoods it (`adapters/ai-dev-kit.json`).
+
+Known limits: one level deep (a script a scanned script calls is not read);
+`npm run`/Makefile recipes, a script path held in an unresolvable `$VAR`, and a
+script committed and then run in the same session are not scanned; headless
+`-p` runs have no human to answer an ask. Latency on this Windows host
+(PowerShell 5.1 pipe, 10-run averages): ≈77 ms per Bash/PowerShell call when
+silent, ≈120–127 ms when it scans a script; consumers who haven't opted in pay
+the same per-call spawn as `banned-api-guard`.
+
+Also: README, SECURITY.md, PLAYBOOK #9, the deck, and the plugin + marketplace
+descriptions count ten hooks (six advisory · four opt-in enforcement); the
+schema gains `enforcement.scriptExecGuard`; manifest `hooks.reviewed.PreToolUse`
+records the acceptance and `PermissionRequest` notes that an ask creates a
+prompt, never answers one; BACKLOG row 56 is retired.
+
+**Verification:** incident-first. The fixture block (15 must-ask cases:
+#88462's literal trap script via `bash <abs>`, `cd && ./`, a BOM'd event and a
+Git-Bash `/tmp` path; an env-inherited temp var; a `.ps1` via the PowerShell
+tool and via `pwsh -File`; a multi-line `rmSync`; `node -e`; `python -c`;
+`cmd /c x.bat`; a heredoc; an untracked script; a tracked script whose
+uncommitted edit reassigns a trapped var — plus 19 must-stay-silent cases) ran
+first against a stub handler: 15/15 ask cases FAILED, 19/19 silent cases
+passed. After implementation all 34 pass. Five mutations each tripped the
+fixtures that depend on them: dropping the "assigned on an added line" branch
+(1 — the tracked reassignment), widening the mkdtemp exemption to any
+assignment (10, #88462 included), letting `-Force` count as recursive (1),
+dropping the BOM strip (1), dropping the Git-Bash mapping (1). The
+helpers-missing fail-safe case also failed first (the fallback only checked
+the command line) and passed once the fallback read the files a command names.
+Full gate green: `install.mjs --check`, `skill-lint`, `skill-evals`,
+`smoke-hooks` (204 asserts), `smoke-installer`, `check-version` (six
+sites at 0.24.0). The dogfood install is idempotent (second run: 0 files
+written) and `.claude/settings.json` gained exactly the one new entry. Live
+pipe tests against the installed copy asked from Git Bash (a `/tmp` path →
+`harmless-trap.sh:5`) and from a PowerShell 5.1 BOM'd pipe (a PowerShell-tool
+`& x.ps1` event → `harmless-cleanup.ps1:3`); `git status` stayed silent. The
+in-session prompt check could not run: a hook wired mid-session isn't in that
+session's hook snapshot, so running the harmless trap script produced no
+prompt — the live-prompt confirmation is owed from a fresh session.
+
 ## 0.23.22 — 2026-09-08
 
 `harness-audit`'s `inventory.mjs` was blind to a skills-dir plugin's own

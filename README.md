@@ -133,10 +133,11 @@ freely — `--check` never fails on it (schema issues print an advisory only).
 
 ## Automation (hooks)
 
-Nine Claude Code hooks make the lifecycle self-reinforcing. The six advisory
+Ten Claude Code hooks make the lifecycle self-reinforcing. The six advisory
 handlers **advise, never block** — they inject a reminder into the agent's
-context; the agent decides. The three enforcement handlers (0.23.0) ship wired
-but **inert**: each blocks only where the project's user-owned adapter config
+context; the agent decides. The four enforcement handlers (0.23.0; script-exec-guard
+0.24.0) ship wired but **inert**: each blocks — or, for script-exec-guard, asks
+the human — only where the project's user-owned adapter config
 carries its `enforcement` key — absent config, the advise-only default is
 unchanged.
 
@@ -151,6 +152,7 @@ unchanged.
 | `stop-gate.mjs` · opt-in | Stop | `enforcement.stopGate.commands` at session end — runs in the background via `asyncRewake` (turn ends immediately); a failing command exits 2, waking the agent one turn later with the failure so it isn't missed (generalized from the danger-noodles/smash-gods/wyrd consumer originals) |
 | `checkpoint-autorun.mjs` · opt-in | Stop | idle with a dirty tree or unpushed commits (`enforcement.checkpointAutorun`) — blocks once for an autonomous checkpoint turn; loop-guarded (`stop_hook_active` + TTL lock), skips pending-question and mid-rebase stops (ported from next-web-boilerplate) |
 | `banned-api-guard.mjs` · opt-in | PostToolUse · `Edit\|Write` | a banned pattern landing under a guarded path (`enforcement.bannedApis` — path-scoped, comment-stripped; the determinism-guard pattern generalized) |
+| `script-exec-guard.mjs` · opt-in | PreToolUse · `Bash\|PowerShell` | a command about to execute a session-fresh script (untracked, outside any repo, or uncommitted lines) or inline `-e`/`-c` code holding a recursive delete of a non-literal or critical target (`enforcement.scriptExecGuard`) — answers `ask`, so the human decides; the harness's own check reads only the command line ([anthropics/claude-code#88462](https://github.com/anthropics/claude-code/issues/88462)). Helpers: `script-exec-parse.mjs` (what runs) · `script-exec-scan.mjs` (what counts) |
 
 Handlers are pure-Node stdin→stdout scripts (no jq/bash dependency — Windows-safe;
 a malformed event exits 0 silently), installed to `.claude/hooks/ai-dev-kit/` and
@@ -246,8 +248,9 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** B1-56 (`script-exec-guard`, 0.24.0), then B1-57 (client-bundle
-  secret sweep + fan-out cite-and-spot-check, 0.24.1) — both signed off from
-  the [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md).
+  **Next:** B1-57 (client-bundle secret sweep + fan-out
+  cite-and-spot-check, 0.24.1), signed off from the
+  [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md); its
+  B1-56 (`script-exec-guard`) shipped in 0.24.0.
   B3-55 (inventory.mjs memory-budget + eval-presence reporting) is filed but
   unplanned; B4-16/B4-31 stay deferred by design.

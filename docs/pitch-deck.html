@@ -208,9 +208,9 @@
 <body>
 
 <section class="slide">
-  <p class="eyebrow">ai-dev-kit · v0.23.22</p>
+  <p class="eyebrow">ai-dev-kit · v0.24.0</p>
   <h1>A portable operating method for agentic development.</h1>
-  <p class="lede">Ten skills, nine hooks, and thirteen techniques that turn AI-assisted
+  <p class="lede">Ten skills, ten hooks, and thirteen techniques that turn AI-assisted
   building into a repeatable pipeline — token-lean, verification-first, and installable
   into any project in one command. Distilled from shipping a production monorepo to a
   verified 100/100.</p>
@@ -361,6 +361,11 @@
       <td>a banned pattern landing under a guarded path</td>
       <td>blocks (exit 2) — domain law at edit time; inert without <code>enforcement.bannedApis</code></td>
     </tr>
+    <tr>
+      <td><code>script-exec-guard</code> · opt-in</td>
+      <td>a command about to run a session-fresh script or inline code that recursively deletes a non-literal target</td>
+      <td>asks the human (permission prompt) — the harness reads only the command line; inert without <code>enforcement.scriptExecGuard</code></td>
+    </tr>
   </table></div>
   <div class="callout">
     <p class="eyebrow">Policy</p>
@@ -371,8 +376,8 @@
     too — and not selectively: the manifest carries an accept/reject verdict for every
     hook event the harness documented at the last review (<b>33</b>), a test holds the
     log complete against that pinned list, and the periodic harness audit moves the
-    pin when the harness adds events. Blocking exists only behind the per-project adapter
-    <code>enforcement</code> block — the 0.23.0 reversal of the Stop-event rejection,
+    pin when the harness adds events. Blocking (and 0.24.0's one ask-the-human guard) exists only behind the
+    per-project adapter <code>enforcement</code> block — the 0.23.0 reversal of the Stop-event rejection,
     made on consumer evidence via retro, with the unconfigured default still
     advise-only. No cache hook or calendar audit nudge exists; those rejections
     stand.</p>
@@ -443,7 +448,7 @@
 </section>
 
 <footer>
-  current as of 2026-09-22 · ai-dev-kit 0.23.22 ·
+  current as of 2026-09-30 · ai-dev-kit 0.24.0 ·
   <a href="https://github.com/jrittelmeyer/ai-dev-kit">jrittelmeyer/ai-dev-kit</a> ·
   <a href="../README.md">README</a> · <a href="../manifest.json">manifest</a> ·
   <a href="PLAYBOOK.md">playbook</a>

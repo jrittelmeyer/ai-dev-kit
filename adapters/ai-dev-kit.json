@@ -20,7 +20,8 @@
         "node install.mjs --check",
         "node .github/skill-lint.mjs"
       ]
-    }
+    },
+    "scriptExecGuard": true
   },
   "gate": [
     "node install.mjs --check",
