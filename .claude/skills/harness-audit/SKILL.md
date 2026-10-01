@@ -25,8 +25,9 @@ the sign-off gate.
 
 Run `scripts/inventory.mjs` first (`node ${CLAUDE_SKILL_DIR}/scripts/inventory.mjs [projectRoot]`
 from the consumer's project root) — it measures per-skill
-description chars/≈tokens, body ≈tokens, and references/scripts files, plus
-every wired hook event/matcher/handler, straight from the working tree
+description chars/≈tokens, body ≈tokens, and references/scripts files, which
+skills have local eval fixtures, every wired hook event/matcher/handler, and
+the project's auto-memory index and topic files against their budgets
 (zero-dep, no network, report-only). Layer judgment on top rather than
 hand-counting:
 
@@ -34,6 +35,8 @@ hand-counting:
   frontmatter) and a cost split of **always-loaded vs on-demand**.
 - Hooks: the script's table, plus wiring form and handler runtimes.
 - Instruction files: `AGENTS.md` / `CLAUDE.md` (root + leaves), their sizes.
+- Memory: the script's resolved directory and budget flags. A MEMORY.md past
+  the harness load cap is truncated every session, not just over a heuristic.
 - Connected tool servers (MCP config), permissions/allowlists in settings,
   subagent and command definitions, packaging (installer, plugin manifest),
   and the CI gates that police any of it.

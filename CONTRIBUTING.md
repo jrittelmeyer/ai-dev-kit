@@ -32,6 +32,7 @@ node .github/skill-lint.mjs
 node .github/skill-evals.mjs
 node .github/smoke-hooks.mjs
 node .github/smoke-installer.mjs
+node .github/smoke-inventory.mjs
 node .github/check-version.mjs
 node install.mjs --check
 ```

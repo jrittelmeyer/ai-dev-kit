@@ -47,5 +47,7 @@ jobs:
         run: node .github/smoke-hooks.mjs
       - name: Settings merge + stale-prune scenarios
         run: node .github/smoke-installer.mjs
+      - name: Inventory memory + eval-presence scenarios
+        run: node .github/smoke-inventory.mjs
       - name: Self-install matches kit source
         run: node install.mjs --check

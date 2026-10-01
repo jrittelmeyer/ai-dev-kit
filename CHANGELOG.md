@@ -1,5 +1,65 @@
 # ai-dev-kit changelog
 
+## 0.24.3 — 2026-10-01
+
+`harness-audit`'s `inventory.mjs` gains the two sections 0.23.21 deferred
+(B3-55): **memory budget** and **eval presence**. Both blockers had answers:
+
+- **`## Memory`** finds the project's auto-memory directory the way the
+  memory docs describe it, with no `git` binary and no dependencies:
+  - Explicit overrides win when set: `autoMemoryDirectory` (local › project ›
+    user settings; a project-scope value is labelled as honored only in a
+    trusted folder), or `CLAUDE_CODE_PROJECT_DIR_NAME` under
+    `CLAUDE_CONFIG_DIR`.
+  - Otherwise it uses `<config dir>/projects/<slug>/memory`, keyed to the git
+    root (a linked worktree resolves to its main checkout through
+    `commondir`). The slug rule is undocumented, so it was inferred from all
+    11 on-disk project dirs: every non-alphanumeric character becomes `-`.
+  - If that misses, a bounded transcript-`cwd` scan is the fallback.
+  - If nothing resolves, it says so and names every path it tried.
+
+  It measures `MEMORY.md` against the adapter's `contextBudget.memoryIndexMaxTokens`
+  and against the harness's hard load cap of the first 200 lines / 25 KB. A
+  file past the cap is flagged **Load cap**, because the excess is dropped
+  every session. It also lists each topic file over `memoryFileMaxTokens`
+  and notes when auto memory is disabled. `printInstructionFileReport`'s
+  config read is now a shared `loadContextBudget()`, with no schema change.
+- **`## Eval presence`** counts scenarios in the three fixture shapes the
+  fleet actually uses:
+  - the kit's `.github/skill-evals/<skill>.json` (wyrd)
+  - a root `evals/evals.json` aggregate (danger-noodles)
+  - per-skill `<skill>/evals/evals.json` in skill-creator format (smash-gods)
+
+  Kit-managed skills without a local fixture (from the install stamp, or the
+  `ai-dev-kit/` plugin route) collapse into one "evals upstream" line. It also
+  reports unreadable fixtures and fixtures that name no installed skill. The
+  section reports presence only; §4 still scores the graded pass.
+
+`harness-audit` → 0.1.11; its §1 names the new outputs. A new
+`.github/smoke-inventory.mjs` (9 cases, isolated `HOME`/`CLAUDE_CONFIG_DIR`)
+joins the adapter gate, CI and CONTRIBUTING. wyrd carries a ported copy of
+`inventory.mjs` plus its own test, so it needs a re-port on its next kit
+upgrade.
+
+**Verification:** `smoke-inventory.mjs` ran first against the unmodified
+`inventory.mjs` and failed 31 checks (no Memory / Eval presence sections),
+then passed after the change. The one interim failure was a test-scoping bug:
+the "no kitskill row" check matched the Skills table, so it was fixed to read
+the eval section only. Live, read-only runs against the kit and seven fleet
+repos all resolved via the git-root slug:
+- Eval rows match the on-disk scan: danger-noodles 4/7, smash-gods 4/4,
+  wyrd 6/6, nobody-promotes-the-plumber 0/5, kit-skills-only repos 0/0, and
+  the kit itself shows all 10 local fixtures.
+- Memory flags surfaced real overruns: danger-noodles and
+  next-web-boilerplate `MEMORY.md` over 700 tokens, and over-budget topic
+  files in danger-noodles (1), wyrd (2), next-web-boilerplate (11) and
+  civicmatch (11).
+- A run rooted at `<kit>/.claude` resolved to the kit's repo-root memory dir.
+
+Self-install wrote 4 files, and the second run wrote 0. Full gate green:
+`install.mjs --check`, `skill-lint`, `skill-evals`, `smoke-hooks`,
+`smoke-installer`, `smoke-inventory`, `check-version` (6 sites at 0.24.3).
+
 ## 0.24.2 — 2026-09-30
 
 Bug fix found while running the 0.24.0 release's own owed live-prompt check

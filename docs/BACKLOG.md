@@ -27,7 +27,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 55 | harness-audit | `inventory.mjs` memory-file budget + per-skill eval-presence reporting — deferred in 0.23.21: needs a portable way to resolve a project's `~/.claude/projects/<slug>/memory/` from a root argument, and consumers with local eval fixtures to report on | Audit instrumentation +1 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
