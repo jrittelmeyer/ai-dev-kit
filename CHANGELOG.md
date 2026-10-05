@@ -1,5 +1,49 @@
 # ai-dev-kit changelog
 
+## 0.24.4 — 2026-10-05
+
+PowerShell parity for the two Bash-command advisory hooks that still only
+matched the Bash tool, plus a tool-name gate in a third:
+
+- `live-verify-reminder.mjs` (PreToolUse) — matcher widens from `Bash` to
+  `Bash|PowerShell`. The harness's `if` field is single-tool-scoped (no
+  `&&`/`||`/list syntax), so this needs two handler entries running the same
+  unchanged script: `if: "Bash(git *)"` and `if: "PowerShell(git *)"`. A
+  `git commit` run through the PowerShell tool never reached the Bash-only
+  matcher before — the reminder silently never fired on a PowerShell-primary
+  Windows session.
+- `skill-drift-guard.mjs` (PostToolUse) — matcher widens to `Bash|PowerShell`;
+  its in-script write-intent regex gains the PowerShell write cmdlets
+  (`Set-Content`, `Add-Content`, `Out-File`, `Copy-Item`, `Move-Item`,
+  `Rename-Item`, `New-Item`, case-insensitive) alongside the existing
+  Bash-isms, and the guarded-path check now matches `.claude\skills\` /
+  `.claude\hooks\` as well as the forward-slash form.
+- `dep-check-nudge.mjs` (PostToolUse) — matcher widens to
+  `Edit|Write|Bash|PowerShell`; the script's own `tool === "Bash"` gate
+  widens to `tool === "Bash" || tool === "PowerShell"` (the regex it runs
+  against `tool_input.command` was already shell-agnostic).
+
+`script-exec-guard.mjs` already matched `Bash|PowerShell` (0.24.0) and needed
+no change — this release closes the gap for the other three. All three
+scripts already stripped the PowerShell 5.1 stdin BOM, so only the harness
+wiring and (for dep-check-nudge and skill-drift-guard) the in-script tool/regex
+checks were the gap. manifest.json's hook-handler index and decision log are
+updated to match.
+
+**Verification:** added PowerShell cases to `.github/smoke-hooks.mjs` for all
+three handlers, then git-stashed just the `dep-check-nudge.mjs` /
+`skill-drift-guard.mjs` script edits (wiring and tests left in place) and
+reran — the `dep-check-nudge` PowerShell "fires" case and both new
+`skill-drift-guard` PowerShell "fires" cases failed (silent) against the
+pre-fix scripts, confirming the gap was real before restoring the fix. (The
+`live-verify-reminder` script needed no logic change — it was always
+tool-agnostic — so its new cases passed throughout; only the harness wiring
+was the gap there.) After restoring the fix, all three passed. Full gate
+green at 6/6 version sites (0.24.4): `install.mjs --check` (40 files match),
+`skill-lint` (10 skills clean), `skill-evals` (33 scenarios, 98 anchors),
+`smoke-hooks` (215 asserts, up from 207 — wiring/parity and manifest
+cross-check held), `smoke-installer`, `smoke-inventory`, `check-version`.
+
 ## 0.24.3 — 2026-10-01
 
 `harness-audit`'s `inventory.mjs` gains the two sections 0.23.21 deferred

@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 /**
- * ai-dev-kit hook — skill-drift guard, Bash twin (PostToolUse: Bash).
+ * ai-dev-kit hook — skill-drift guard, Bash|PowerShell twin (PostToolUse:
+ * Bash|PowerShell).
  *
- * Fires when a Bash command writes to a path under `.claude/skills/` or
- * `.claude/hooks/` (sed -i, cp, mv, tee, a `>`/`>>` redirect, etc.) —
- * indirect edits an Edit/Write-tool matcher can't see. Installed copies are
+ * Fires when a Bash or PowerShell command writes to a path under
+ * `.claude/skills/` or `.claude/hooks/` (sed -i, cp, mv, tee, a `>`/`>>`
+ * redirect, Set-Content, Copy-Item, Move-Item, etc.) — indirect edits an
+ * Edit/Write-tool matcher can't see. Installed copies are
  * installer output — direct edits get flagged by `install.mjs --check` and
  * overwritten on the next install. Injects a pointer to the kit source
  * instead. Never blocks; the installer itself writes via Node fs, so
@@ -26,12 +28,18 @@ try {
 }
 const command = String(input?.tool_input?.command ?? "");
 
-const touchesGuardedPath = /\.claude\/(skills|hooks)\//.test(command);
-// Write-intent allowlist, mirroring dep-check-nudge's style: a plain `cat` or
-// `grep` naming the path is a read, not drift — only fire on commands that
-// actually mutate the file.
+const touchesGuardedPath = /\.claude[\\/](skills|hooks)[\\/]/.test(command);
+// Write-intent allowlist, mirroring dep-check-nudge's style: a plain `cat`/
+// `Get-Content` or `grep`/`Select-String` naming the path is a read, not
+// drift — only fire on commands that actually mutate the file. Covers both
+// Bash tools (sed -i, cp, mv, tee, a `>`/`>>` redirect, …) and PowerShell
+// cmdlets (Set-Content, Add-Content, Out-File, Copy-Item, Move-Item,
+// Rename-Item, New-Item), case-insensitively for the PowerShell names.
 const writesToIt =
   /(>>?(?!\()|\bsed\s+-i\b|\bcp\b|\bmv\b|\btee\b|\bperl\s+-i\b|\bdd\b|\bpatch\b|\bgit\s+apply\b)/.test(
+    command,
+  ) ||
+  /\b(Set-Content|Add-Content|Out-File|Copy-Item|Move-Item|Rename-Item|New-Item)\b/i.test(
     command,
   );
 

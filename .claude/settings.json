@@ -2,7 +2,7 @@
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
           {
             "type": "command",
@@ -11,6 +11,16 @@
               "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/live-verify-reminder.mjs"
             ],
             "if": "Bash(git *)",
+            "timeout": 10,
+            "statusMessage": "ai-dev-kit: live-verify reminder"
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PROJECT_DIR}/.claude/hooks/ai-dev-kit/live-verify-reminder.mjs"
+            ],
+            "if": "PowerShell(git *)",
             "timeout": 10,
             "statusMessage": "ai-dev-kit: live-verify reminder"
           }
@@ -47,7 +57,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "Edit|Write|Bash",
+        "matcher": "Edit|Write|Bash|PowerShell",
         "hooks": [
           {
             "type": "command",
@@ -61,7 +71,7 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "hooks": [
           {
             "type": "command",

@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 /**
- * ai-dev-kit hook — live-verify reminder (PreToolUse: Bash, if: "Bash(git *)").
+ * ai-dev-kit hook — live-verify reminder (PreToolUse: Bash|PowerShell, one
+ * handler per tool: if "Bash(git *)", if "PowerShell(git *)" — the harness's
+ * `if` field matches a single tool's calls, so each tool needs its own
+ * handler entry even though both run this same script unchanged).
  *
  * Fires when a `git commit` is about to run (including compound commands like
  * `git add … && git commit …`). Injects a reminder to confirm the live-verify

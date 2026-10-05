@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.24.3",
+  "version": "0.24.4",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -26,14 +26,14 @@
       {
         "file": "hooks/dep-check-nudge.mjs",
         "event": "PostToolUse",
-        "matcher": "Edit|Write|Bash",
+        "matcher": "Edit|Write|Bash|PowerShell",
         "skill": "dep-check",
-        "fires": "package.json edits; pm add/update/upgrade or install-with-args commands"
+        "fires": "package.json edits; pm add/update/upgrade or install-with-args commands (Bash or PowerShell)"
       },
       {
         "file": "hooks/live-verify-reminder.mjs",
         "event": "PreToolUse",
-        "matcher": "Bash (if: \"Bash(git *)\")",
+        "matcher": "Bash|PowerShell (if: \"Bash(git *)\" and if: \"PowerShell(git *)\", one handler entry per tool)",
         "skill": "live-verify",
         "fires": "any command segment containing `git … commit`"
       },
@@ -47,9 +47,9 @@
       {
         "file": "hooks/skill-drift-guard.mjs",
         "event": "PostToolUse",
-        "matcher": "Bash",
+        "matcher": "Bash|PowerShell",
         "skill": "(kit invariant)",
-        "fires": "a Bash command writes to .claude/skills/ or .claude/hooks/ (sed -i, cp, mv, tee, a redirect) — the indirect edits the PreToolUse twin's Edit|Write matcher can't see"
+        "fires": "a Bash or PowerShell command writes to .claude/skills/ or .claude/hooks/ (sed -i, cp, mv, tee, a redirect, Set-Content, Copy-Item, Move-Item, …) — the indirect edits the PreToolUse twin's Edit|Write matcher can't see"
       },
       {
         "file": "hooks/context-guard.mjs",
@@ -102,9 +102,9 @@
       "UserPromptSubmit": "rejected 0.20.0 — accepts additionalContext but fires on every prompt; a standing nudge at that frequency is the same noise trade already rejected for SessionStart(startup). Facts that apply to every prompt belong in CLAUDE.md, which loads without running a script",
       "UserPromptExpansion": "rejected 0.20.0 — matches skill/command names, but a kit skill's own SKILL.md already carries its rules; re-injecting them at expansion pays for the same content twice. PLAYBOOK #9: the skill trigger already covers it",
       "MessageDisplay": "rejected 0.20.0 — display-only. `displayContent` rewrites what the human sees while the transcript and the model keep the original text, so it cannot advise the agent",
-      "PreToolUse": "accepted 0.2.0 — live-verify-reminder (matcher Bash, if: \"Bash(git *)\"): fires before a commit, the last moment the agent can still run the verify recipe. 0.23.19 adds skill-drift-guard-preedit (matcher Edit|Write): fires before a direct edit to .claude/skills/ or .claude/hooks/ lands, so the redirect-to-kit-source precedes the wasted edit instead of following it. 0.24.0 adds script-exec-guard (matcher Bash|PowerShell, opt-in enforcement.scriptExecGuard): the harness's permission layer judges the command line and never reads the body of a script it runs (anthropics/claude-code#88462 — the fifth home-directory loss of that class), so before execution the handler reads session-fresh scripts and inline code and answers permissionDecision \"ask\" on a recursive delete of a non-literal or critical target — an escalation to the human, never a deny or exit 2",
+      "PreToolUse": "accepted 0.2.0 — live-verify-reminder (matcher Bash, if: \"Bash(git *)\"): fires before a commit, the last moment the agent can still run the verify recipe. 0.23.19 adds skill-drift-guard-preedit (matcher Edit|Write): fires before a direct edit to .claude/skills/ or .claude/hooks/ lands, so the redirect-to-kit-source precedes the wasted edit instead of following it. 0.24.0 adds script-exec-guard (matcher Bash|PowerShell, opt-in enforcement.scriptExecGuard): the harness's permission layer judges the command line and never reads the body of a script it runs (anthropics/claude-code#88462 — the fifth home-directory loss of that class), so before execution the handler reads session-fresh scripts and inline code and answers permissionDecision \"ask\" on a recursive delete of a non-literal or critical target — an escalation to the human, never a deny or exit 2. 0.24.4 widens live-verify-reminder's matcher to Bash|PowerShell (the harness's `if` field is single-tool-scoped — no `&&`/`||`/list syntax — so it needs two handler entries, `if: \"Bash(git *)\"` and `if: \"PowerShell(git *)\"`, running the same unchanged script): a `git commit` run through the PowerShell tool never reached the Bash-only matcher before, so the reminder silently never fired on Windows sessions that use PowerShell for git",
       "PermissionRequest": "rejected 0.20.0 — decision-only (`decision.behavior` allow/deny) with no context channel; auto-answering a permission prompt is a block-class action the kit's trust contract excludes. (0.24.0's script-exec-guard is not this event: a PreToolUse \"ask\" creates a prompt for the human, it never answers one)",
-      "PostToolUse": "accepted 0.2.0 — dep-check-nudge, skill-drift-guard, context-guard: the tool result is the moment the agent can still act on what it just did. 0.23.0 adds banned-api-guard on the same event — opt-in blocking (adapter enforcement.bannedApis), inert without config. 0.23.19 narrows skill-drift-guard's matcher to Bash only — its Edit|Write coverage moved to the PreToolUse twin (skill-drift-guard-preedit), so this handler now catches only the indirect Bash-command edits the pre-edit matcher can't see",
+      "PostToolUse": "accepted 0.2.0 — dep-check-nudge, skill-drift-guard, context-guard: the tool result is the moment the agent can still act on what it just did. 0.23.0 adds banned-api-guard on the same event — opt-in blocking (adapter enforcement.bannedApis), inert without config. 0.23.19 narrows skill-drift-guard's matcher to Bash only — its Edit|Write coverage moved to the PreToolUse twin (skill-drift-guard-preedit), so this handler now catches only the indirect Bash-command edits the pre-edit matcher can't see. 0.24.4 widens dep-check-nudge and skill-drift-guard to Bash|PowerShell (plus a PowerShell write-cmdlet allowlist — Set-Content, Add-Content, Out-File, Copy-Item, Move-Item, Rename-Item, New-Item — for skill-drift-guard's own in-script filter): both scripts already read `tool_input.command` the same way regardless of which shell tool ran it, but the matcher and, for dep-check-nudge, a hardcoded `tool === \"Bash\"` check silently excluded the PowerShell tool",
       "PostToolUseFailure": "rejected 0.20.0 — accepts additionalContext and checkpoint's three-strikes rule is the natural payload, but strike counting needs cross-call state a stateless handler cannot hold, and firing on every tool error (a typo'd grep, a missing file) is an intolerable false-positive rate. Revisit only with a session state file",
       "PostToolBatch": "rejected 0.20.0 — fires once per batch with the full tool set, but supports no matcher; the kit's three PostToolUse nudges are per-file and per-command decisions that need exactly the matcher scoping this event cannot express, and there is no batch-level fact worth injecting on its own",
       "PermissionDenied": "rejected 0.20.0 — `retry` only, no context channel; re-driving a denied tool call is the user's decision, not a hook's",
@@ -228,7 +228,7 @@
         "precedes": "build (any dependency change)"
       },
       "automation": {
-        "active": "PostToolUse (Edit|Write|Bash) → hooks/dep-check-nudge.mjs — injects the dep-check reminder on package.json edits / pm installs"
+        "active": "PostToolUse (Edit|Write|Bash|PowerShell) → hooks/dep-check-nudge.mjs — injects the dep-check reminder on package.json edits / pm installs"
       }
     },
     {
@@ -246,7 +246,7 @@
         "precedes": "checkpoint"
       },
       "automation": {
-        "active": "PreToolUse (Bash, if git *) → hooks/live-verify-reminder.mjs — injects the live-verify reminder before commits"
+        "active": "PreToolUse (Bash|PowerShell, if git *) → hooks/live-verify-reminder.mjs — injects the live-verify reminder before commits"
       }
     },
     {

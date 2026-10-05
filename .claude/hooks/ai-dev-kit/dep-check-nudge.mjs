@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * ai-dev-kit hook — dep-check nudge (PostToolUse: Edit|Write|Bash).
+ * ai-dev-kit hook — dep-check nudge (PostToolUse: Edit|Write|Bash|PowerShell).
  *
  * Fires when the dependency surface changes: a package.json edit, or a
  * package-manager add/install/update command. Injects a reminder to run the
@@ -29,7 +29,7 @@ const editsManifest =
 // `<pm> … add|update|upgrade|up`, or `<pm> … install|i <name>` with a real package
 // argument (a bare `pnpm install` is a routine lockfile install — no nudge).
 const addsViaCli =
-  tool === "Bash" &&
+  (tool === "Bash" || tool === "PowerShell") &&
   (/\b(pnpm|npm|yarn|bun)\b(?:\s+\S+)*?\s+(add|update|upgrade|up)\b/.test(command) ||
     /\b(pnpm|npm|yarn|bun)\b(?:\s+\S+)*?\s+(install|i)\s+(?:-\S+\s+)*[^-\s]/.test(command));
 

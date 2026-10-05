@@ -253,4 +253,5 @@ The canonical consumer block is four lines:
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
   secret sweep + fan-out cite-and-spot-check in 0.24.1).
   B3-55 (inventory.mjs memory-budget + eval-presence reporting) shipped in
-  0.24.3; B4-16/B4-31 stay deferred by design.
+  0.24.3; PowerShell parity for `dep-check-nudge`/`live-verify-reminder`/
+  `skill-drift-guard` shipped in 0.24.4; B4-16/B4-31 stay deferred by design.
