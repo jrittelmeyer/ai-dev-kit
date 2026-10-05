@@ -45,6 +45,9 @@
   "depPolicy": {
     "releaseAgeDays": 7
   },
+  "harnessAudit": {
+    "kitSourcePath": "../../ai-dev-kit"
+  },
   "contextBudget": {
     "agentsMdMaxLines": 150,
     "contextDocSplitTokens": 3000,
