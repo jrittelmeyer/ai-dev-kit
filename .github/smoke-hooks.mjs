@@ -7,7 +7,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 
 const cases = [
   ["hooks/dep-check-nudge.mjs", { tool_name: "Bash", tool_input: { command: "pnpm add lodash" } }, true],
@@ -721,10 +721,12 @@ for (const event of wiredEvents) {
     // the first alternative of expand()'s env-ref regex used to swallow "env"
     // as the variable name before "$env:VAR" could match, so the script's own
     // path never resolved and the guard fell through to scanning the command
-    // line — which mentions no delete — instead of the script.
+    // line — which mentions no delete — instead of the script. The separator is
+    // the platform's own: on Linux a backslash is part of a file name, not a
+    // path separator, so a hardcoded one never resolves there.
     const envPath = put(segOut, "env-path.ps1", ["Remove-Item -Recurse -Force $env:LEFTOVER"]);
     process.env.ADK_SEG_OUT = segOut;
-    expectAsk("PowerShell $env: var in the script's own path", segRun(pwsh(`& "$env:ADK_SEG_OUT\\env-path.ps1"`)), "env-path.ps1:1");
+    expectAsk("PowerShell $env: var in the script's own path", segRun(pwsh(`& "$env:ADK_SEG_OUT${sep}env-path.ps1"`)), "env-path.ps1:1");
     delete process.env.ADK_SEG_OUT;
     const mjs = put(segOut, "clean.mjs", [
       'import { rmSync } from "node:fs";',

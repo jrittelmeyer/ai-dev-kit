@@ -60,6 +60,15 @@ Self-install wrote 4 files, and the second run wrote 0. Full gate green:
 `install.mjs --check`, `skill-lint`, `skill-evals`, `smoke-hooks`,
 `smoke-installer`, `smoke-inventory`, `check-version` (6 sites at 0.24.3).
 
+CI on the release commit then went red on ubuntu only. The cause was not
+this change: 0.24.2's `$env:` regression case in `smoke-hooks` hardcoded a
+`\` separator, which on Linux is part of the file name. That made 0.24.2's own
+CI red too, so its release was skipped and **v0.24.2 was never tagged**. The
+case now uses the platform separator, so Windows keeps the original shape.
+The Linux failure was reproduced in a `node:22` container (old test `FAIL`)
+and fixed there. All six gate scripts, `smoke-inventory` included, pass on
+Linux. The `v0.24.3` tag lands on that fix commit.
+
 ## 0.24.2 — 2026-09-30
 
 Bug fix found while running the 0.24.0 release's own owed live-prompt check
