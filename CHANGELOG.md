@@ -1,5 +1,44 @@
 # ai-dev-kit changelog
 
+## 0.24.6 — 2026-10-05
+
+B1-58, the first of the 2026-10-05 harness audit's signed rows: the
+`PostModelSwitch` hook verdict rested on a premise the harness has since
+changed, and the kit's "11 of 33" advisory-capable count with it.
+
+- `manifest.json` → `hooks.reviewed.PostModelSwitch`: re-recorded. The
+  2.1.251 grounds ("display-only notification … no context channel back to
+  the agent") no longer hold — the hooks reference now lists the event under
+  "Context only" with `hookSpecificOutput.additionalContext` delivered on
+  the next request after the switch. The verdict stays **rejected** on its
+  merits: a model change loses no orientation (the conversation is intact,
+  so the compact-reorient case doesn't apply) and changes no project state
+  the adapter or gate describe, so there is nothing project-shaped to
+  inject and a per-switch nudge is the SessionStart(startup) noise trade
+  again. The entry names the one condition that would reopen it (a
+  tier-dependent kit rule).
+- `manifest.json` → `hooks.reviewedAgainst` and README's decision-log
+  paragraph: the advisory-capable count is **12 of 33** (the other 21 can
+  only block, act, or notify the human); the review date moves to
+  2026-10-05 and the README now distinguishes the two tripwires — the
+  changelog re-fetch catches a new *event*, the hooks-reference re-fetch
+  catches a changed *contract* on an existing one, which is what fired here.
+
+No handler, wiring, or pin changes: the 33-event `EVENT_SURFACE` pin and
+every other verdict are untouched. BACKLOG row 58 is retired.
+
+**Verification:** the contract change was confirmed on the live hooks
+reference by three targeted re-fetches during the audit (the "Context only"
+row and the "Add context for Claude" timing note both name
+`PostModelSwitch`; no version gate attached). `smoke-hooks` still asserts
+the decision log covers all 33 pinned events and that the re-recorded
+verdict starts with a valid disposition (it does: `rejected`). Full gate
+green after the self-install: `install.mjs --check` (40 files match),
+`skill-lint` (10 clean), `skill-evals` (33 scenarios, 98 anchors),
+`smoke-hooks` (215 asserts), `smoke-installer`, `smoke-inventory`,
+`check-version` (6 sites at 0.24.6). Docs/manifest-only change — no
+live-verify loop applies.
+
 ## 0.24.5 — 2026-10-05
 
 `harness-audit`'s fourth run (2026-10-05, report in

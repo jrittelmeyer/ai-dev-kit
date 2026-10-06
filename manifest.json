@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.24.5",
+  "version": "0.24.6",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -94,7 +94,7 @@
         "fires": "a Bash/PowerShell command executes a session-fresh script (untracked, outside any repo, or uncommitted lines) or inline code holding a recursive delete of a non-literal or critical target — answers permissionDecision \"ask\" so the human decides (never deny, never exit 2); inert without adapter opt-in"
       }
     ],
-    "reviewedAgainst": "https://code.claude.com/docs/en/hooks — 33 documented events, full-surface pass 2026-08-24 (0.20.0), extended 2026-08-31 (2.1.251 added PreModelSwitch/PostModelSwitch, both rejected). Only 11 events can return hookSpecificOutput.additionalContext (SessionStart, Setup, SubagentStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, Stop, SubagentStop); the other 22 can only block, act, or talk to the human, and the kit's default is advise-only (blocking exists solely behind the adapter enforcement opt-in). .github/smoke-hooks.mjs asserts this log covers the full surface.",
+    "reviewedAgainst": "https://code.claude.com/docs/en/hooks — 33 documented events, full-surface pass 2026-08-24 (0.20.0), extended 2026-08-31 (2.1.251 added PreModelSwitch/PostModelSwitch, both rejected), re-verified 2026-10-05 at harness 2.1.289 (the reference now lists PostModelSwitch as context-capable; verdict re-recorded, still rejected). Only 12 events can return hookSpecificOutput.additionalContext (SessionStart, Setup, SubagentStart, UserPromptSubmit, UserPromptExpansion, PreToolUse, PostToolUse, PostToolUseFailure, PostToolBatch, Stop, SubagentStop, PostModelSwitch); the other 21 can only block, act, or talk to the human, and the kit's default is advise-only (blocking exists solely behind the adapter enforcement opt-in). .github/smoke-hooks.mjs asserts this log covers the full surface.",
     "reviewed": {
       "SessionStart": "accepted 0.16.0 for the `compact` matcher only (compact-reorient) — compaction is the one entry point where disorientation is the default. `startup|resume|clear` rejected 0.16.0: a per-session nudge is latency and noise, and orientation on a normal start is the resume prompt's job. `fork` rejected 0.20.0: a forked session inherits its parent's context, so orientation is intact",
       "Setup": "rejected 0.20.0 — fires only under `--init-only`, `-p --init`, or `-p --maintenance`, never on normal startup, so an orientation or drift nudge here would essentially never reach an interactive session; SessionStart already covers per-session entry",
@@ -128,7 +128,7 @@
       "Elicitation": "rejected 0.20.0 — answers MCP form prompts on the agent's behalf (accept/decline/cancel), automating a human decision that SECURITY.md's trust contract puts out of scope",
       "ElicitationResult": "rejected 0.20.0 — the same MCP elicitation surface after the response; overriding submitted form content is out of scope for the same reason",
       "PreModelSwitch": "rejected 2.1.251 — decision-only (allow/deny a model switch), no additionalContext channel; blocking a model switch is out of scope for an advisory kit",
-      "PostModelSwitch": "rejected 2.1.251 — display-only notification that a switch occurred, no context channel back to the agent"
+      "PostModelSwitch": "rejected 2.1.251, re-recorded 0.24.6 — the 2.1.251 grounds (display-only, no context channel) no longer hold: as of the 2026-10-05 review the hooks reference lists it under \"Context only\" with hookSpecificOutput.additionalContext delivered on the next request after the switch. Still rejected on its merits: no kit invariant is model-switch-shaped — a model change loses no orientation (the conversation is intact, so SessionStart(compact)'s reorient case does not apply) and changes no project state the adapter or gate describe, so there is nothing project-shaped to inject and a per-switch nudge is the SessionStart(startup) noise trade again. Reconsider only if a tier-dependent kit rule appears (e.g. a skill whose steps differ by model tier)"
     }
   },
   "optional": {

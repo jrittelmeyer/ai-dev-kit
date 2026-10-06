@@ -171,14 +171,17 @@ be noise. The Stop-hook checkpoint rejection was **reversed in 0.23.0** on
 consumer evidence (next-web-boilerplate ran it in production sessions) — as
 the opt-in `checkpoint-autorun` above, never by default. The full decision log lives in `manifest.json` →
 `hooks.reviewed`, which carries an accept/reject verdict for **every one of the
-33 hook events the harness documented at the 2026-08-31 review** — the
-organizing fact being that only 11 of them can return `additionalContext` at
-all, and the other 22 can only block, act, or notify the human. `smoke-hooks`
+33 hook events the harness documented at the 2026-10-05 review** — the
+organizing fact being that only 12 of them can return `additionalContext` at
+all, and the other 21 can only block, act, or notify the human. `smoke-hooks`
 asserts the log covers the kit-pinned event list, so the pin and the log can't
 drift apart; a harness-side addition is caught by `harness-audit`'s changelog
 re-fetch, which then moves the pin (harness 2.1.251 added
-`PreModelSwitch`/`PostModelSwitch`, both rejected — no `additionalContext`
-channel). Hooks changed in `settings.json` load at
+`PreModelSwitch`/`PostModelSwitch`, both rejected), and a harness-side
+*contract* change is caught by its hooks-reference re-fetch (the 2026-10-05
+review found `PostModelSwitch` promoted to context-capable; its verdict was
+re-recorded on the true grounds and stays rejected — nothing in the kit is
+model-switch-shaped). Hooks changed in `settings.json` load at
 session start; an already-running session may need `/hooks` opened once (or a
 restart) to pick them up.
 
@@ -248,10 +251,10 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** the 2026-10-05 harness audit's four signed rows, one release
-  each — B1-58 `PostModelSwitch` verdict + 12-of-33 count, B1-59
-  `skill-drift-guard` write-intent precision, B3-60 harness-audit method
-  inputs, B3-61 CONTRIBUTING AGENTS.md-precedence note. The
+  **Next:** the 2026-10-05 harness audit's signed rows, one release each —
+  B1-58 (`PostModelSwitch` verdict + 12-of-33 count) shipped in 0.24.6;
+  B1-59 `skill-drift-guard` write-intent precision, B3-60 harness-audit
+  method inputs, B3-61 CONTRIBUTING AGENTS.md-precedence note remain. The
   [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
   secret sweep + fan-out cite-and-spot-check in 0.24.1); B3-55 shipped in
