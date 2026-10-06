@@ -1,5 +1,45 @@
 # ai-dev-kit changelog
 
+## 0.24.7 — 2026-10-05
+
+B1-59 from the 2026-10-05 harness audit: `skill-drift-guard` (PostToolUse ·
+Bash|PowerShell) fired on read-only commands. The audit hit it twice while
+merely *running* the inventory script — `node .claude/skills/harness-audit/
+scripts/inventory.mjs . 2>&1 | head -200` — because the write-intent regex
+matched the `>` inside `2>&1`, and any `cp`/`mv`/`Out-File` token anywhere in
+a command that also named a guarded path counted as a write to it.
+
+- `hooks/skill-drift-guard.mjs`: write intent is now anchored to the
+  guarded path and judged per pipeline/chain segment (split on newlines,
+  `|`, `||`, `&&`, `;`). A segment writes to a guarded path when (1) a
+  redirect's *target* is guarded (`2>&1` yields no target, `>/dev/null` and
+  `> /tmp/out` target elsewhere), (2) an in-place writer (`sed -i`,
+  `perl -i`, `tee`, `dd`, `patch`, `git apply`, `Set-Content`,
+  `Add-Content`, `Out-File`, `New-Item`, `Rename-Item`) names a guarded
+  operand in the same segment, or (3) a copy/move (`cp`, `mv`, `Copy-Item`,
+  `Move-Item`) has a guarded *destination* (`-Destination <path>` or the
+  last operand), so `cp .claude/skills/x/SKILL.md /tmp/` is a read. 82
+  lines, within SECURITY.md's 140-line handler bound. The nudge text and
+  the matcher are unchanged; `manifest.json`'s handler entry describes the
+  anchored rule.
+
+**Verification:** anchors first — ten new `smoke-hooks` cases (six must-stay-
+silent: the audit's exact command, `2>/dev/null`, a redirect to `/tmp`, a
+`cp` out of the tree, a PowerShell `Get-Content … | Out-File out.md`, a
+`Copy-Item … -Destination C:\tmp\`; four must-fire: `tee` into a guarded
+path, `cp -r … .claude/skills/tidy/ && echo done`, a heredoc `cat >` into
+`.claude/hooks/`, `Get-Content x | Out-File .claude/skills/…`). Run against
+the pre-fix handler, exactly the six silent cases FAILED (`fired=true,
+expected fired=false`) and the four fire cases passed; after the rewrite all
+ten pass and every pre-existing fire/silent/BOM case for both drift-guard
+twins still passes. Hand-piped the audit's command and a `sed -i` write
+through the new handler: silent and fires respectively. Full gate green
+after the self-install: `install.mjs --check` (40 files match),
+`skill-lint` (10 clean), `skill-evals` (33 scenarios, 98 anchors),
+`smoke-hooks` (225 asserts, up from 215), `smoke-installer`,
+`smoke-inventory`, `check-version` (6 sites at 0.24.7). BACKLOG row 59
+retired.
+
 ## 0.24.6 — 2026-10-05
 
 B1-58, the first of the 2026-10-05 harness audit's signed rows: the

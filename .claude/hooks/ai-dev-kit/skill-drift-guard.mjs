@@ -28,22 +28,45 @@ try {
 }
 const command = String(input?.tool_input?.command ?? "");
 
-const touchesGuardedPath = /\.claude[\\/](skills|hooks)[\\/]/.test(command);
-// Write-intent allowlist, mirroring dep-check-nudge's style: a plain `cat`/
-// `Get-Content` or `grep`/`Select-String` naming the path is a read, not
-// drift — only fire on commands that actually mutate the file. Covers both
-// Bash tools (sed -i, cp, mv, tee, a `>`/`>>` redirect, …) and PowerShell
-// cmdlets (Set-Content, Add-Content, Out-File, Copy-Item, Move-Item,
-// Rename-Item, New-Item), case-insensitively for the PowerShell names.
-const writesToIt =
-  /(>>?(?!\()|\bsed\s+-i\b|\bcp\b|\bmv\b|\btee\b|\bperl\s+-i\b|\bdd\b|\bpatch\b|\bgit\s+apply\b)/.test(
-    command,
-  ) ||
-  /\b(Set-Content|Add-Content|Out-File|Copy-Item|Move-Item|Rename-Item|New-Item)\b/i.test(
-    command,
-  );
+const GUARDED = /\.claude[\\/](skills|hooks)[\\/]/;
+// Write intent is anchored to the guarded path, not merely co-present with
+// it (0.24.7, B1-59): a read-only command that names a guarded path and also
+// carries `2>&1`, a redirect elsewhere, a copy *out* of the tree, or a writer
+// in another pipeline segment is a read, not drift — the pre-0.24.7 regex
+// fired on exactly that (`node .claude/skills/x/scripts/y.mjs 2>&1 | head`).
+// Each pipeline/chain segment is judged on its own: a segment writes to a
+// guarded path when (1) a redirect's *target* is guarded, (2) an in-place
+// writer names a guarded operand, or (3) a copy/move's *destination* is
+// guarded. Plain `cat`/`Get-Content`/`grep`/`Select-String` never match.
+const IN_PLACE =
+  /\b(sed\s+-i|perl\s+-i|tee|dd|patch|git\s+apply|Set-Content|Add-Content|Out-File|New-Item|Rename-Item)\b/i;
+const COPY = /\b(cp|mv|Copy-Item|Move-Item)\b/i;
 
-if (!touchesGuardedPath || !writesToIt) process.exit(0);
+function segmentWrites(seg) {
+  if (!GUARDED.test(seg)) return false;
+  // (1) `> path`, `>> path`, `1> path`, `&> path`. `2>&1` yields no target
+  //     (`&` is excluded), `>/dev/null` and `> /tmp/out` target elsewhere.
+  const redirect = />>?\s*["']?([^\s"'|;&<>()]+)/g;
+  for (let m; (m = redirect.exec(seg)); ) if (GUARDED.test(m[1])) return true;
+  // (2) the writer and the guarded operand share a segment.
+  if (IN_PLACE.test(seg)) return true;
+  // (3) destination = `-Destination <path>` if given, else the last operand.
+  if (COPY.test(seg)) {
+    const dest = /-Dest(?:ination)?\s+["']?([^\s"']+)/i.exec(seg);
+    if (dest) return GUARDED.test(dest[1]);
+    const operands = seg
+      .replace(/^[\s(]*[\w.-]*(cp|mv|Copy-Item|Move-Item)\b/i, "")
+      .split(/\s+/)
+      .filter((t) => t && !t.startsWith("-"))
+      .map((t) => t.replace(/^["']|["']$/g, ""));
+    return operands.length > 0 && GUARDED.test(operands[operands.length - 1]);
+  }
+  return false;
+}
+
+const writesToIt = command.split(/\r?\n|\|\|?|&&|;/).some(segmentWrites);
+
+if (!writesToIt) process.exit(0);
 
 const additionalContext =
   "ai-dev-kit skill-drift guard: a Bash command just wrote to a path under .claude/skills/ or " +

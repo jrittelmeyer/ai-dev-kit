@@ -30,6 +30,21 @@ const cases = [
   ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Copy-Item x.mjs .claude/hooks/ai-dev-kit/dep-check-nudge.mjs" } }, true],
   ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Get-Content .claude/skills/checkpoint/SKILL.md" } }, false],
   ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Set-Content src/app.ts -Value x" } }, false],
+  // B1-59 (0.24.7): write intent must be anchored to the guarded path. A
+  // read-only command that names a guarded path and *also* carries an fd
+  // redirect, a redirect elsewhere, a copy *out* of the guarded tree, or a
+  // writer in a different pipeline segment is a read, not drift. The first
+  // case is the exact command the 2026-10-05 harness audit ran — it fired.
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "node .claude/skills/harness-audit/scripts/inventory.mjs . 2>&1 | head -200" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "node .claude/skills/harness-audit/scripts/inventory.mjs . 2>/dev/null" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cat .claude/skills/checkpoint/SKILL.md > /tmp/out.md" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cp .claude/skills/checkpoint/SKILL.md /tmp/" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cat x.md | tee .claude/skills/checkpoint/SKILL.md" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cp -r skills/tidy/ .claude/skills/tidy/ && echo done" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "Bash", tool_input: { command: "cat > .claude/hooks/ai-dev-kit/x.mjs <<'EOF'\nhi\nEOF" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Get-Content .claude/skills/checkpoint/SKILL.md | Out-File out.md" } }, false],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Get-Content x.md | Out-File .claude/skills/checkpoint/SKILL.md" } }, true],
+  ["hooks/skill-drift-guard.mjs", { tool_name: "PowerShell", tool_input: { command: "Copy-Item .claude/skills/checkpoint/SKILL.md -Destination C:\\tmp\\" } }, false],
   ["hooks/skill-drift-guard-preedit.mjs", { tool_name: "Edit", tool_input: { file_path: ".claude/skills/checkpoint/SKILL.md" } }, true],
   ["hooks/skill-drift-guard-preedit.mjs", { tool_name: "Edit", tool_input: { file_path: "src/app.ts" } }, false],
   ["hooks/context-guard.mjs", { tool_name: "Edit", tool_input: { file_path: "AGENTS.md" } }, true],

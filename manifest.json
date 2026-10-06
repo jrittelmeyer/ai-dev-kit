@@ -1,6 +1,6 @@
 {
   "name": "ai-dev-kit",
-  "version": "0.24.6",
+  "version": "0.24.7",
   "description": "Portable agentic-development skill library: lifecycle skills, a per-project adapter contract, and a cross-platform installer.",
   "adapterConfig": ".claude/ai-dev-kit.config.json",
   "docs": {
@@ -49,7 +49,7 @@
         "event": "PostToolUse",
         "matcher": "Bash|PowerShell",
         "skill": "(kit invariant)",
-        "fires": "a Bash or PowerShell command writes to .claude/skills/ or .claude/hooks/ (sed -i, cp, mv, tee, a redirect, Set-Content, Copy-Item, Move-Item, …) — the indirect edits the PreToolUse twin's Edit|Write matcher can't see"
+        "fires": "a Bash or PowerShell command writes to .claude/skills/ or .claude/hooks/ — the indirect edits the PreToolUse twin's Edit|Write matcher can't see. Write intent is anchored to the guarded path per pipeline/chain segment (0.24.7): a redirect whose target is guarded, an in-place writer (sed -i, perl -i, tee, dd, patch, git apply, Set-Content, Add-Content, Out-File, New-Item, Rename-Item) naming a guarded operand, or a copy/move (cp, mv, Copy-Item, Move-Item) whose destination is guarded. `2>&1`, a redirect elsewhere, a copy out of the tree, or a writer in another segment is a read and stays silent"
       },
       {
         "file": "hooks/context-guard.mjs",

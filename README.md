@@ -252,9 +252,10 @@ The canonical consumer block is four lines:
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
   **Next:** the 2026-10-05 harness audit's signed rows, one release each —
-  B1-58 (`PostModelSwitch` verdict + 12-of-33 count) shipped in 0.24.6;
-  B1-59 `skill-drift-guard` write-intent precision, B3-60 harness-audit
-  method inputs, B3-61 CONTRIBUTING AGENTS.md-precedence note remain. The
+  B1-58 (`PostModelSwitch` verdict + 12-of-33 count) shipped in 0.24.6,
+  B1-59 (`skill-drift-guard` write intent anchored to the guarded path) in
+  0.24.7; B3-60 harness-audit method inputs and B3-61 CONTRIBUTING
+  AGENTS.md-precedence note remain. The
   [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
   secret sweep + fan-out cite-and-spot-check in 0.24.1); B3-55 shipped in

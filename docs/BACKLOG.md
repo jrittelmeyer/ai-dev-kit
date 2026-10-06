@@ -30,7 +30,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 59 | hooks | `skill-drift-guard` write-intent precision — anchor the redirect/`cp`/`mv`/`sed` detection to the guarded path (operand or redirect *target* under `.claude/(skills\|hooks)/`) and exclude fd-only redirects (`2>&1`, `>/dev/null`); regression case shown failing first with the audit's exact command; every current "fires" case kept | Hooks +3 | S |
 | B3 | 60 | harness-audit | Method: §1 names `/skill-doctor` as the observed-use input when running inside Claude Code, §4 names `/doctor prompt-audit` as a mechanical input where the binary exists, §2 records the release-tag-page fallback when the changelog fetch returns fewer entries than the gap; body stays generic (tool names in `stack.md`) | method quality | S |
 | B3 | 61 | docs | CONTRIBUTING note: this repo relies on AGENTS.md and a local `CLAUDE.local.md` silently replaces it (v2.1.277 rule; `claude-md-and-agents-md` restores both); fold in the carried trim of AGENTS.md's release-ritual and rename prose | Instruction +3 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
