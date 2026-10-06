@@ -19,6 +19,13 @@ Node ≥ 22, no npm packages) and token-lean docs.
   gate fails when the six sites disagree.
 - **A test that claims to catch a bug** should be shown failing against the
   pre-fix code (note it in the PR description).
+- **Project instructions live in `AGENTS.md`, and the harness reads it only
+  when no `CLAUDE.md` is in reach.** Claude Code (v2.1.277+) loads `AGENTS.md`
+  only when no `CLAUDE.md`, `.claude/CLAUDE.md`, or `CLAUDE.local.md` sits in
+  the working directory or above it — a personal `CLAUDE.local.md` dropped in
+  this repo silently replaces every rule in `AGENTS.md`. Keep personal notes
+  in `~/.claude/CLAUDE.md` (never counted), or set Project instructions to
+  `claude-md-and-agents-md` in `/config` to load both.
 
 ## Before you push
 

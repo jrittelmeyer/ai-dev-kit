@@ -1,5 +1,44 @@
 # ai-dev-kit changelog
 
+## 0.24.9 — 2026-10-05
+
+B3-61, the last of the 2026-10-05 harness audit's signed rows — two
+instruction-file fixes, no behavior change beyond the docs the six-site rule
+covers.
+
+- **CONTRIBUTING ground rule: AGENTS.md precedence.** This repo carries its
+  agent rules in `AGENTS.md` and no `CLAUDE.md`. Claude Code reads
+  `AGENTS.md` natively (v2.1.277+) only when no `CLAUDE.md`,
+  `.claude/CLAUDE.md`, or `CLAUDE.local.md` sits in the working directory or
+  above it — so a contributor's personal `CLAUDE.local.md` dropped in this
+  repo silently replaces every rule in `AGENTS.md`. The new ground rule
+  names the failure mode and the two safe alternatives (`~/.claude/CLAUDE.md`,
+  which is never counted, or the `claude-md-and-agents-md` project-instructions
+  setting).
+- **AGENTS.md trim (carried since the 2026-08-25 audit).** The two release
+  rules and the rename rule kept their imperative sentence and lost their
+  PLAYBOOK-shaped rationale: 45 → 40 lines (≈688 → ≈600 tokens). The why
+  now lives in one place — README → Rules → Versioning gained the two
+  corollaries (self-contained release commit; one release commit per push
+  because `release.yml` reads `VERSION` as of the CI run's sha) beside the
+  auto-tagging paragraph that already explained the mechanism and the
+  v0.23.0 red-sha history. AGENTS.md points there.
+
+BACKLOG row 61 is retired; all four rows from the 2026-10-05 harness audit
+have shipped (0.24.6–0.24.9) and README "Next" returns to no active row.
+
+**Verification:** `inventory.mjs`'s standing-instruction section reports
+AGENTS.md at 40 lines (budget 150) ≈600 tokens, down from 45/≈688; every
+rule survives as an imperative with its pointer. The precedence rule was
+verified on the live memory reference during the audit (the three counting
+files, the two non-counting ones, and the setting name quoted from it) and
+by this session itself, which loads `AGENTS.md` as project instructions
+with no `CLAUDE.md` present. Full gate green after the self-install:
+`install.mjs --check` (40 files match), `skill-lint` (10 clean),
+`skill-evals` (33 scenarios, 100 anchors), `smoke-hooks` (225 asserts),
+`smoke-installer`, `smoke-inventory`, `check-version` (6 sites at 0.24.9).
+Docs-only change — no live-verify loop applies.
+
 ## 0.24.8 — 2026-10-05
 
 B3-60 from the 2026-10-05 harness audit: `harness-audit` 0.1.12 → 0.1.13,

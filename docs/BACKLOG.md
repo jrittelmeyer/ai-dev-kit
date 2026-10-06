@@ -6,8 +6,8 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 report. Every row enters plan → sign-off → build.
 
 Source: [HARNESS_AUDIT_2026-10-05](archive/HARNESS_AUDIT_2026-10-05.md)
-(96.4/100, fourth harness audit — rows 58–61, signed 2026-10-05). Earlier
-rows 47–57 all shipped by 0.24.1 (47–54 from
+(96.4/100, fourth harness audit — rows 58–61, signed 2026-10-05 and all
+shipped by 0.24.9). Earlier rows 47–57 all shipped by 0.24.1 (47–54 from
 [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md), 56–57 from
 the rootstock-os review). Scored chain — project audits
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
@@ -30,7 +30,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 61 | docs | CONTRIBUTING note: this repo relies on AGENTS.md and a local `CLAUDE.local.md` silently replaces it (v2.1.277 rule; `claude-md-and-agents-md` restores both); fold in the carried trim of AGENTS.md's release-ritual and rename prose | Instruction +3 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 

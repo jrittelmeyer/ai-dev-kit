@@ -228,7 +228,11 @@ The canonical consumer block is four lines:
   runs `check-release-ready.mjs` against that run's sha, and — on pass — cuts the tag
   and Release via `.github/cut-release.mjs` (no-op if `v<version>` already exists). A
   red or still-running CI can't get tagged (v0.23.0 shipped on a red sha this gate
-  exists to catch). `.github/check-release-ready.mjs <sha>` can still be run by hand
+  exists to catch). Two corollaries `AGENTS.md` states as rules: a release commit is
+  self-contained (the gate checks only the sha it is pointed at, so a split release
+  can tag green on an intermediate broken commit), and one release commit per push
+  (the workflow reads `VERSION` as of the CI run's sha, so two bumps in one push tag
+  only the second — push one, let CI go green, then the next). `.github/check-release-ready.mjs <sha>` can still be run by hand
   against any sha, and `ci.yml`'s `workflow_dispatch:` lets CI be re-run manually
   against `main` or a tag (GitHub's dispatch API takes a branch/tag ref, not an
   arbitrary sha — for one that never got its own CI run, push a throwaway branch at
@@ -251,12 +255,13 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** the 2026-10-05 harness audit's signed rows, one release each —
-  B1-58 (`PostModelSwitch` verdict + 12-of-33 count) shipped in 0.24.6,
-  B1-59 (`skill-drift-guard` write intent anchored to the guarded path) in
-  0.24.7, B3-60 (harness-audit method: the harness's own usage report and
-  prompt-pattern audit as inputs, changelog-gap fallback) in 0.24.8; B3-61
-  CONTRIBUTING AGENTS.md-precedence note remains. The
+  **Next:** no active row — the 2026-10-05 harness audit's four signed rows
+  shipped one release each: B1-58 (`PostModelSwitch` verdict + 12-of-33
+  count) in 0.24.6, B1-59 (`skill-drift-guard` write intent anchored to the
+  guarded path) in 0.24.7, B3-60 (harness-audit method: the harness's own
+  usage report and prompt-pattern audit as inputs, changelog-gap fallback)
+  in 0.24.8, B3-61 (CONTRIBUTING AGENTS.md-precedence note + AGENTS.md
+  trim) in 0.24.9. The
   [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
   secret sweep + fan-out cite-and-spot-check in 0.24.1); B3-55 shipped in

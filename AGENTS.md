@@ -21,23 +21,18 @@ pointed at, not restated here.
   (`command: "node"` + one anchored `args` entry) is a smoke-enforced invariant.
 - **Zero dependencies:** pure Node ≥ 22 — no package.json, no npm packages, no
   shell-specific scripts.
-- **Never rename a skill directory** without a migration plan — stale-prune only
-  covers manifest-listed names; a silent rename orphans consumers' installed
-  copies forever.
+- **Never rename a skill directory** without a migration plan — stale-prune
+  covers manifest-listed names only; a silent rename orphans every consumer's
+  installed copy.
 - **Gate before commit:** run the adapter `gate` array
   (`adapters/ai-dev-kit.json`) and keep skill bodies generic — project facts go
   in an adapter or project memory, never hardcoded in a skill.
-- **A release commit is self-contained:** the version bump, self-install, and
-  any fixture/doc updates land in **one** commit, never a sequence — the
-  pre-tag `check-release-ready.mjs` gate only checks the sha you point it at,
-  so a split release can tag green on an intermediate broken commit (how
-  v0.23.0 shipped red).
-- **One release commit per push:** never batch two version bumps into the
-  same push. `release.yml` auto-tags on every green CI run against `VERSION`
-  as of that sha — a push carrying commit A (bumps to 0.23.x) then commit B
-  (bumps to 0.23.x+1) only ever sees B's `VERSION`, so A's release is skipped
-  silently. Push each release commit on its own, and let CI go green on it,
-  before starting the next.
+- **A release commit is self-contained:** version bump, self-install, and
+  fixture/doc updates land in **one** commit — the pre-tag gate checks only
+  the sha it is pointed at (why: `README.md` → Rules → Versioning).
+- **One release commit per push,** and let CI go green on it before the
+  next — `release.yml` tags against `VERSION` as of the pushed sha, so a
+  second bump in the same push silently skips the first release.
 
 Pointers: `README.md` (status doc · install · release ritual) ·
 `CONTRIBUTING.md` (local suite · ground rules) · `docs/PLAYBOOK.md` (the
