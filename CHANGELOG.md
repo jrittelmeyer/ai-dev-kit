@@ -1,5 +1,56 @@
 # ai-dev-kit changelog
 
+## 0.24.5 — 2026-10-05
+
+`harness-audit`'s fourth run (2026-10-05, report in
+`docs/archive/HARNESS_AUDIT_2026-10-05.md`, **96.4/100**, was 96.1) lands
+its self-maintained references in kit source and mirrors them into the
+dogfood install; `harness-audit` 0.1.11 → 0.1.12.
+
+- `references/sources.md`: all rows re-fetched and stamped 2026-10-05; three
+  new rows (native `claude plugin eval`, the memory/AGENTS.md-precedence
+  page, the Claude Mods reference); the marketplace row records the doc
+  page's 2026-Q3 split; the changelog row records a fetch limit found this
+  run — the raw CHANGELOG fetch returns only the newest ≈7 entries, so a gap
+  wider than that must be covered from per-version release pages and the
+  doc pages' "Requires v2.1.NNN" notes (this run: 2.1.283–2.1.289 from the
+  raw file, 2.1.277 from its release page, 2.1.253–2.1.282 from doc notes
+  only).
+- `references/stack.md`: two new sections — **Harness-native tooling**
+  (`/skill-doctor`, `/doctor prompt-audit`, `claude plugin eval`, `claude
+  plugin validate --strict`, Claude Mods, each with an adopt/document
+  verdict) and **Distribution channels** (Anthropic's directory as a third
+  channel; payload hygiene re-verified: still no exclusion mechanism) — plus
+  the lean-MCP consensus and the 2026-09-24 state-of-harness-engineering
+  study under Adjacent tooling. The file crossed 100 lines and gained the
+  Contents heading the authoring rubric requires.
+
+Audit findings filed as backlog rows 58–61 (two B1, two B3), signed off and
+building next, one release each: the hooks reference now lists
+`PostModelSwitch` as `additionalContext`-capable (12 of 33, not 11 — the
+manifest verdict and README count are stale); `skill-drift-guard` fires on a
+stderr redirect (`2>&1`) in a read-only command that names a guarded path
+(reproduced live twice during the audit); harness-audit's method gains the
+harness's own instruments and the changelog fallback; a CONTRIBUTING note on
+the v2.1.277 rule that a local `CLAUDE.local.md` silently suppresses
+AGENTS.md. Watch item re-checked (ninth pass, head 2.1.289): gate not lifted.
+
+**Verification:** every `sources.md` row fetched live (14 rows, three
+targeted re-fetches of the hooks reference to confirm the `PostModelSwitch`
+change verbatim); the `skill-drift-guard` finding reproduced by piping the
+exact audit command into the handler (fires with `2>&1`, silent without).
+Sampled with/without graded pass on the three scenarios added in 0.24.1,
+one fresh read-only Sonnet subagent each: 4/4 expect behaviors skill-earned,
+3/3 reject regressions prevented, 0 free (≈40k tokens per scenario).
+Writing the references first tripped two gate checks that were then fixed
+before this commit — `skill-lint` rejected a hook-placeholder literal in
+skill prose, and the dogfooded stop-gate (which runs `skill-lint`) went red
+on it in `smoke-hooks`; `stack.md` over 100 lines needed a Contents heading.
+Full gate green after the fixes and the self-install: `install.mjs --check`
+(40 files match), `skill-lint` (10 clean), `skill-evals` (33 scenarios, 98
+anchors), `smoke-hooks` (215 asserts), `smoke-installer`, `smoke-inventory`,
+`check-version` (6 sites at 0.24.5).
+
 ## 0.24.4 — 2026-10-05
 
 PowerShell parity for the two Bash-command advisory hooks that still only

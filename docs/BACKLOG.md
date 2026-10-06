@@ -5,9 +5,11 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 *why* and the named deductions behind every row live in the originating audit
 report. Every row enters plan → sign-off → build.
 
-Source: [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md)
-(97.1/100, ninth audit — rows 47–54, all shipped by 0.23.20; 51–53 were the
-2026-08-31 harness audit's proposals, adopted there). Scored chain — project audits
+Source: [HARNESS_AUDIT_2026-10-05](archive/HARNESS_AUDIT_2026-10-05.md)
+(96.4/100, fourth harness audit — rows 58–61, signed 2026-10-05). Earlier
+rows 47–57 all shipped by 0.24.1 (47–54 from
+[PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md), 56–57 from
+the rootstock-os review). Scored chain — project audits
 [90.4](archive/PROJECT_AUDIT_2026-08-09.md) →
 [96.9](archive/PROJECT_AUDIT_2026-08-09-post-B3.md) →
 [97.4](archive/PROJECT_AUDIT_2026-08-12.md) →
@@ -18,7 +20,8 @@ Source: [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md)
 [98.1](archive/PROJECT_AUDIT_2026-08-26-post-0.23.10.md) → 97.1; harness currency
 [92.4](archive/HARNESS_AUDIT_2026-08-23.md) →
 [96.5](archive/HARNESS_AUDIT_2026-08-25.md) →
-[96.1](archive/HARNESS_AUDIT_2026-08-31.md); model-graded evals
+[96.1](archive/HARNESS_AUDIT_2026-08-31.md) →
+[96.4](archive/HARNESS_AUDIT_2026-10-05.md); model-graded evals
 [2026-08-24](archive/SKILL_EVALS_2026-08-24.md) →
 [2026-08-26](archive/SKILL_EVALS_2026-08-26.md) (162/162 PASS) →
 [2026-09-02](archive/SKILL_EVALS_2026-09-02.md) (delta mode, 70/94 skill-earned); fleet audit
@@ -27,6 +30,10 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
+| B1 | 58 | hooks | `PostModelSwitch` verdict re-recorded on true grounds (the hooks reference now lists it as `additionalContext`-capable; recommend reject because nothing in the kit is model-switch-shaped) and the advisory-capable count moves 11→12 of 33 in `manifest.json` `reviewedAgainst` and README | Hooks +3 | trivial |
+| B1 | 59 | hooks | `skill-drift-guard` write-intent precision — anchor the redirect/`cp`/`mv`/`sed` detection to the guarded path (operand or redirect *target* under `.claude/(skills\|hooks)/`) and exclude fd-only redirects (`2>&1`, `>/dev/null`); regression case shown failing first with the audit's exact command; every current "fires" case kept | Hooks +3 | S |
+| B3 | 60 | harness-audit | Method: §1 names `/skill-doctor` as the observed-use input when running inside Claude Code, §4 names `/doctor prompt-audit` as a mechanical input where the binary exists, §2 records the release-tag-page fallback when the changelog fetch returns fewer entries than the gap; body stays generic (tool names in `stack.md`) | method quality | S |
+| B3 | 61 | docs | CONTRIBUTING note: this repo relies on AGENTS.md and a local `CLAUDE.local.md` silently replaces it (v2.1.277 rule; `claude-md-and-agents-md` restores both); fold in the carried trim of AGENTS.md's release-ritual and rename prose | Instruction +3 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |
 
@@ -36,8 +43,11 @@ Watch (externally gated, re-check each audit):
   launch in a subdirectory (kit-side share closed by B1-1). The hooks doc
   defines the placeholder as "the project root **where the session started**"
   with a worktree carve-out; subdirectory launches remain unspecified. Last
-  re-check **2026-08-31** (eighth pass since 2026-08-09): changelog swept
-  through head **2.1.252** — no root-resolution entry (2.1.248's
-  `CLAUDE_CODE_PROJECT_DIR_NAME` names the per-project transcript directory,
-  not the root). Gate not lifted. Earlier re-check detail in
-  [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
+  re-check **2026-10-05** (ninth pass since 2026-08-09): hooks reference
+  definition unchanged at head **2.1.289**; adjacent movement only —
+  project *skills* now load from every parent `.claude/skills/` up to the
+  repo root and `/cd` (v2.1.246+) moves the session root, but a skills-dir
+  plugin still loads only from the primary working directory and nothing
+  names hook paths. Changelog 2.1.253–2.1.282 covered from doc version notes
+  only (see the audit's changelog row). Gate not lifted. Earlier re-check
+  detail in [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).

@@ -242,16 +242,18 @@ The canonical consumer block is four lines:
 - **Quality bar:** project audit **97.1/100** (ninth pass, 2026-08-31 —
   [report](docs/archive/PROJECT_AUDIT_2026-08-31.md); the full scored chain
   is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) · harness-currency
-  **96.1/100**
-  ([HARNESS_AUDIT_2026-08-31](docs/archive/HARNESS_AUDIT_2026-08-31.md)) ·
+  **96.4/100**
+  ([HARNESS_AUDIT_2026-10-05](docs/archive/HARNESS_AUDIT_2026-10-05.md)) ·
   model-graded eval evidence **162/162 PASS**
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** no active row — the
+  **Next:** the 2026-10-05 harness audit's four signed rows, one release
+  each — B1-58 `PostModelSwitch` verdict + 12-of-33 count, B1-59
+  `skill-drift-guard` write-intent precision, B3-60 harness-audit method
+  inputs, B3-61 CONTRIBUTING AGENTS.md-precedence note. The
   [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
-  secret sweep + fan-out cite-and-spot-check in 0.24.1).
-  B3-55 (inventory.mjs memory-budget + eval-presence reporting) shipped in
-  0.24.3; PowerShell parity for `dep-check-nudge`/`live-verify-reminder`/
-  `skill-drift-guard` shipped in 0.24.4; B4-16/B4-31 stay deferred by design.
+  secret sweep + fan-out cite-and-spot-check in 0.24.1); B3-55 shipped in
+  0.24.3; PowerShell hook parity in 0.24.4; B4-16/B4-31 stay deferred by
+  design.
