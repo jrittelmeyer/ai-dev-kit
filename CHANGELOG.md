@@ -1,5 +1,46 @@
 # ai-dev-kit changelog
 
+## 0.24.8 — 2026-10-05
+
+B3-60 from the 2026-10-05 harness audit: `harness-audit` 0.1.12 → 0.1.13,
+three method additions the run itself showed were missing.
+
+- **§1 Inventory — observed use.** Where the harness ships its own per-skill
+  usage report (on Claude Code, `/skill-doctor`: context cost and invocation
+  count per skill, never-invoked skills flagged), run it when the audit runs
+  inside an interactive session. `scripts/inventory.mjs` measures static
+  cost only; this is the observed-use half it cannot see, and the script
+  stays the portable, headless path.
+- **§2 Refresh — changelog-gap fallback.** A page fetcher can truncate: the
+  2026-10-05 run found the raw harness changelog fetch returns only the
+  newest ≈7 releases, against a 37-release gap. When the fetch returns fewer
+  releases than the gap since the previous audit, cover the remainder from
+  the per-version release pages and the doc pages' minimum-version notes,
+  and say in the report which range came from which — a silently partial
+  sweep is a fabricated "no change".
+- **§4 Rubric diff — a second mechanical input.** Where the harness ships
+  its own prompt-pattern audit of instruction files, skills and agents (on
+  Claude Code, `/doctor prompt-audit [path]`: older-model patterns, stale
+  paths, contradicting files), run it beside the project's linter; it sees
+  the harness's side, not the ecosystem's, so it feeds the judgment layer
+  rather than replacing it.
+
+The two harness commands are named once each as the Claude Code instance of
+a generic step; their standing and version floors live in
+`references/stack.md`, per the body's own rule. Two eval anchors added
+(`per-version release pages`, `second mechanical input`) with a matching
+expect/reject line each. BACKLOG row 60 is retired.
+
+**Verification:** anchors first — the two new fixture entries were added
+before the prose and `skill-evals.mjs` failed on exactly those 2 anchors;
+after the prose, 10 skills · 33 scenarios · 100 anchors resolve, each on one
+line. `skill-lint` clean (the body names no `${…}` wiring placeholder and no
+bare year; always-loaded budget unchanged at 855 portable / 257 charged —
+the description is untouched). Full gate green after the self-install:
+`install.mjs --check` (40 files match), `smoke-hooks` (225 asserts),
+`smoke-installer`, `smoke-inventory`, `check-version` (6 sites at 0.24.8).
+Docs/skill-prose change — no live-verify loop applies.
+
 ## 0.24.7 — 2026-10-05
 
 B1-59 from the 2026-10-05 harness audit: `skill-drift-guard` (PostToolUse ·

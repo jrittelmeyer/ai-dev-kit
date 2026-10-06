@@ -30,7 +30,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B3 | 60 | harness-audit | Method: §1 names `/skill-doctor` as the observed-use input when running inside Claude Code, §4 names `/doctor prompt-audit` as a mechanical input where the binary exists, §2 records the release-tag-page fallback when the changelog fetch returns fewer entries than the gap; body stays generic (tool names in `stack.md`) | method quality | S |
 | B3 | 61 | docs | CONTRIBUTING note: this repo relies on AGENTS.md and a local `CLAUDE.local.md` silently replaces it (v2.1.277 rule; `claude-md-and-agents-md` restores both); fold in the carried trim of AGENTS.md's release-ritual and rename prose | Instruction +3 | S |
 | B4 | 16 | packaging | npm/`npx` packaging — opens on consumer demand (partially superseded by the plugin marketplace) | Public +1 | M |
 | B4 | 31 | packaging | Plugin payload hygiene — `source: "./"` ships the whole repo to every consumer's cache; no exclusion mechanism exists (re-verified against the live plugins reference 2026-08-31), so this needs a restructure. **Advised against** at current scale | Public +1 | L |

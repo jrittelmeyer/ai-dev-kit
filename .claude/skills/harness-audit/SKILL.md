@@ -40,6 +40,11 @@ hand-counting:
 - Connected tool servers (MCP config), permissions/allowlists in settings,
   subagent and command definitions, packaging (installer, plugin manifest),
   and the CI gates that police any of it.
+- Observed use: where the harness ships its own per-skill usage report (on
+  Claude Code, `/skill-doctor` — context cost and invocation count per
+  skill, never-invoked skills flagged), run it when the audit runs inside an
+  interactive session. It is the observed-use half the script cannot
+  measure; the script stays the portable, headless path.
 
 ## 2. Refresh the authorities
 
@@ -48,7 +53,12 @@ governs, its URL, how it was last verified, and when. **Re-fetch every row.**
 A moved or dead source → find its successor and update the row *as part of
 this run* (the skill repairs its own inputs). No network access → run the
 mechanical steps only and stamp the report **PARTIAL** — never fabricate
-ecosystem findings. If the adapter's `harnessAudit.kitSourcePath` resolves to
+ecosystem findings. A fetcher can truncate a long page: when the harness
+changelog fetch returns fewer releases than the gap since the previous audit,
+cover the remainder from the per-version release pages and the doc pages'
+minimum-version notes, and say in the report which range came from which —
+a silently partial changelog sweep is a fabricated "no change". If the
+adapter's `harnessAudit.kitSourcePath` resolves to
 an existing local directory, apply the identical edit to
 `<kitSourcePath>/skills/harness-audit/references/sources.md` in the same run,
 so the installed copy and kit source never diverge. If the field is absent or
@@ -73,8 +83,13 @@ mirrored upstream.
 ## 4. Rubric diff
 
 Run the project's mechanical skill linter and eval runner first where they
-exist, and don't re-litigate what they enforce. Then score the judgment layer
-against the refreshed authorities:
+exist, and don't re-litigate what they enforce. Where the harness ships its
+own prompt-pattern audit of instruction files, skills, and agents (on Claude
+Code, `/doctor prompt-audit [path]` — older-model patterns, stale paths,
+contradicting files), run it as a second mechanical input; it sees the
+harness's side, not the ecosystem's, so it feeds the judgment layer rather
+than replacing it. Then score the judgment layer against the refreshed
+authorities:
 
 - Description quality (what + when, third person, trigger phrases) and the
   always-loaded token budget.
