@@ -10,8 +10,9 @@ where the project's own adapter config explicitly opts in.
 
 ## What `--hooks` executes in your sessions
 
-`install.mjs --hooks` wires ten hook entries into `.claude/settings.json`;
-matching events then run the kit's handlers out of
+`install.mjs --hooks` wires ten handlers (eleven entries — `live-verify-reminder`
+is wired once per shell tool because the harness's `if` field is single-tool)
+into `.claude/settings.json`; matching events then run the kit's handlers out of
 `.claude/hooks/ai-dev-kit/`. Two contract classes, each handler (and
 script-exec-guard's two helper modules) auditable in under 140 lines (kit
 source `hooks/`):

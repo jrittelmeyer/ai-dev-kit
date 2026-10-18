@@ -143,10 +143,10 @@ unchanged.
 
 | Handler | Event · matcher | Fires on |
 | --- | --- | --- |
-| `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash` | package.json edits; pm `add`/`update`/install-with-args |
-| `live-verify-reminder.mjs` | PreToolUse · `Bash` (`if: "Bash(git *)"`) | any command segment containing `git … commit` |
+| `dep-check-nudge.mjs` | PostToolUse · `Edit\|Write\|Bash\|PowerShell` | package.json edits; pm `add`/`update`/install-with-args (either shell tool) |
+| `live-verify-reminder.mjs` | PreToolUse · `Bash\|PowerShell` (`if: "Bash(git *)"` and `if: "PowerShell(git *)"`, one entry each — the `if` field is single-tool) | any command segment containing `git … commit` |
 | `skill-drift-guard-preedit.mjs` | PreToolUse · `Edit\|Write` | a file tool about to edit under `.claude/skills\|hooks/` — redirects to kit source before the wasted edit lands |
-| `skill-drift-guard.mjs` | PostToolUse · `Bash` | a Bash command writing under `.claude/skills\|hooks/` (`sed -i`, `cp`, `mv`, `tee`, a redirect) — the indirect edits the PreToolUse twin can't see |
+| `skill-drift-guard.mjs` | PostToolUse · `Bash\|PowerShell` | a shell command whose write intent targets `.claude/skills\|hooks/` — a redirect *into* it, an in-place writer (`sed -i`, `tee`, `Set-Content`, …) naming it, or a copy/move whose destination is it, judged per pipeline segment (0.24.7) — the indirect edits the PreToolUse twin can't see |
 | `context-guard.mjs` | PostToolUse · `Edit\|Write` | edits to `AGENTS.md`/`CLAUDE.md` (any depth), the adapter’s `docs.contextDir`, or agent-memory files (`~/.claude/projects/<slug>/memory/*.md`) — injects the matching context-economy reminder |
 | `compact-reorient.mjs` | SessionStart · `compact` | a session resuming from context compaction — injects a one-shot "re-open the status doc + current backlog row; re-verify assumed findings" reorientation (deliberately not wired on startup/resume/clear/fork; the handler also guards on the payload's `source`, so a mis-wired matcher can't widen it) |
 | `stop-gate.mjs` · opt-in | Stop | `enforcement.stopGate.commands` at session end — runs in the background via `asyncRewake` (turn ends immediately); a failing command exits 2, waking the agent one turn later with the failure so it isn't missed (generalized from the danger-noodles/smash-gods/wyrd consumer originals) |
@@ -206,7 +206,7 @@ The canonical consumer block is four lines:
   `--check` exists to catch exactly that.
 - **Keep skill bodies generic.** Project facts go in the adapter (mechanical params)
   or the project's agent memory (recipes/gotchas) — never hardcoded in a skill.
-- **Skill bodies are eval-gated.** Each skill carries three scenarios in
+- **Skill bodies are eval-gated.** Each skill carries three or more scenarios in
   `.github/skill-evals/<skill>.json`; every expected behavior anchors to a literal
   the body must still contain, so editing a rule away fails CI instead of passing
   the shape-and-size gates. `node .github/skill-evals.mjs --report` prints the same
@@ -246,8 +246,8 @@ The canonical consumer block is four lines:
   (B4-16), plugin payload hygiene (B4-31, advised against at current scale),
   and git-root resolution for `CLAUDE_PROJECT_DIR` when sessions launch in a
   subdirectory — harness-side, watched in [docs/BACKLOG.md](docs/BACKLOG.md).
-- **Quality bar:** project audit **97.1/100** (ninth pass, 2026-08-31 —
-  [report](docs/archive/PROJECT_AUDIT_2026-08-31.md); the full scored chain
+- **Quality bar:** project audit **96.3/100** (tenth pass, 2026-10-18 —
+  [report](docs/archive/PROJECT_AUDIT_2026-10-18.md); the full scored chain
   is indexed in [docs/BACKLOG.md](docs/BACKLOG.md)) · harness-currency
   **96.4/100**
   ([HARNESS_AUDIT_2026-10-05](docs/archive/HARNESS_AUDIT_2026-10-05.md)) ·
@@ -255,13 +255,16 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** no active row — the 2026-10-05 harness audit's four signed rows
-  shipped one release each: B1-58 (`PostModelSwitch` verdict + 12-of-33
-  count) in 0.24.6, B1-59 (`skill-drift-guard` write intent anchored to the
-  guarded path) in 0.24.7, B3-60 (harness-audit method: the harness's own
-  usage report and prompt-pattern audit as inputs, changelog-gap fallback)
-  in 0.24.8, B3-61 (CONTRIBUTING AGENTS.md-precedence note + AGENTS.md
-  trim) in 0.24.9. The
+  **Next:** B1-62 first — `release.yml` is a pwn-request (an open
+  high-severity CodeQL alert since 2026-09-02: a fork PR from a branch named
+  `main` reaches the write-token job); then B1-63, `script-exec-guard`
+  hardening (`\rm`, `/bin/rm`, `xargs rm`, a timeout fail-open on long
+  scripts). The 2026-10-05 harness audit's four signed rows shipped one
+  release each: B1-58 (`PostModelSwitch` verdict + 12-of-33 count) in
+  0.24.6, B1-59 (`skill-drift-guard` write intent anchored to the guarded
+  path) in 0.24.7, B3-60 (harness-audit method inputs, changelog-gap
+  fallback) in 0.24.8, B3-61 (CONTRIBUTING AGENTS.md-precedence note +
+  AGENTS.md trim) in 0.24.9. The
   [rootstock-os review](docs/archive/ROOTSTOCK_REVIEW_2026-09-30.md)'s two
   rows shipped (B1-56 `script-exec-guard` in 0.24.0; B1-57 client-bundle
   secret sweep + fan-out cite-and-spot-check in 0.24.1); B3-55 shipped in

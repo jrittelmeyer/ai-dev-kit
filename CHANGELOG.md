@@ -290,7 +290,7 @@ cross-check held), `smoke-installer`, `smoke-inventory`, `check-version`.
   section reports presence only; §4 still scores the graded pass.
 
 `harness-audit` → 0.1.11; its §1 names the new outputs. A new
-`.github/smoke-inventory.mjs` (9 cases, isolated `HOME`/`CLAUDE_CONFIG_DIR`)
+`.github/smoke-inventory.mjs` (10 cases, isolated `HOME`/`CLAUDE_CONFIG_DIR`)
 joins the adapter gate, CI and CONTRIBUTING. wyrd carries a ported copy of
 `inventory.mjs` plus its own test, so it needs a re-port on its next kit
 upgrade.
@@ -602,10 +602,10 @@ be re-run manually against `main` or a tag without a new push (GitHub's
 dispatch API takes a branch/tag ref, not an arbitrary sha — confirmed live;
 a truly orphaned sha needs a throwaway branch pushed at it first). New
 `.github/workflows/release.yml`
-triggers on `workflow_run` of CI completing successfully on `main`; it reads
-`VERSION`, no-ops if `v<version>` is already tagged, otherwise runs
+triggers on `workflow_run` of CI completing successfully on `main`; it runs
 `check-release-ready.mjs` against the CI run's sha (pinned, not `main` HEAD)
-and — on green — hands off to the new `.github/cut-release.mjs`, which cuts
+and — on green — hands off to the new `.github/cut-release.mjs`, which reads
+`VERSION`, no-ops if `v<version>` is already tagged, and otherwise cuts
 the annotated tag and creates the GitHub Release titled `v<version> —
 <subject>` (subject and body both derived from the CHANGELOG's top
 `## <version>` entry, not from any one commit — decoupling the title from
