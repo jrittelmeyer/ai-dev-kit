@@ -1,5 +1,42 @@
 # ai-dev-kit changelog
 
+## 0.24.10 — 2026-10-18
+
+B1-62 from the 2026-10-18 project audit: closes the `release.yml`
+pwn-request (CodeQL alert #1, `actions/untrusted-checkout/high`, open since
+2026-09-02).
+
+- **`release.yml` job guard.** `cut-release` ran for any completed CI
+  `workflow_run` whose `head_branch` was `main` — and a fork's default branch
+  is also `main`, so a fork PR's CI run reached a job that checks out the
+  fork's `head_sha` and executes `.github/check-release-ready.mjs` and
+  `cut-release.mjs` from that checkout with a `contents: write` token
+  (GitHub: a `workflow_run` job gets write tokens "even if the previous
+  workflow was not" privileged). The `if:` now also requires
+  `workflow_run.event == 'push'` and
+  `workflow_run.head_repository.full_name == github.repository`.
+  Permissions stay `contents: write` only. Every legitimate release is a push
+  to `main` from this repository, so the release path is unchanged.
+- **Dependabot #1 merged first** (`actions/setup-node` 7.0.0 → 7.1.0, SHA
+  pin updated in `ci.yml` and `release.yml`); CI was green on it before this
+  commit.
+
+BACKLOG row 62 is retired; README "Next" is now B1-63.
+
+**Verification:** the mechanism was read from GitHub's `workflow_run` docs
+and CodeQL alert #1's own text during the audit; the Dependabot PR's run on
+2026-10-11 already showed `cut-release` `skipped` for a non-`main` branch.
+This commit's workflow YAML was exercised by the gate's own tooling (no
+workflow-lint step exists) and by the push itself: the post-push steps —
+CI green on the release sha, the `v0.24.10` tag landing, and the
+code-scanning alerts API returning 0 open alerts — are recorded in the
+program state after the push. Full gate green after the self-install, on
+Windows and on Linux (Docker `node:22`): `install.mjs --check` (40 files
+match), `skill-lint` (10 clean), `skill-evals` (33 scenarios, 100 anchors),
+`smoke-hooks` (225 asserts), `smoke-installer`, `smoke-inventory`,
+`check-version` (6 sites at 0.24.10). No hook or skill changed, so no
+live-verify loop applies.
+
 ## 0.24.9 — 2026-10-05
 
 B3-61, the last of the 2026-10-05 harness audit's signed rows — two

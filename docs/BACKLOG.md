@@ -6,8 +6,8 @@ shipped-item history (the CHANGELOG owns that) and no duplicated detail — the
 report. Every row enters plan → sign-off → build.
 
 Source: [PROJECT_AUDIT_2026-10-18](archive/PROJECT_AUDIT_2026-10-18.md)
-(96.3/100, tenth audit — rows 62–67; 62 is an open high-severity CodeQL
-alert and goes first). Earlier rows 47–61 all shipped by 0.24.9 (47–54 from
+(96.3/100, tenth audit — rows 62–67; 62 shipped in 0.24.10, closing the
+high-severity CodeQL alert). Earlier rows 47–61 all shipped by 0.24.9 (47–54 from
 [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md), 56–57 from
 the rootstock-os review, 58–61 from
 [HARNESS_AUDIT_2026-10-05](archive/HARNESS_AUDIT_2026-10-05.md)). Scored chain — project audits
@@ -32,7 +32,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B1 | 62 | ci-security | Close the `release.yml` pwn-request (CodeQL alert #1, high, open since 2026-09-02): gate the job on `workflow_run.event == 'push'` **and** `workflow_run.head_repository.full_name == github.repository` beside the existing checks; verify by the alert closing and a fork-PR run showing `skipped` | Security +5 | S |
 | B1 | 63 | hooks | `script-exec-guard` hardening, each shown failing first: `\rm` / `/bin/rm` verbs, `xargs rm`, `+=` and climbing-mktemp exemption bypass, `Binary files` diff output counts as "all", memoised `assigns()` so a 192 KB script scans inside the 10 s timeout instead of failing open, `+++` skipped only before the first `@@`, extensionless heredoc targets, `timeout`/`nice`/`flock` wrappers; document the size/`node_modules` skips and `cd "$HOME"; rm -rf .` as known limits | Hooks +6 | M |
 | B2 | 64 | harness-audit | `inventory.mjs` robustness: BOM/JSONC-safe `hooksFromFile` degrading to an "unreadable" line, dedup key with `if` + full command, non-`.mjs` handler names, inline `plugin.json` hooks, no-skills-dir continues, symlinks followed, fixture-shape-only reads; smoke cases for the Skills and Hooks sections; SKILL.md §1 names the standing-instruction section | Lifecycle +3 | M |
 | B2 | 65 | release-tooling | `cut-release.mjs` idempotence (existing-tag sha check, `gh release view` fallback), `check-release-ready` pagination (`per_page=100`), AGENTS.md states the red-release-sha consequence (orphaned version: hand-tag the fix sha or documented skip) and `check-tag-currency` accepts the skip, `GITHUB_JOB` self-exclusion commented, Release titles capped | Versioning +3 | S |
