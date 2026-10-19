@@ -255,9 +255,10 @@ The canonical consumer block is four lines:
   ([SKILL_EVALS_2026-08-26](docs/archive/SKILL_EVALS_2026-08-26.md)) with
   **70/94** expect behaviors confirmed skill-earned against a no-skill
   baseline ([SKILL_EVALS_2026-09-02](docs/archive/SKILL_EVALS_2026-09-02.md)).
-  **Next:** B1-63 first — `script-exec-guard` hardening (`\rm`, `/bin/rm`,
-  `xargs rm`, a timeout fail-open on long scripts); B1-62 (the `release.yml`
-  pwn-request, CodeQL alert #1) shipped in 0.24.10. The 2026-10-05 harness
+  **Next:** B2-64 — `inventory.mjs` robustness (BOM crash, hook dedup);
+  B1-62 (the `release.yml` pwn-request, CodeQL alert #1) shipped in
+  0.24.10, B1-63 (`script-exec-guard` hardening: `\rm`, `/bin/rm`,
+  `xargs rm`, the long-script timeout fail-open) in 0.24.11. The 2026-10-05 harness
   audit's four signed rows shipped one
   release each: B1-58 (`PostModelSwitch` verdict + 12-of-33 count) in
   0.24.6, B1-59 (`skill-drift-guard` write intent anchored to the guarded

@@ -775,10 +775,20 @@ for (const event of wiredEvents) {
     put(segOn, "tracked-clean.sh", ['rm -rf "$DIR"']);
     put(segOn, "lib.sh", ['W="$(mktemp -d)"', "trap 'rm -rf \"$W\"' EXIT", "echo ok"]);
     put(segOn, "lib2.sh", ["trap 'rm -rf \"$DIR\"' EXIT"]);
+    put(segOn, ".gitattributes", ["nodiff.sh -diff"]);
+    put(segOn, "nodiff.sh", ["echo ok"]);
+    put(segOn, "count.mjs", ['import { rmSync } from "node:fs";', "const dir = process.env.D;"]);
     gitIn("add", "-A");
     gitIn("commit", "-q", "-m", "fixture");
     put(segOn, "lib.sh", ['W="$(mktemp -d)"', "trap 'rm -rf \"$W\"' EXIT", 'W="$HOME"', "echo ok"]);
     put(segOn, "lib2.sh", ["trap 'rm -rf \"$DIR\"' EXIT", "echo bye"]);
+    put(segOn, "nodiff.sh", ["echo ok", 'rm -rf "$HOME"']);
+    put(segOn, "count.mjs", [
+      'import { rmSync } from "node:fs";',
+      "const dir = process.env.D;",
+      "++globalThis.n;",
+      "rmSync(dir, { recursive: true });",
+    ]);
     put(segOn, "new.sh", ['rm -rf "$1"']);
     put(segOn, "build.sh", ["rm -rf dist"]);
     expectAsk("untracked script, positional target", segRun(bash("bash new.sh", { cwd: segOn })), "new.sh:1");
@@ -786,6 +796,46 @@ for (const event of wiredEvents) {
     expectQuiet("tracked-clean script", segRun(bash("bash tracked-clean.sh", { cwd: segOn })));
     expectQuiet("tracked script, only an echo added", segRun(bash("bash lib2.sh", { cwd: segOn })));
     expectQuiet("untracked script, literal target", segRun(bash("bash build.sh", { cwd: segOn })));
+
+    // B1-63: evasions the 2026-10-18 project audit reproduced — each was silent.
+    // A `-diff` attribute made `git diff` print "Binary files … differ" (no +
+    // lines, so tracked-clean); an added `++` line was dropped as the +++ header,
+    // shifting every later line number.
+    expectAsk("tracked script with a -diff attribute", segRun(bash("bash nodiff.sh", { cwd: segOn })), "nodiff.sh:2");
+    expectAsk("added ++ line keeps later line numbers", segRun(bash("node count.mjs", { cwd: segOn })), "count.mjs:4");
+    const evade = [
+      ["backslash-escaped \\rm", ['\\rm -rf "$HOME"'], 1],
+      ["absolute /bin/rm", ['/bin/rm -rf "$HOME"'], 1],
+      ["xargs rm fed $HOME", ['ls "$HOME" | xargs rm -rf'], 1],
+      ["+= climb out of a mktemp dir", ['T="$(mktemp -d)"', 'T+="/../.."', "trap 'rm -rf \"$T\"' EXIT"], 3],
+      ["mktemp RHS that climbs", ['T="$(mktemp -d)/../.."', "trap 'rm -rf \"$T\"' EXIT"], 2],
+    ];
+    evade.forEach(([label, body, line], k) => {
+      const s = put(segOut, `evade-${k}.sh`, body);
+      expectAsk(label, segRun(bash(`bash "${s}"`)), `evade-${k}.sh:${line}`);
+    });
+    const wrapped = put(segOut, "wrapped.sh", ['rm -rf "$HOME"']);
+    for (const w of ["timeout 30", "nice -n 10", "flock /tmp/adk-seg.lock"]) {
+      expectAsk(`${w.split(" ")[0]} wrapper`, segRun(bash(`${w} bash "${wrapped}"`)), "wrapped.sh:1");
+    }
+    const gen2 = join(segOut, "gen-noext").replace(/\\/g, "/");
+    expectAsk("heredoc writes an extensionless script", segRun(bash(`cat > "${gen2}" <<'EOF'\nrm -rf "$X"\nEOF\nbash "${gen2}"`)));
+    // A 192 KB script (under the 256 KB cap) must scan inside the wiring's
+    // 10 s timeout: a killed hook lets the command through unasked.
+    const big = [];
+    for (let k = 0, size = 0; size < 192 * 1024; k++) {
+      big.push(`V${k}="$(mktemp -d)"`, `rm -rf "$V${k}"`);
+      size += 2 * String(k).length + 30;
+    }
+    big.push('rm -rf "$HOME"');
+    const bigSh = put(segOut, "big.sh", big);
+    const bigRes = spawnSync(process.execPath, [join(process.cwd(), SEG)], {
+      input: JSON.stringify(bash(`bash "${bigSh}"`)),
+      encoding: "utf8",
+      env: { ...process.env, CLAUDE_PROJECT_DIR: segOn },
+      timeout: 10000,
+    });
+    expectAsk("192 KB script scans inside the 10 s hook timeout", bigRes, `big.sh:${big.length}`);
 
     expectQuiet("no opt-in", segRun(bash(`bash "${demo}"`), segBare));
     expectQuiet("node -e literal rmSync target", segRun(bash(`node -e "require('fs').rmSync('dist', {recursive: true, force: true})"`)));

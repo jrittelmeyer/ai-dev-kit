@@ -41,7 +41,11 @@ source `hooks/`):
   ls-files`/`git diff` to skip tracked-clean scripts, and answers
   `permissionDecision: "ask"` on a recursive delete of a non-literal or
   critical target — it adds a prompt for the human, never a deny, so it is
-  safe to pre-set in a template. No network calls in any handler.
+  safe to pre-set in a template. It is defence-in-depth behind the
+  harness's own `rm` check, not a sandbox: it reads one level deep, skips
+  scripts over 256 KB and under `node_modules`, and does not catch a literal
+  target in a moved directory (`cd "$HOME"; rm -rf .`) — the full list is in
+  the CHANGELOG (0.24.0, 0.24.11). No network calls in any handler.
 
 Pure Node stdlib, zero dependencies, per-entry timeouts in the wiring
 (10 s per tool-event handler · 300/30 s for the Stop pair), malformed events

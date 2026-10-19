@@ -1,5 +1,61 @@
 # ai-dev-kit changelog
 
+## 0.24.11 — 2026-10-19
+
+B1-63 from the 2026-10-18 project audit: `script-exec-guard` hardening. The
+audit reproduced eight ways a session-fresh script's recursive delete got
+past the guard silently, and one way to time it out. A killed hook lets the
+command run unasked, so that one fails open.
+
+- **Verbs and pipes** (`script-exec-scan.mjs`). `\rm -rf "$HOME"` and
+  `/bin/rm -rf "$HOME"` now count: the verb may follow `\` or `/`.
+  `ls "$HOME" | xargs rm -rf` counts as piped in, like a bare `| rm`.
+- **The mktemp exemption** only covers names assigned from
+  mktemp/mkdtemp alone. `T+="/../.."` is an assignment now, and never a
+  mktemp one. A mktemp right-hand side containing `..`
+  (`T="$(mktemp -d)/../.."`) no longer qualifies.
+- **No fail-open on long scripts.** Assignments are indexed once per scan
+  instead of re-reading every line for each name. The temp-dir and
+  fresh-assignment checks are memoised per target, and the scan stops at
+  the first live hit, which is the only one the guard uses. A 192 KB
+  script went from about 45.7 s (killed at the wiring's 10 s timeout) to
+  scanning inside the timeout. During the build, a probe found a second
+  slow path: one name reassigned about 6,000 times in a 250 KB script took
+  4.7 s even after the index. With the memo it takes 31 ms.
+- **Tracked scripts** (`script-exec-guard.mjs`). `git diff` now runs with
+  `--text --no-ext-diff --no-textconv`, so a `-diff` or textconv attribute
+  can no longer turn added lines into "Binary files … differ", which read
+  as tracked-clean. A `+++` line is treated as the file header only before
+  the first `@@`. An added line starting with `++` used to be dropped, which
+  shifted every later line number so the delete after it was missed.
+- **What runs** (`script-exec-parse.mjs`). `timeout`, `nice` and `flock`
+  are wrappers, and their own arguments are skipped. A heredoc command now
+  has its text scanned whenever it runs a script, including one that is not
+  on disk yet and has no script extension. Before, the target needed a
+  script extension, although 0.24.0 promised heredoc-written scripts.
+- **Known limits, now written down** (here and in SECURITY.md): scripts
+  over 256 KB and under `node_modules` are skipped. A literal target in a
+  moved directory (`cd "$HOME"; rm -rf .`) is not caught. Both are in
+  addition to the 0.24.0 list.
+
+BACKLOG row 63 is retired; README "Next" is now B2-64. The three files stay
+inside SECURITY.md's 140-line bound (guard 134, parse 88, scan 136).
+
+**Verification:** all twelve new `smoke-hooks` cases were added first and
+run against the 0.24.10 hooks. All twelve failed: eleven `asked=false` and
+the 192 KB case `exit null` (killed by the 10 s timeout). All other cases
+stayed green. After the fix all twelve ask, and the existing quiet cases
+(mktemp cleanup idiom, literal targets, tracked-clean, reading not running)
+stay silent. An out-of-tree probe timed adversarial inputs at ≤ 3 ms each:
+64 KB runs of `declare -a …`, `| xargs -x …`, `timeout -a …` and
+`flock -a x …`, plus a 64 KB unbroken word. The 6,000-reassignment case
+went from 4,654 ms to 31 ms; it has no smoke case, because a timing assert
+under the 10 s budget would not fail on this host. Full gate green after
+the self-install, on Windows and on Linux (Docker `node:22`):
+`install.mjs --check` (40 files match), `skill-lint` (10 clean),
+`skill-evals` (33 scenarios, 100 anchors), `smoke-hooks` (237 asserts),
+`smoke-installer`, `smoke-inventory`, `check-version` (6 sites at 0.24.11).
+
 ## 0.24.10 — 2026-10-18
 
 B1-62 from the 2026-10-18 project audit: closes the `release.yml`

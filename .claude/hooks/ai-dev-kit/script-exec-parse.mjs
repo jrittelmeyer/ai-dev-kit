@@ -3,7 +3,7 @@
  *
  * parse(cmd, cwd) → [{ file } | { code, label }]: what a Bash/PowerShell
  * command executes. Only heads in command position count (start, ; & | ( `
- * { $( or a newline; wrappers like sudo/env/VAR=x skipped), so `cat x.sh` and
+ * { $( or a newline; wrappers like sudo/env/timeout/VAR=x skipped), so `cat x.sh` and
  * `grep bash x.sh` read rather than run. An interpreter (bash/sh/zsh,
  * node/deno/bun, python, pwsh, cmd) yields its first existing file argument or
  * its inline code (-e / -c / -Command); a head that is itself a path runs that
@@ -16,7 +16,7 @@ import { homedir, tmpdir } from "node:os";
 import { basename, resolve } from "node:path";
 
 const HEAD =
-  /(?:^|[;&|(\n`{]|\$\()\s*((?:(?:sudo|env|time|nohup|exec|then|do|if|else|npx|bunx|xargs|uv|poetry|pipenv)\s+(?:run\s+)?|[A-Za-z_]\w*=\S*\s+)*)("[^"]*"|'[^']*'|[^\s;&|()<>]+)/g;
+  /(?:^|[;&|(\n`{]|\$\()\s*((?:(?:sudo|env|time|nohup|exec|then|do|if|else|npx|bunx|xargs|uv|poetry|pipenv|(?:timeout|flock)\s+(?:-\S+\s+)*\S+|nice(?:\s+-n\s*-?\d+|\s+-\d+)?)\s+(?:run\s+)?|[A-Za-z_]\w*=\S*\s+)*)("[^"]*"|'[^']*'|[^\s;&|()<>]+)/g;
 const TOK = /"(?:\\.|[^"\\])*"|'[^']*'|[;&|\n)]+|[^\s;&|()<>]+/g;
 const INTERP = /^(?:bash|sh|zsh|dash|ksh|source|\.|node|deno|bun|tsx|ts-node|python[\d.]*|py|pwsh|powershell|cmd)$/;
 const INLINE = { node: /^(?:-e|-p|--eval|--print)$/, py: /^-c$/, sh: /^-c$/, ps: /^-c(?:ommand)?$/i, cmd: /^\/[ck]$/i };
@@ -43,6 +43,7 @@ function expand(t, base) {
 export function parse(cmd, cwd) {
   const out = [];
   let missing = false;
+  let ran = false; // something ran a script — with a heredoc, maybe the one it writes (any name)
   for (const m of cmd.matchAll(HEAD)) {
     const head = unq(m[2]);
     const b = basename(head.replace(/\\/g, "/")).toLowerCase().replace(/\.exe$/, "");
@@ -56,6 +57,7 @@ export function parse(cmd, cwd) {
       continue;
     }
     let file = null;
+    if (INTERP.test(b) || /[\\/]/.test(head) || SCRIPT_EXT.test(head)) ran = true;
     if (INTERP.test(b)) {
       const fam = /^(?:node|deno|bun|tsx|ts-node)$/.test(b) ? "node" : /^py/.test(b) ? "py"
         : /^(?:pwsh|powershell)$/.test(b) ? "ps" : b === "cmd" ? "cmd" : "sh";
@@ -81,6 +83,6 @@ export function parse(cmd, cwd) {
     }
     if (file) out.push({ file });
   }
-  if (missing || (out.length && /<</.test(cmd))) out.push({ code: cmd, label: "command text" });
+  if (missing || (ran && /<</.test(cmd))) out.push({ code: cmd, label: "command text" });
   return out;
 }

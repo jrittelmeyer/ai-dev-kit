@@ -66,14 +66,15 @@ function review(file) {
   const d = dirname(file);
   const b = basename(file);
   if (!git(["ls-files", "--", b], d)?.trim()) return "all";
-  const diff = git(["diff", "-U0", "HEAD", "--", b], d);
+  // --text etc.: a `-diff` or textconv attribute must not hide the added lines.
+  const diff = git(["diff", "-U0", "--text", "--no-ext-diff", "--no-textconv", "HEAD", "--", b], d);
   if (diff === null) return "all";
   const added = new Set();
-  let n = 0;
+  let n = -1; // before the first @@, a "+++" line is the file header; after it, an added "++…" line
   for (const l of diff.split("\n")) {
     const h = /^@@ -\S+ \+(\d+)/.exec(l);
     if (h) n = Number(h[1]);
-    else if (l.startsWith("+") && !l.startsWith("+++")) added.add(n++);
+    else if (n >= 0 && l.startsWith("+")) added.add(n++);
   }
   return added.size ? added : null;
 }
