@@ -18,11 +18,25 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 const root = process.argv[2] ?? process.cwd();
 const tokens = (s) => Math.ceil(s.length / 4);
 const posix = (p) => p.replaceAll("\\", "/");
+const firstLine = (m) => String(m).split("\n")[0];
+const isObject = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+/** JSON.parse that tolerates the UTF-8 BOM Windows editors prepend. */
+const parseJson = (text) => JSON.parse(text.replace(/^\uFEFF/, ""));
+const readJsonStrict = (p) => parseJson(readFileSync(p, "utf8"));
 const readJson = (p) => {
   try {
-    return JSON.parse(readFileSync(p, "utf8"));
+    return readJsonStrict(p);
   } catch {
     return null;
+  }
+};
+/** Directory test that follows links — a `Dirent` reports a symlink or a
+ * Windows junction as neither file nor directory. False for a dangling link. */
+const isDir = (p) => {
+  try {
+    return statSync(p).isDirectory();
+  } catch {
+    return false;
   }
 };
 
@@ -44,15 +58,27 @@ function parseFrontmatter(text) {
   return { fields, body: text.slice(m[0].length) };
 }
 
-const walk = (dir) =>
-  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const p = join(dir, entry.name);
-    return entry.isDirectory() ? walk(p) : [p];
+/** Every file under `dir`, following directory links. A realpath seen-set
+ * stops a link back to an ancestor from looping; dangling links are skipped. */
+function walk(dir, seen = new Set()) {
+  const real = realpathSync(dir);
+  if (seen.has(real)) return [];
+  seen.add(real);
+  return readdirSync(dir).flatMap((name) => {
+    const p = join(dir, name);
+    let stat;
+    try {
+      stat = statSync(p);
+    } catch {
+      return [];
+    }
+    return stat.isDirectory() ? walk(p, seen) : [p];
   });
+}
 
 function findSkillsDir() {
   for (const candidate of [".claude/skills", "skills"]) {
-    if (existsSync(join(root, candidate))) return candidate;
+    if (isDir(join(root, candidate))) return candidate;
   }
   return null;
 }
@@ -66,9 +92,8 @@ function findSkillsDir() {
  * `label` disambiguates nested skills as `<plugin>/<skill>` in the report. */
 function collectSkillDirs(skillsDir) {
   const out = [];
-  const entries = readdirSync(join(root, skillsDir), { withFileTypes: true })
-    .filter((e) => e.isDirectory())
-    .map((e) => e.name)
+  const entries = readdirSync(join(root, skillsDir))
+    .filter((n) => isDir(join(root, skillsDir, n)))
     .sort();
   for (const name of entries) {
     const base = join(root, skillsDir, name);
@@ -79,9 +104,8 @@ function collectSkillDirs(skillsDir) {
     const pluginManifest = join(base, ".claude-plugin", "plugin.json");
     const pluginSkillsDir = join(base, "skills");
     if (existsSync(pluginManifest) && existsSync(pluginSkillsDir)) {
-      const nested = readdirSync(pluginSkillsDir, { withFileTypes: true })
-        .filter((e) => e.isDirectory())
-        .map((e) => e.name)
+      const nested = readdirSync(pluginSkillsDir)
+        .filter((n) => isDir(join(pluginSkillsDir, n)))
         .sort();
       for (const n of nested) {
         const p = join(pluginSkillsDir, n);
@@ -92,14 +116,14 @@ function collectSkillDirs(skillsDir) {
   return out;
 }
 
-function skillRows(skillsDir) {
+function skillRows(skillDirs) {
   const rows = [];
-  for (const { label, dirPath } of collectSkillDirs(skillsDir)) {
+  for (const { label, dirPath } of skillDirs) {
     const skillPath = join(dirPath, "SKILL.md");
-    const { fields, body } = parseFrontmatter(readFileSync(skillPath, "utf8"));
+    const { fields, body } = parseFrontmatter(readFileSync(skillPath, "utf8").replace(/^﻿/, ""));
     const desc = fields.description ?? "";
     const files = walk(dirPath).filter((f) => !f.endsWith("SKILL.md"));
-    const refs = files.map((f) => posix(relative(dirPath, f)));
+    const refs = files.map((f) => posix(relative(dirPath, f))).sort();
     rows.push({
       name: label,
       descChars: desc.length,
@@ -112,32 +136,55 @@ function skillRows(skillsDir) {
   return rows;
 }
 
-/** Wired hook events from a single hooks.json- or settings.json-shaped file
- * (both nest { hooks: { EventName: [{ matcher, hooks: [...] }] } }).
- * 'source' is "loaded" for a file Claude Code reads directly
- * (.claude/settings*.json) or "reference" for an installer/plugin-manifest
- * copy (hooks/hooks.json, or an installed hook dir's own hooks.json) that
- * describes the same hooks but is not itself read by Claude Code. */
-function hooksFromFile(path, source) {
+/** Short, quoted, table-safe excerpt of a prompt or URL. */
+const clip = (s, n = 40) => {
+  const t = String(s).replace(/\s+/g, " ").trim();
+  return (t.length > n ? `${t.slice(0, n).trimEnd()}…` : t).replaceAll("|", "\\|");
+};
+const baseName = (t) => t.split(/[\\/]/).filter(Boolean).pop() ?? t;
+
+/** A readable handler name: a command hook's first path-like token (its
+ * basename carries an extension — `guard.mjs`, `lint.sh`, `check.py` — and an
+ * `.exe` interpreter yields to the script after it), else its first token
+ * (`npx`, `eslint`); prompt/agent hooks by their prompt, http hooks by URL. */
+function handlerName(h) {
+  const type = h.type ?? "command";
+  if (type === "prompt" || type === "agent") return `${type}: "${clip(h.prompt ?? "")}"`;
+  if (type === "http") return `http: ${clip(h.url ?? "")}`;
+  const tokens = [...String(h.command ?? "").split(/\s+/), ...(Array.isArray(h.args) ? h.args.map(String) : [])]
+    .map((t) => t.replace(/^["']+|["';]+$/g, ""))
+    .filter(Boolean);
+  const pathy = tokens.filter((t) => /[^./\\]\.[A-Za-z0-9]{1,8}$/.test(baseName(t)));
+  const name = pathy.find((t) => !/\.exe$/i.test(t)) ?? pathy[0] ?? tokens[0];
+  return name ? baseName(name) : "?";
+}
+
+/** Rows from one hooks event map ({ EventName: [{ matcher, hooks: [...] }] }),
+ * shape-checked so a malformed map throws and the caller reports the whole
+ * source unreadable rather than half-reading it. */
+function hookRows(wired, file, source) {
+  if (!isObject(wired)) throw new Error("`hooks` is not an object");
   const rows = [];
-  const parsed = JSON.parse(readFileSync(path, "utf8"));
-  const wired = parsed.hooks ?? {};
   for (const [event, entries] of Object.entries(wired)) {
+    if (!Array.isArray(entries)) throw new Error(`hooks.${event} is not an array`);
     for (const entry of entries) {
+      if (!isObject(entry) || !Array.isArray(entry.hooks ?? [])) throw new Error(`hooks.${event} has a malformed matcher group`);
       for (const h of entry.hooks ?? []) {
-        const handler =
-          [h.command ?? "", ...(Array.isArray(h.args) ? h.args : [])]
-            .join(" ")
-            .match(/([\w-]+\.mjs)\b/)?.[1] ?? "?";
+        if (!isObject(h)) throw new Error(`hooks.${event} has a non-object handler`);
+        const matcher = entry.matcher ?? "*";
+        const type = h.type ?? "command";
         rows.push({
           event,
-          matcher: entry.matcher ?? "*",
-          handler,
-          type: h.type ?? "command",
+          matcher,
+          handler: handlerName(h),
+          type,
           if: h.if ?? "",
           timeout: h.timeout ?? "",
-          file: posix(relative(root, path)),
+          file,
           source,
+          // The full definition: two entries differing only in `if` (or in a
+          // command's arguments) are two hooks, not one.
+          defKey: JSON.stringify([event, matcher, type, h.command ?? "", h.args ?? [], h.prompt ?? "", h.url ?? "", h.if ?? ""]),
         });
       }
     }
@@ -145,43 +192,111 @@ function hooksFromFile(path, source) {
   return rows;
 }
 
-function findHookFiles() {
-  const found = [];
+/** The event map of a hooks.json- or settings.json-shaped file (both wrap it
+ * in a top-level `hooks` key). Throws on unreadable JSON or a non-object root. */
+function fileHooks(path) {
+  const parsed = readJsonStrict(path);
+  if (!isObject(parsed)) throw new Error("not a JSON object");
+  return parsed.hooks ?? {};
+}
+
+/** Every hook source as { file, source, load }, `load()` returning an event map
+ * or throwing. 'source' is "loaded" for what Claude Code reads directly
+ * (.claude/settings*.json, a skills-dir plugin's hooks) or "reference" for an
+ * installer/plugin-manifest copy (hooks/hooks.json, a root plugin manifest, an
+ * installed hook dir's own hooks.json) that describes the same hooks but is
+ * not itself read by Claude Code. */
+function findHookSources() {
+  const sources = [];
+  const seen = new Set();
+  const rel = (p) => posix(relative(root, p));
+  const addFile = (path, source) => {
+    if (seen.has(resolve(path))) return;
+    seen.add(resolve(path));
+    sources.push({ file: rel(path), source, load: () => fileHooks(path) });
+  };
+  const fail = (file, source, message) =>
+    sources.push({
+      file,
+      source,
+      load: () => {
+        throw new Error(message);
+      },
+    });
+  /** A plugin manifest's `hooks` — per the plugins reference a `.json` path,
+   * an inline event map, or an array of either, merged with the plugin's
+   * hooks/hooks.json (never replacing it). A path must resolve inside the
+   * plugin dir; one that escapes or is missing is reported, not read. */
+  const addManifestHooks = (pluginDir, source) => {
+    const manifest = join(pluginDir, ".claude-plugin", "plugin.json");
+    if (!existsSync(manifest)) return;
+    let declared;
+    try {
+      const parsed = readJsonStrict(manifest);
+      if (!isObject(parsed)) throw new Error("not a JSON object");
+      declared = parsed.hooks;
+    } catch (e) {
+      fail(rel(manifest), source, firstLine(e.message));
+      return;
+    }
+    if (declared === undefined) return;
+    for (const item of Array.isArray(declared) ? declared : [declared]) {
+      if (typeof item !== "string") {
+        sources.push({ file: rel(manifest), source, load: () => item });
+        continue;
+      }
+      const target = resolve(pluginDir, item);
+      const back = relative(resolve(pluginDir), target);
+      if (back === ".." || back.startsWith(`..${sep}`) || isAbsolute(back)) {
+        fail(rel(manifest), source, `hooks path escapes plugin directory: ${item}`);
+      } else if (!existsSync(target)) {
+        fail(rel(manifest), source, `hooks path not found: ${item}`);
+      } else {
+        addFile(target, source);
+      }
+    }
+  };
+
   for (const candidate of ["hooks/hooks.json", "hooks/installer-hooks.json"]) {
     const p = join(root, candidate);
-    if (existsSync(p)) found.push({ path: p, source: "reference" });
+    if (existsSync(p)) addFile(p, "reference");
   }
+  addManifestHooks(root, "reference");
   for (const candidate of [".claude/settings.json", ".claude/settings.local.json"]) {
     const p = join(root, candidate);
-    if (existsSync(p)) found.push({ path: p, source: "loaded" });
+    if (existsSync(p)) addFile(p, "loaded");
   }
   const installedDir = join(root, ".claude/hooks");
-  if (existsSync(installedDir)) {
-    for (const entry of readdirSync(installedDir, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const p = join(installedDir, entry.name, "hooks.json");
-      if (existsSync(p)) found.push({ path: p, source: "reference" });
+  if (isDir(installedDir)) {
+    for (const name of readdirSync(installedDir)) {
+      const p = join(installedDir, name, "hooks.json");
+      if (isDir(join(installedDir, name)) && existsSync(p)) addFile(p, "reference");
     }
   }
   // Skills-dir plugins (`.claude/skills/<name>/.claude-plugin/plugin.json`)
-  // auto-load their own `hooks/hooks.json` directly — no settings.json merge,
-  // no separate reference copy to drift against (A95/D072).
+  // auto-load their own `hooks/hooks.json` plus any manifest `hooks` directly —
+  // no settings.json merge, no separate reference copy to drift against
+  // (A95/D072).
   const skillsDirPath = join(root, ".claude/skills");
-  if (existsSync(skillsDirPath)) {
-    for (const entry of readdirSync(skillsDirPath, { withFileTypes: true })) {
-      if (!entry.isDirectory()) continue;
-      const pluginManifest = join(skillsDirPath, entry.name, ".claude-plugin", "plugin.json");
-      const pluginHooks = join(skillsDirPath, entry.name, "hooks", "hooks.json");
-      if (existsSync(pluginManifest) && existsSync(pluginHooks)) {
-        found.push({ path: pluginHooks, source: "loaded" });
-      }
+  if (isDir(skillsDirPath)) {
+    for (const name of readdirSync(skillsDirPath).sort()) {
+      const pluginDir = join(skillsDirPath, name);
+      if (!isDir(pluginDir) || !existsSync(join(pluginDir, ".claude-plugin", "plugin.json"))) continue;
+      const pluginHooks = join(pluginDir, "hooks", "hooks.json");
+      if (existsSync(pluginHooks)) addFile(pluginHooks, "loaded");
+      addManifestHooks(pluginDir, "loaded");
     }
   }
-  return found;
+  return sources;
 }
 
-function printSkillTable(rows) {
+function printSkillTable(skillsDir) {
   console.log("## Skills\n");
+  if (!skillsDir) {
+    console.log(`Skills: none (looked for .claude/skills, skills under ${posix(resolve(root))}).`);
+    return;
+  }
+  const rows = skillRows(collectSkillDirs(skillsDir));
   console.log("| skill | desc chars | desc ≈tok | body ≈tok | references/scripts |");
   console.log("|---|---:|---:|---:|---|");
   let totalDescTok = 0;
@@ -198,23 +313,36 @@ function printSkillTable(rows) {
   );
 }
 
-function printHookTable(hookFiles) {
+function printHookTable(sources) {
   console.log("\n## Hooks\n");
-  if (hookFiles.length === 0) {
-    console.log("No hooks.json / installer-hooks.json / settings.json found under the given root.");
+  if (sources.length === 0) {
+    console.log("No hooks.json / installer-hooks.json / settings.json / plugin.json hooks found under the given root.");
     return;
   }
-  const allRows = hookFiles.flatMap(({ path, source }) => hooksFromFile(path, source));
-  const hookKey = (r) => `${r.event}|${r.matcher}|${r.handler}`;
+  const allRows = [];
+  let unreadable = 0;
+  for (const { file, source, load } of sources) {
+    try {
+      allRows.push(...hookRows(load(), file, source));
+    } catch (e) {
+      // Report-only: one bad wiring file costs its own rows, not the report.
+      console.log(`unreadable: ${file} (${firstLine(e.message)})`);
+      unreadable++;
+    }
+  }
+  if (unreadable > 0) console.log("");
+  // Parity is path-insensitive: a loaded copy spells the handler's path under
+  // the project dir, a reference copy under the plugin root.
+  const hookKey = (r) => `${r.event}|${r.matcher}|${r.handler}${r.if ? `|${r.if}` : ""}`;
 
   const loadedRows = [];
-  const loadedKeys = new Set();
+  const loadedDefs = new Set();
   for (const row of allRows.filter((r) => r.source === "loaded")) {
-    const key = hookKey(row);
-    if (loadedKeys.has(key)) continue;
-    loadedKeys.add(key);
+    if (loadedDefs.has(row.defKey)) continue;
+    loadedDefs.add(row.defKey);
     loadedRows.push(row);
   }
+  const loadedKeys = new Set(loadedRows.map(hookKey));
   console.log("**Loaded** — read directly by Claude Code (`.claude/settings*.json`):\n");
   console.log("| event | matcher | handler | type | if | timeout | wiring file |");
   console.log("|---|---|---|---|---|---:|---|");
@@ -240,7 +368,7 @@ function printHookTable(hookFiles) {
   if (orphanKeys.length > 0) {
     console.log(
       `\n**Drift** — ${orphanKeys.length} reference-only hook(s) declared but not found in any ` +
-        `loaded settings file (event|matcher|handler): ${orphanKeys.join(", ")}.`,
+        `loaded settings file (event|matcher|handler[|if]): ${orphanKeys.join(", ")}.`,
     );
   }
 }
@@ -270,7 +398,9 @@ function printEvalPresence(skillDirs) {
   const kitFormatDir = join(root, ".github/skill-evals");
   if (existsSync(kitFormatDir)) {
     for (const f of readdirSync(kitFormatDir).filter((n) => n.endsWith(".json")).sort()) {
-      sources.push({ path: join(kitFormatDir, f), fallback: f.slice(0, -".json".length) });
+      // `.github/skill-evals/` can also hold results or config JSON: only a
+      // fixture-shaped file (or one named for an installed skill) is read.
+      sources.push({ path: join(kitFormatDir, f), fallback: f.slice(0, -".json".length), shapeGated: true });
     }
   }
   sources.push({ path: join(root, "evals/evals.json"), fallback: null });
@@ -282,13 +412,21 @@ function printEvalPresence(skillDirs) {
   const skillFor = (name) => labels.find((l) => l === name) ?? labels.find((l) => l.split("/").pop() === name);
   const covered = new Map();
   const unreadable = [];
+  const ignored = [];
   const orphans = [];
-  for (const { path, fallback } of sources) {
+  const fixtureShaped = (json, fallback) =>
+    Boolean(skillFor(fallback)) || (isObject(json) && ["skill", "skill_name", "scenarios", "evals"].some((k) => k in json));
+  for (const { path, fallback, shapeGated } of sources) {
     if (!existsSync(path)) continue;
     const rel = posix(relative(root, path));
     let entries;
     try {
-      entries = fixtureEntries(JSON.parse(readFileSync(path, "utf8")), fallback);
+      const json = readJsonStrict(path);
+      if (shapeGated && !fixtureShaped(json, fallback)) {
+        ignored.push(rel);
+        continue;
+      }
+      entries = fixtureEntries(json, fallback);
     } catch (e) {
       unreadable.push(`${rel} (${String(e.message).split("\n")[0]})`);
       continue;
@@ -327,6 +465,7 @@ function printEvalPresence(skillDirs) {
   }
   if (orphans.length > 0) console.log(`Fixture(s) naming no installed skill: ${orphans.join(", ")}.`);
   if (unreadable.length > 0) console.log(`Unreadable fixture(s): ${unreadable.join(", ")}.`);
+  if (ignored.length > 0) console.log(`Ignored (not a fixture shape): ${ignored.join(", ")}.`);
   const local = labels.filter((l) => !kitManaged(l));
   const managedLocal = labels.filter((l) => kitManaged(l) && covered.has(l)).length;
   console.log(
@@ -554,19 +693,18 @@ function printMemoryReport(budget) {
   }
 }
 
+/** Report-only: a section that throws says so and the rest still runs. */
+const section = (name, print) => {
+  try {
+    print();
+  } catch (e) {
+    console.log(`${name}: not measured — ${firstLine(e.message)}`);
+  }
+};
 const skillsDir = findSkillsDir();
-if (!skillsDir) {
-  console.error(`inventory: no .claude/skills or skills directory found under ${root}`);
-  process.exit(1);
-}
 const budget = loadContextBudget();
-printSkillTable(skillRows(skillsDir));
-printEvalPresence(collectSkillDirs(skillsDir));
-printHookTable(findHookFiles());
-printInstructionFileReport(budget);
-try {
-  printMemoryReport(budget);
-} catch (e) {
-  // Report-only: an unreadable memory dir must not take down the rest.
-  console.log(`Memory: not measured — ${e.message}`);
-}
+section("Skills", () => printSkillTable(skillsDir));
+section("Eval presence", () => printEvalPresence(skillsDir ? collectSkillDirs(skillsDir) : []));
+section("Hooks", () => printHookTable(findHookSources()));
+section("Standing-instruction file", () => printInstructionFileReport(budget));
+section("Memory", () => printMemoryReport(budget));

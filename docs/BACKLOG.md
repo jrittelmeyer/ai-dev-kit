@@ -7,7 +7,7 @@ report. Every row enters plan → sign-off → build.
 
 Source: [PROJECT_AUDIT_2026-10-18](archive/PROJECT_AUDIT_2026-10-18.md)
 (96.3/100, tenth audit — rows 62–67; 62 shipped in 0.24.10, closing the
-high-severity CodeQL alert; 63 in 0.24.11). Earlier rows 47–61 all shipped by 0.24.9 (47–54 from
+high-severity CodeQL alert; 63 in 0.24.11; 64 in 0.24.12). Earlier rows 47–61 all shipped by 0.24.9 (47–54 from
 [PROJECT_AUDIT_2026-08-31](archive/PROJECT_AUDIT_2026-08-31.md), 56–57 from
 the rootstock-os review, 58–61 from
 [HARNESS_AUDIT_2026-10-05](archive/HARNESS_AUDIT_2026-10-05.md)). Scored chain — project audits
@@ -32,7 +32,6 @@ Retired Watch items: [BACKLOG_WATCH_HISTORY](archive/BACKLOG_WATCH_HISTORY.md).
 
 | Band | # | Area | Item | Lifts | Effort |
 |------|---|------|------|-------|--------|
-| B2 | 64 | harness-audit | `inventory.mjs` robustness: BOM/JSONC-safe `hooksFromFile` degrading to an "unreadable" line, dedup key with `if` + full command, non-`.mjs` handler names, inline `plugin.json` hooks, no-skills-dir continues, symlinks followed, fixture-shape-only reads; smoke cases for the Skills and Hooks sections; SKILL.md §1 names the standing-instruction section | Lifecycle +3 | M |
 | B2 | 65 | release-tooling | `cut-release.mjs` idempotence (existing-tag sha check, `gh release view` fallback), `check-release-ready` pagination (`per_page=100`), AGENTS.md states the red-release-sha consequence (orphaned version: hand-tag the fix sha or documented skip) and `check-tag-currency` accepts the skip, `GITHUB_JOB` self-exclusion commented, Release titles capped | Versioning +3 | S |
 | B3 | 66 | ci | CONTRIBUTING "Before you push" gains the Linux gate run (Docker `node:22`) with the reason — 0.24.2/0.24.3 went red on ubuntu from a `\` a Windows-only run can't see | Testing +1 | S |
 | B3 | 67 | ci-security | Alert monitoring between audits: `check-release-ready` refuses to cut a release while a code-scanning alert ≥ high is open (`security-events: read`); a weekly `schedule:` CI step fails the same way | Security +1 | S |

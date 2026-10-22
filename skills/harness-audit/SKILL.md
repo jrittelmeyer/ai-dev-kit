@@ -26,15 +26,18 @@ the sign-off gate.
 Run `scripts/inventory.mjs` first (`node ${CLAUDE_SKILL_DIR}/scripts/inventory.mjs [projectRoot]`
 from the consumer's project root) — it measures per-skill
 description chars/≈tokens, body ≈tokens, and references/scripts files, which
-skills have local eval fixtures, every wired hook event/matcher/handler, and
-the project's auto-memory index and topic files against their budgets
-(zero-dep, no network, report-only). Layer judgment on top rather than
-hand-counting:
+skills have local eval fixtures, every wired hook event/matcher/handler, the
+standing-instruction file, and the project's auto-memory index and topic
+files against their budgets (zero-dep, no network, report-only). Layer
+judgment on top rather than hand-counting:
 
 - Skills: the script's table, plus version (from the kit stamp or
   frontmatter) and a cost split of **always-loaded vs on-demand**.
-- Hooks: the script's table, plus wiring form and handler runtimes.
-- Instruction files: `AGENTS.md` / `CLAUDE.md` (root + leaves), their sizes.
+- Hooks: the script's table, plus wiring form and handler runtimes. An
+  `unreadable:` line is a wiring defect to report, not a gap to hand-fill.
+- Standing-instruction file: the script's section — root `CLAUDE.md`,
+  falling back to `AGENTS.md`, its line count against the adapter's budget.
+  Add the other root file when both exist, and leaf files, by hand.
 - Memory: the script's resolved directory and budget flags. A MEMORY.md past
   the harness load cap is truncated every session, not just over a heuristic.
 - Connected tool servers (MCP config), permissions/allowlists in settings,

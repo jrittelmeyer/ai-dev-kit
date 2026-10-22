@@ -1,5 +1,88 @@
 # ai-dev-kit changelog
 
+## 0.24.12 — 2026-10-22
+
+B2-64 from the 2026-10-18 project audit: `inventory.mjs` robustness
+(harness-audit 0.1.14). The script is the audit's primary instrument. A
+BOM'd `settings.json` aborted the whole report with exit 1, and the kit's
+own report said "10 hook(s) loaded" for 11 wired entries.
+
+- **Wiring files degrade instead of aborting.** JSON reads strip a UTF-8
+  BOM. As a side benefit, a BOM'd `settings.local.json` or
+  `ai-dev-kit.config.json` is no longer silently ignored, so its
+  `contextBudget` is honored. A hook source that won't parse, or whose shape
+  is wrong (an event value that isn't an array, a malformed matcher group),
+  prints `unreadable: <file> (<reason>)`. Only that file's rows are skipped.
+  A BOM'd `SKILL.md` has its frontmatter read too (found in review).
+- **Loaded hooks dedupe on the full definition** (type, command, args,
+  prompt/url, `if`), so the `PowerShell(git *)` live-verify variant is its
+  own row. The kit reports 11. The reference-vs-loaded parity check keys
+  on a path-insensitive `event|matcher|handler[|if]`. A loaded copy spells
+  the handler under the project dir and a reference copy under the plugin
+  root, so a full-path key would flag every hook as drift. A reference
+  that differs only in `if` is now drift.
+- **Handler names.** A command hook is named by its first path-like token
+  (`lint.sh`, `check.py`, any extension), with an `.exe` interpreter
+  yielding to the script after it, else by its first token (`npx`).
+  Prompt and agent hooks show `prompt: "<first 40 chars>"`. No more `?`
+  rows collapsing into one.
+- **Plugin manifest hooks.** The live plugins reference (fetched
+  2026-10-22) says manifest `hooks` takes a `.json` path, an inline event
+  map, or an array mixing both. It **merges with** `hooks/hooks.json`
+  rather than replacing it, and paths must resolve inside the plugin root.
+  The signed plan assumed manifest `hooks` replaced the default file and
+  that arrays held only paths. The documented behavior is implemented
+  instead. A skills-dir plugin's manifest hooks are loaded rows, alongside
+  its `hooks/hooks.json`. A root `.claude-plugin/plugin.json`'s hooks are
+  reference rows. A path that escapes the plugin dir, or that is missing,
+  is reported unreadable and not read.
+- **No skills dir** prints `Skills: none (looked for …)` and the report
+  continues with exit 0. Before, it wrote a stderr line and exited 1 with no
+  report.
+- **Links followed.** Directory tests follow symlinks and Windows junctions
+  across the skills, nested plugin skills, `.claude/hooks/*` and
+  skills-dir-plugin scans. `walk()` carries a realpath seen-set, so a link
+  back to an ancestor can't loop. Dangling links are skipped.
+  References/scripts lists are sorted, so the output is the same on every
+  filesystem.
+- **`skill-evals/` reads fixtures only.** A `*.json` there counts as a
+  fixture when its basename names an installed skill or it carries
+  `skill` / `skill_name` / `scenarios` / `evals`. Any other valid JSON
+  (e.g. `results.json`) goes on one `Ignored (not a fixture shape)` line
+  instead of "Unreadable fixture".
+- **Every section is guarded.** Skills, Eval presence, Hooks and the
+  Standing-instruction file now get the same treatment Memory had: a
+  section that throws prints `<Section>: not measured — <reason>`.
+- harness-audit SKILL.md §1 names the `## Standing-instruction file`
+  section and treats an `unreadable:` line as a defect to report.
+
+BACKLOG row 64 is retired; README "Next" is now B2-65.
+
+**Verification:** `smoke-inventory` grew from 42 to 96 checks, all added
+before the fix. Against the 0.24.11 `inventory.mjs`, 35 of the 54 new
+checks failed, among them the BOM crash (exit 1), the merged `if`
+variants, the `?` handlers, the manifest hooks, the missing skills dir
+(exit 1), the linked skill dir, the `results.json` misreport and the
+section that threw (EISDIR, exit 1). The other 19 are labelled regression
+guards or are trivial exit checks. These guards cover the Skills and Hooks
+sections, which had no smoke coverage before, plus the dangling link and
+the true-duplicate dedup. The symlink-cycle guard can't fail on 0.24.11,
+which never followed links. With the seen-set removed it fails: two
+back-links make a naive walk 2^depth, and the case was killed by SIGTERM at
+its 20 s bound. A single back-link is not enough, because the OS's
+ELOOP/path-length limit ends a linear walk. The adversarial review found
+three things, each fixed with a fixture shown failing first. First, the
+editor had written literal U+FEFF bytes where `\uFEFF` was meant; they are
+now escapes. Second, a BOM'd `SKILL.md` lost its frontmatter. Third, the
+new name heuristic had regressed `"…/node.exe" hook.mjs` to `node.exe`.
+On the kit itself the report now shows 11 hooks loaded and 11 unique
+reference keys, all matching, with no drift and exit 0. Full gate green
+after the self-install, on Windows and on Linux (Docker `node:22`):
+`install.mjs --check` (40 files match), `skill-lint` (10 clean),
+`skill-evals` (33 scenarios, 100 anchors), `smoke-hooks` (237 asserts),
+`smoke-installer`, `smoke-inventory` (96 checks), `check-version` (6 sites
+at 0.24.12).
+
 ## 0.24.11 — 2026-10-19
 
 B1-63 from the 2026-10-18 project audit: `script-exec-guard` hardening. The
